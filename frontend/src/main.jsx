@@ -12,6 +12,7 @@ import { Routes, Route, BrowserRouter } from "react-router";
 import Patient from "./pages/Patient/Patient.jsx";
 import Doctor from "./pages/Doctor.jsx";
 import Home from "./pages/Home.jsx";
+import { AuthProvider } from "./auth/AuthProvider.jsx";
 
 function Fallback({ error, resetErrorBoundary }) {
   // Call resetErrorBoundary() to reset the error boundary and retry the render.
@@ -26,14 +27,16 @@ function Fallback({ error, resetErrorBoundary }) {
 
 createRoot(document.getElementById("root")).render(
   <ErrorBoundary FallbackComponent={Fallback}>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App></App>}>
-          <Route index path="/" element={<Home></Home>}></Route>
-          <Route index path="/patient" element={<Patient></Patient>}></Route>
-          <Route index path="/doctor" element={<Doctor></Doctor>}></Route>
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App></App>}>
+            <Route index path="/" element={<Home></Home>}></Route>
+            <Route index path="/patient" element={<Patient></Patient>}></Route>
+            <Route index path="/doctor" element={<Doctor></Doctor>}></Route>
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   </ErrorBoundary>
 );

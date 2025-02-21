@@ -1,8 +1,10 @@
 import { Box, Button, TextField } from "@mui/material";
 import { useFormik } from "formik";
 import { patientSchema } from "./patientSchema";
+import { useAuth } from "../../auth/AuthProvider";
 
 function PatientForm() {
+  const { token, setToken } = useAuth();
   const {
     values,
     errors,
@@ -21,12 +23,15 @@ function PatientForm() {
     validationSchema: patientSchema,
     onSubmit: async (values, actions) => {
       //send api request to login user here.
-      alert(JSON.stringify(values, null, 2));
+
+      alert(JSON.stringify(values, null, 2) + "mock set token for the user");
+
+      // for now, we will set dummy values for the user token.
+      setToken("patient");
 
       actions.resetForm();
     },
   });
-  const errorBg = "#ffc2bf";
   return (
     <form onSubmit={handleSubmit}>
       <Box
@@ -78,7 +83,7 @@ function PatientForm() {
           error={errors.password && touched.password}
           helperText={touched.password && errors.password}
         />
-        <Button onClick={() => handleSubmit()}>Submit</Button>
+        <Button type="submit">Submit</Button>
         {/**
          * TODO: ADD INSURANCE INFO AND PAYMENTS ONLINE (CREDIT INFO)
          */}
