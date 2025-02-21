@@ -1,20 +1,26 @@
 import { useState } from "react";
-import Root from "./Root";
-import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
+import NavBar from "./NavBar";
+import {
+  Box,
+  createTheme,
+  CssBaseline,
+  ThemeProvider,
+  Typography,
+} from "@mui/material";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router";
-import Patient from "./pages/Patient";
+import Patient from "./pages/Patient/Patient";
 
 const theme = createTheme({
-  typography: {
-    allVariants: {
-      color: "white",
-    },
-    fontSize: 16,
-  },
   palette: {
-    main: "blue",
+    primary: {
+      main: "#D71600",
+    },
+    text: {
+      primary: "#000000",
+      secondary: "#000000",
+    },
     background: {
-      default: "#131313",
+      default: "#FFFFFF",
     },
   },
 });
@@ -23,7 +29,8 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline></CssBaseline>
-      <Root></Root>
+      <NavBar></NavBar>
+
       <Outlet></Outlet>
     </ThemeProvider>
   );

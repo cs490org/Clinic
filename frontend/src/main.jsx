@@ -9,8 +9,9 @@ import "@fontsource/roboto/700.css";
 import { ErrorBoundary } from "react-error-boundary";
 import { Routes, Route, BrowserRouter } from "react-router";
 
-import Patient from "./pages/Patient.jsx";
+import Patient from "./pages/Patient/Patient.jsx";
 import Doctor from "./pages/Doctor.jsx";
+import Home from "./pages/Home.jsx";
 
 function Fallback({ error, resetErrorBoundary }) {
   // Call resetErrorBoundary() to reset the error boundary and retry the render.
@@ -28,6 +29,7 @@ createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App></App>}>
+          <Route index path="/" element={<Home></Home>}></Route>
           <Route index path="/patient" element={<Patient></Patient>}></Route>
           <Route index path="/doctor" element={<Doctor></Doctor>}></Route>
         </Route>

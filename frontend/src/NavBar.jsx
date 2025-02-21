@@ -5,7 +5,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router";
 
-export default function Root() {
+export default function NavBar() {
   const navigate = useNavigate();
   return (
     <Box sx={{ flexGrow: 1 }}>
