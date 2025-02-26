@@ -14,7 +14,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -41,14 +40,11 @@ public class UserService {
 
         UserResponseDTO userResponseDTO = new UserResponseDTO();
         userResponseDTO.setId(token.getUser().getUserId());
-        userResponseDTO.setCreditBalance(token.getUser().getCreditBalance());
         userResponseDTO.setImgUri(token.getUser().getImgUri());
         userResponseDTO.setEmail(token.getUser().getEmail());
         userResponseDTO.setFirstName(token.getUser().getFirstName());
         userResponseDTO.setLastName(token.getUser().getLastName());
         userResponseDTO.setRole(token.getUser().getRole());
-        userResponseDTO.setMfaEnabled(token.getUser().isMfaEnabled());
-        userResponseDTO.setConnectedAccountId(token.getUser().getConnectAccountId());
 
         return userResponseDTO;
     }
@@ -84,21 +80,6 @@ public class UserService {
         jdbcTemplate.update("update users set img_uri = :imageUri where user_id = :userId", params);
     }
 
-    public Integer updateUserCreditBalance(String accessToken, Integer amount, @Nullable Boolean replace) {
-        Token token = tokenRepository.findByToken(accessToken).orElseThrow();
-
-        Integer userId = token.getUser().getUserId();
-
-        User user = userRepository.findById(userId).orElseThrow();
-        if (Boolean.TRUE.equals(replace)) {
-            user.setCreditBalance(amount);
-        } else {
-            user.setCreditBalance(user.getCreditBalance() + amount);
-        }
-
-        return userRepository.save(user).getCreditBalance();
-    }
-
     public boolean isValidResetToken(String email, String token) {
         Integer userId = userRepository.findByEmail(email).orElseThrow().getUserId();
         PasswordResetToken passwordResetToken = tokenResetRepository.findByUserId(userId).orElseThrow();
@@ -120,7 +101,6 @@ public class UserService {
             dto.setEmail(user.getEmail());
             dto.setFirstName(user.getFirstName());
             dto.setLastName(user.getLastName());
-            dto.setMfaEnabled(user.isMfaEnabled());
             dto.setRole(user.getRole());
 
             dtos.add(dto);
