@@ -1,4 +1,4 @@
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, Paper, Typography, useTheme } from "@mui/material";
 import StyledButton from "../components/StyledButton";
 import { useNavigate } from "react-router";
 
@@ -13,9 +13,9 @@ function LandingPage() {
       alignItems={"center"}
       mt={"8rem"}
     >
-      <Box display="flex" width="80%">
+      <Box display="flex" width="80%" alignItems={"center"} gap="6rem">
         <Box display="flex" flexDirection={"column"}>
-          <Typography variant="h1" fontWeight={"bold"} fontSize={"3rem"}>
+          <Typography variant="h1" fontWeight={"bold"} fontSize={"4rem"}>
             Your Health Journey Starts Here
           </Typography>
           <Typography fontSize={"1.5rem"}>
@@ -27,20 +27,29 @@ function LandingPage() {
               sx={{
                 backgroundColor: theme.palette.primary.main,
                 color: "white",
+                flex: 1,
               }}
-              onClick={() => navigate("patient")}
+              onClick={() => navigate("/signup?userType=patient")}
             >
               Join as Patient
             </StyledButton>
-            <StyledButton onClick={() => navigate("doctor")}>
+            <StyledButton
+              sx={{ flex: 1 }}
+              onClick={() => navigate("/signup?userType=doctor")}
+            >
               Join as Docter
             </StyledButton>
-            <StyledButton onClick={() => navigate("/")}>
+            <StyledButton
+              sx={{ flex: 1 }}
+              onClick={() => navigate("/signup?userType=pharmacist")}
+            >
               Join as Pharmacist
             </StyledButton>
           </Box>
         </Box>
-        <Box></Box>
+        <Paper>
+          <img width={800} src="./weightloss.jpg"></img>
+        </Paper>
       </Box>
     </Box>
   );
