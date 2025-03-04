@@ -2,8 +2,8 @@ import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
-import Button from "@mui/material/Button";
 import { useNavigate } from "react-router";
+import StyledButton from "./components/StyledButton";
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -11,15 +11,15 @@ export default function NavBar() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar>
         <Toolbar>
-          <Button onClick={() => navigate("/")} color="inherit">
+          <StyledButton onClick={() => navigate("/")} color="inherit">
             Home
-          </Button>
-          <Button onClick={() => navigate("/patient")} color="inherit">
+          </StyledButton>
+          <StyledButton onClick={() => navigate("/patient")} color="inherit">
             Patient
-          </Button>
-          <Button onClick={() => navigate("/doctor")} color="inherit">
+          </StyledButton>
+          <StyledButton onClick={() => navigate("/doctor")} color="inherit">
             Doctor
-          </Button>
+          </StyledButton>
         </Toolbar>
       </AppBar>
     </Box>

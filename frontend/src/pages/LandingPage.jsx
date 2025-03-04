@@ -1,18 +1,14 @@
 import { Box, Typography } from "@mui/material";
 
-function Home() {
+function LandingPage() {
   return (
     <Box
       height="100vh"
       display="flex"
       justifyContent={"center"}
       alignItems={"center"}
-    >
-      <Typography>
-        home page - color scheme definitely not stolen from johnson and johnson
-      </Typography>
-    </Box>
+    ></Box>
   );
 }
 
-export default Home;
+export default LandingPage;

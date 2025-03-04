@@ -11,7 +11,7 @@ import { Routes, Route, BrowserRouter } from "react-router";
 
 import Patient from "./pages/Patient/Patient.jsx";
 import Doctor from "./pages/Doctor.jsx";
-import Home from "./pages/Home.jsx";
+import LandingPage from "./pages/LandingPage.jsx";
 import { AuthProvider } from "./auth/AuthProvider.jsx";
 
 function Fallback({ error, resetErrorBoundary }) {
@@ -31,7 +31,7 @@ createRoot(document.getElementById("root")).render(
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<App></App>}>
-            <Route index path="/" element={<Home></Home>}></Route>
+            <Route index path="/" element={<LandingPage></LandingPage>}></Route>
             <Route index path="/patient" element={<Patient></Patient>}></Route>
             <Route index path="/doctor" element={<Doctor></Doctor>}></Route>
           </Route>
