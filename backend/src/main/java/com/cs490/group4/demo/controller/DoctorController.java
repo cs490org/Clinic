@@ -1,21 +1,19 @@
+package com.cs490.group4.demo.controller;
 
-/*
-handle HTTP requests
-calls DoctorService to retrieve and proces sdata
+import com.cs490.group4.demo.service.DoctorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-returns JSON from HTTP requsts.
+@RestController
+public class DoctorController {
 
-flow:
-client makes request
-Controler handles request
-Service processes the request
-Repo fetches data from database
-Service returns data to Controller
-    Why do we need Service?
-    same reason why we use geters and setters - sepeartoin of concerns
-Contrller sends response to client
+    @Autowired
+    private DoctorService doctorService;
 
-Controller -> Service -> Repository (Query database) -> Service -> Controller
-*/
-package com.cs490.group4.demo.controller;public class DoctorController {
+    @GetMapping("/doctors")
+    private ResponseEntity<?> getAllDoctors(){
+        return ResponseEntity.ok(doctorService.getAllDoctors());
+    }
 }

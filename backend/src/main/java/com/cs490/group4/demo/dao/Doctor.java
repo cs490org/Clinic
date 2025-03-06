@@ -1,18 +1,10 @@
 package com.cs490.group4.demo.dao;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
 
-
-/*
-Represnents a table in the data base
-each instance of Doctor corresponsds to a row 
-use JPA annotations for special colunm properties
-*/
 @Entity
 public class Doctor {
-    @Id
-    private Integer id; //primary key
 
+    private String firstName, lastName;
 
-    // TODO: other infor about doctors..
 }
