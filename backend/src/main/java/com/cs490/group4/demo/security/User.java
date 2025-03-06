@@ -24,13 +24,11 @@ public class User implements UserDetails {
     @GeneratedValue
     @Column(name = "user_id")
     private Integer userId;
-    @Column(columnDefinition = "integer default 0")
-    private Integer creditBalance;
-    private String firstName, lastName, email, password, mfaSecret, imgUri, connectAccountId;
+    private String firstName, lastName, email, password, imgUri;
     @Enumerated(EnumType.STRING)
     private Role role;
     @Column(columnDefinition = "boolean default false")
-    private boolean mfaEnabled, disabled;
+    private boolean disabled;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
