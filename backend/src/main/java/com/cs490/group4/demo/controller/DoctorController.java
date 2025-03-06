@@ -16,5 +16,4 @@ public class DoctorController {
     private ResponseEntity<?> getAllDoctors(){
         return ResponseEntity.ok(doctorService.getAllDoctors());
     }
-
 }
