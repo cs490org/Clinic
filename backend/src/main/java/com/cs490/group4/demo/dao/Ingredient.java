@@ -5,12 +5,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
 @Entity
-public class Doctor {
+public class Ingredient {
 
     @Id
     @GeneratedValue
     private Integer id;
-    private String firstName, lastName, email, phone, specialty;
-    private Long licenseNumber;
+
+    private Integer calories, carbs, fats, protein;
+
+    private String name, description;
 
 }

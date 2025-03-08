@@ -4,13 +4,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
+import java.math.BigDecimal;
+
 @Entity
-public class Doctor {
+public class Drug {
 
     @Id
     @GeneratedValue
     private Integer id;
-    private String firstName, lastName, email, phone, specialty;
-    private Long licenseNumber;
+    private String name, description, dosage;
+
+    private BigDecimal price;
 
 }

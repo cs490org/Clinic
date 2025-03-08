@@ -5,12 +5,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
 @Entity
-public class Doctor {
+public class Patient {
 
     @Id
     @GeneratedValue
     private Integer id;
-    private String firstName, lastName, email, phone, specialty;
-    private Long licenseNumber;
+    private String firstName, lastName, email, phone, address;
 
 }

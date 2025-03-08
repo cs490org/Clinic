@@ -7,10 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/*
-process and validate data before storing / retrieving
-talks to databas through the Repository
-*/
+
 @Service
 public class DoctorService {
 
@@ -18,8 +15,8 @@ public class DoctorService {
     @Autowired
     private DoctorRepository doctorRepository;
 
-    // public List<Doctor> getAllDoctors(){
-    //     return doctorRepository.findAll();
-    // }
+     public List<Doctor> getAllDoctors(){
+         return doctorRepository.findAll();
+     }
 
 }
