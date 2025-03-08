@@ -2,6 +2,8 @@ package com.cs490.group4.demo.dao;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class Prescription {
 
@@ -9,16 +11,22 @@ public class Prescription {
     @GeneratedValue
     private Integer id;
 
-    @ManyToMany
+    @ManyToOne
     @JoinColumn(name = "doctor_id", referencedColumnName = "id")
     private Doctor doctor;
 
-    @ManyToMany
+    @ManyToOne
     @JoinColumn(name = "patient_id", referencedColumnName = "id")
     private Patient patient;
 
-    @ManyToMany
+    @ManyToOne
     @JoinColumn(name = "drug_id", referencedColumnName = "id")
     private Drug drug;
+
+    @OneToOne
+    @JoinColumn(name = "rx_status_code", referencedColumnName = "id")
+    private RxStatusCode rxStatusCode;
+
+    private LocalDateTime rxExpiryTimestamp;
 
 }

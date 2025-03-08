@@ -41,7 +41,6 @@ public class AuthenticationService {
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .creditBalance(0)
                 .role(Role.USER).build();
         if (repository.findByEmail(user.getEmail()).isEmpty()) {
             User savedUser = repository.save(user);
@@ -83,7 +82,6 @@ public class AuthenticationService {
             userResponseDTO.setFirstName(user.getFirstName());
             userResponseDTO.setLastName(user.getLastName());
             userResponseDTO.setRole(user.getRole());
-            userResponseDTO.setMfaEnabled(user.isMfaEnabled());
             return CredentialsCheckResponseDTO.builder().validCredentials(true).userResponseDTO(userResponseDTO).build();
         } catch (Exception e) {
             return CredentialsCheckResponseDTO.builder().validCredentials(false).build();
@@ -102,20 +100,6 @@ public class AuthenticationService {
             return AuthenticationResponseDTO.builder().accessToken(accessToken).refreshToken(newRefreshToken).build();
         }
         throw new RuntimeException("Token expired or not found in the database. Cannot refresh access token.");
-    }
-
-    public void checkUserMFA(String email) {
-        User user = repository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("FATAL: Requested to check MFA status for a user, but that user's email was not found in the db!"));
-        if (user.isMfaEnabled()) {
-
-        } else {
-
-        }
-    }
-
-    public boolean hasMFAEnabled(String email) {
-        User user = repository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("FATAL: Requested to check MFA status for a user, but that user's email was not found in the db!"));
-        return user.isMfaEnabled();
     }
 
     private void saveUserToken(User user, String jwtToken) {

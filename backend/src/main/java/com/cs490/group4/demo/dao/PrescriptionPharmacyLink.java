@@ -9,11 +9,11 @@ public class PrescriptionPharmacyLink {
     @GeneratedValue
     private Integer id;
 
-    @ManyToMany
+    @ManyToOne
     @JoinColumn(name = "prescription_id", referencedColumnName = "id")
     private Prescription prescription;
 
-    @ManyToMany
+    @ManyToOne
     @JoinColumn(name = "pharmacy_id", referencedColumnName = "id")
     private Pharmacy pharmacy;
 
