@@ -5,9 +5,17 @@ import Toolbar from "@mui/material/Toolbar";
 import { useNavigate } from "react-router";
 import StyledButton from "./components/StyledButton";
 import { styled, Typography } from "@mui/material";
+import { useAuth } from "./auth/AuthProvider";
 
 export default function NavBar() {
   const navigate = useNavigate();
+  const { isAuthenticated, logout, userRole } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar>
@@ -32,15 +40,31 @@ export default function NavBar() {
             </StyledButton>
           </Box>
           <Box display="flex" gap="0.5rem">
-            <StyledButton sx={{ color: "white", border: "1px solid white" }}>
-              Sign In
-            </StyledButton>
-            <StyledButton
-              sx={{ backgroundColor: "white", border: "1px solid white" }}
-              onClick={() => navigate("signup")}
-            >
-              Sign Up
-            </StyledButton>
+            {isAuthenticated ? (
+              <>
+                <StyledButton
+                  sx={{ color: "white", border: "1px solid white" }}
+                  onClick={handleLogout}
+                >
+                  Logout
+                </StyledButton>
+              </>
+            ) : (
+              <>
+                <StyledButton 
+                  sx={{ color: "white", border: "1px solid white" }} 
+                  onClick={() => navigate("signin")}
+                >
+                  Sign In
+                </StyledButton>
+                <StyledButton
+                  sx={{ backgroundColor: "white", border: "1px solid white" }}
+                  onClick={() => navigate("signup")}
+                >
+                  Sign Up
+                </StyledButton>
+              </>
+            )}
           </Box>
         </Box>
       </AppBar>

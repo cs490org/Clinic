@@ -7,68 +7,90 @@ import {
 } from "react";
 
 import axios from "axios";
-const AuthContext = createContext(undefined);
+const AuthContext = createContext(null);
 
 export const useAuth = () => {
-  const authContext = useContext(AuthContext);
+  const context = useContext(AuthContext);
 
-  if (!authContext) {
+  if (!context) {
     throw new Error("useAuth must be used within an AuthProvider.");
   }
-  return authContext;
+  return context;
 };
 
 const api = axios.create({
   baseURL: "Somewhere",
 });
 
-/*
-handles setting authorizatoi headers when we have a token
-handles refreshing tokens when we get an unauthorized response from server.
-*/
 export const AuthProvider = ({ children }) => {
-  // we might call an api and get the token, and do setToken
-  //  (in some other component like the login page or somethiing)
-  const [token, setToken] = useState();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState(null);
+  const [userDetails, setUserDetails] = useState({
+    email: null,
+    role: null,
+    firstName: null,
+    lastName: null,
+    token: null
+  });
 
-  // get token from api
-  useEffect(() => {
-    const fetchMe = async () => {
-      try {
-        // TODO: FETCH TOKEN FROM API
-        // if we have a valid token, it will be in the
-        //  authorizaiton headers so we could extract from there on the server
-        setToken("token");
-      } catch {
-        setToken(null);
-      }
+  const login = async (email, password, role) => {
+    const mockUserData = {
+      email,
+      role,
+      firstName: "Test",
+      lastName: "User",
+      token: "mock-jwt-token" 
     };
-    fetchMe();
-  }, []);
+
+    setIsAuthenticated(true);
+    setUserRole(role);
+    setUserDetails(mockUserData);
+    
+    return mockUserData;
+  };
+
+  const register = async (userData) => {
+    const mockUserData = {
+      ...userData,
+      id: Math.random().toString(36).substr(2, 9),
+      token: "mock-jwt-token" 
+    };
+
+    setIsAuthenticated(true);
+    setUserRole(userData.role);
+    setUserDetails(mockUserData);
+
+    return mockUserData;
+  };
+  const logout = () => {
+    setIsAuthenticated(false);
+    setUserRole(null);
+    setUserDetails({
+      email: null,
+      role: null,
+      firstName: null,
+      lastName: null,
+      token: null
+    });
+  };
+
 
   /*
     if token defined, add it to authorization headers.
-    useLayoutEffect instread of useEffect because useLayoutEffect
-        is blocking (synchronous), we dont want to render components that need auth
-        until we get the new token.
   */
   useLayoutEffect(() => {
     const authInterceptor = api.interceptors.request.use((config) => {
       config.headers.Authorization =
-        !config._retry && token
-          ? `Bearer ${token}`
+        !config._retry && isAuthenticated && userDetails?.token
+          ? `Bearer ${userDetails.token}`
           : config.headers.Authorization;
       return config;
     });
 
-    /*
-      cleanup - avoid stacking interceptors
-      React automatically calls functions returned from useEffect
-    */
     return () => {
       api.interceptors.request.eject(authInterceptor);
     };
-  }, [token]);
+  }, [isAuthenticated, userDetails?.token]);
 
   /**
    * If unauthorized status code, refrehs token.
@@ -81,21 +103,19 @@ export const AuthProvider = ({ children }) => {
         const originalRequest = error.config;
 
         if (
-          error.response.status === 403 &&
-          error.response.data.message === "Unauthorized"
+          error.response?.status === 403 &&
+          error.response?.data?.message === "Unauthorized"
         ) {
           try {
-            // try to refresh token
             // TODO: HIT REFRESH TOKEN ENDPOINT
-            const accessToken = "Token";
-            setToken(accessToken);
+            const accessToken = "mock-jwt-token";
+            setIsAuthenticated(true);
+            setUserDetails((prev) => ({ ...prev, token: accessToken }));
             originalRequest.headers.Authorization = `Bearer ${accessToken}`;
             originalRequest._retry = true;
-            // retry with original request
             return api(originalRequest);
           } catch {
-            //error getting refresh token (proably expired), go to login page.
-            setToken(null);
+            logout(); // Use the logout function to reset all auth state
           }
         }
         return Promise.reject(error);
@@ -106,7 +126,14 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
   return (
-    <AuthContext.Provider value={{ token, setToken }}>
+    <AuthContext.Provider value={{
+      isAuthenticated,
+      userRole,
+      userDetails,
+      login,
+      logout,
+      register
+    }}>
       {children}
     </AuthContext.Provider>
   );

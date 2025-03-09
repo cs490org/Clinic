@@ -12,17 +12,28 @@ import {
   Typography,
   TextField,
   Button,
-  Grid,
-  Link,
-  FormControlLabel,
-  Checkbox,
-  Box,
+  Stack,
   Alert,
   Tabs,
   Tab,
+  Checkbox,
+  FormControlLabel,
+  Divider,
+  MenuItem,
 } from "@mui/material";
+import { useNavigate, Link as RouterLink } from "react-router";
+import { useAuth } from "../auth/AuthProvider";
+
+const SPECIALTIES = [
+  "Weight Loss",
+  "Weight Gain",
+  "Nutrition",
+  "Physical Therapy"
+];
 
 const SignupPage = () => {
+  const navigate = useNavigate();
+  const { register } = useAuth();
   const urlParams = new URLSearchParams(window.location.search);
   const initialUserType = urlParams.get("userType") || "patient";
 
@@ -34,23 +45,22 @@ const SignupPage = () => {
     password: "",
     confirmPassword: "",
     agreeToTerms: false,
-    // Additional fields for different user types
-    // DOCTORS
-    specialization: "", // TODO: Dropdown for specialization types
+    address: "",
+    phone: "",
+    specialization: "",
     licenseNumber: "",
-
-    // PHARMACY
     pharmacyName: "",
     pharmacyAddress: "",
+    pharmacyPhone: "",
+    pharmacyZipCode: "",
   });
 
   const [errors, setErrors] = useState({});
-  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const handleUserTypeChange = (event, newValue) => {
     setUserType(newValue);
     setErrors({});
-    setSubmitSuccess(false);
   };
 
   const handleChange = (event) => {
@@ -59,6 +69,10 @@ const SignupPage = () => {
       ...prevData,
       [name]: name === "agreeToTerms" ? checked : value,
     }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
   };
 
   const validateForm = () => {
@@ -66,7 +80,8 @@ const SignupPage = () => {
 
     if (!formData.firstName.trim())
       newErrors.firstName = "First name is required";
-    if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
+    if (!formData.lastName.trim()) 
+      newErrors.lastName = "Last name is required";
 
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
@@ -88,12 +103,24 @@ const SignupPage = () => {
       newErrors.agreeToTerms = "You must agree to the terms and conditions";
     }
 
-    // Validate user type specific fields
+    if (userType === "patient") {
+      if (!formData.address)
+        newErrors.address = "Address is required";
+      if (!formData.phone)
+        newErrors.phone = "Phone number is required";
+      else if (!/^\d{10}$/.test(formData.phone.replace(/\D/g, '')))
+        newErrors.phone = "Please enter a valid 10-digit phone number";
+    }
+
     if (userType === "doctor") {
       if (!formData.specialization)
         newErrors.specialization = "Specialization is required";
       if (!formData.licenseNumber)
         newErrors.licenseNumber = "License number is required";
+      if (!formData.phone)
+        newErrors.phone = "Phone number is required";
+      else if (!/^\d{10}$/.test(formData.phone.replace(/\D/g, '')))
+        newErrors.phone = "Please enter a valid 10-digit phone number";
     }
 
     if (userType === "pharmacist") {
@@ -101,227 +128,357 @@ const SignupPage = () => {
         newErrors.pharmacyName = "Pharmacy name is required";
       if (!formData.pharmacyAddress)
         newErrors.pharmacyAddress = "Pharmacy address is required";
+      if (!formData.pharmacyPhone)
+        newErrors.pharmacyPhone = "Pharmacy phone number is required";
+      else if (!/^\d{10}$/.test(formData.pharmacyPhone.replace(/\D/g, '')))
+        newErrors.pharmacyPhone = "Please enter a valid 10-digit phone number";
+      if (!formData.pharmacyZipCode)
+        newErrors.pharmacyZipCode = "ZIP code is required";
+      else if (!/^\d{5}(-\d{4})?$/.test(formData.pharmacyZipCode))
+        newErrors.pharmacyZipCode = "Please enter a valid ZIP code (e.g., 12345 or 12345-6789)";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (validateForm()) {
-      // send form data to backend here
-      console.log("Form submitted:", { userType, ...formData });
-      setSubmitSuccess(true);
-      // Reset form after successful submission
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        agreeToTerms: false,
-        specialization: "",
-        licenseNumber: "",
-        pharmacyName: "",
-        pharmacyAddress: "",
-      });
+      try {
+        const requestData = {
+          email: formData.email,
+          password: formData.password,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          role: userType.toUpperCase(),
+        };
+
+        if (userType === "patient") {
+          requestData.address = formData.address;
+          requestData.phone = formData.phone;
+        } else if (userType === "doctor") {
+          requestData.specialty = formData.specialization;
+          requestData.licenseNumber = formData.licenseNumber;
+          requestData.phone = formData.phone;
+        } else if (userType === "pharmacist") {
+          requestData.pharmacyName = formData.pharmacyName;
+          requestData.address = formData.pharmacyAddress;
+          requestData.phone = formData.pharmacyPhone;
+          requestData.zipCode = formData.pharmacyZipCode;
+        }
+
+        const data = await register(requestData);
+        
+        switch (data.role) {
+          case "PATIENT":
+            navigate("/patient/dashboard");
+            break;
+          case "DOCTOR":
+            navigate("/doctor/dashboard");
+            break;
+          case "PHARMACIST":
+            navigate("/pharmacist/dashboard");
+            break;
+          default:
+            navigate("/dashboard");
+        }
+      } catch (error) {
+        setSubmitError(error.response?.data?.message || "Registration failed");
+      }
     }
   };
 
   return (
-    <Container sx={{ mt: "10rem" }} maxWidth="xs">
-      <Paper
-        elevation={3}
+    <Container maxWidth="sm" sx={{ maxWidth: '700px' }}>
+      <Stack
+        spacing={3}
         sx={{
-          padding: 4,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          mt: 8,
+          minHeight: '100vh',
+          py: 8,
+          alignItems: 'center',
+          justifyContent: 'center'
         }}
       >
-        <Typography component="h1" variant="h5">
-          Sign Up
-        </Typography>
-        <Box
-          sx={{ borderBottom: 1, borderColor: "divider", width: "100%", mb: 3 }}
+        <Paper
+          elevation={3}
+          sx={{
+            p: 4,
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
         >
+          <Typography component="h1" variant="h5" gutterBottom>
+            Sign Up
+          </Typography>
+
           <Tabs
             value={userType}
             onChange={handleUserTypeChange}
-            aria-label="user type tabs"
+            variant="fullWidth"
+            sx={{ width: '100%', mb: 3 }}
           >
             <Tab label="Patient" value="patient" />
             <Tab label="Doctor" value="doctor" />
             <Tab label="Pharmacist" value="pharmacist" />
           </Tabs>
-        </Box>
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+
+          <Stack component="form" onSubmit={handleSubmit} spacing={2} sx={{ width: '100%' }}>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
               <TextField
                 name="firstName"
                 required
                 fullWidth
                 label="First Name"
-                autoFocus
+                autoComplete="given-name"
                 value={formData.firstName}
                 onChange={handleChange}
                 error={!!errors.firstName}
                 helperText={errors.firstName}
               />
-            </Grid>
-            <Grid item xs={12} sm={6}>
+
               <TextField
                 name="lastName"
                 required
                 fullWidth
                 label="Last Name"
+                autoComplete="family-name"
                 value={formData.lastName}
                 onChange={handleChange}
                 error={!!errors.lastName}
                 helperText={errors.lastName}
               />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                name="email"
-                required
-                fullWidth
-                label="Email Address"
-                value={formData.email}
-                onChange={handleChange}
-                error={!!errors.email}
-                helperText={errors.email}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                name="password"
-                required
-                fullWidth
-                label="Password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                error={!!errors.password}
-                helperText={errors.password}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                name="confirmPassword"
-                required
-                fullWidth
-                label="Confirm Password"
-                type="password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                error={!!errors.confirmPassword}
-                helperText={errors.confirmPassword}
-              />
-            </Grid>
+            </Stack>
+
+            <TextField
+              name="email"
+              required
+              fullWidth
+              label="Email Address"
+              autoComplete="email"
+              value={formData.email}
+              onChange={handleChange}
+              error={!!errors.email}
+              helperText={errors.email}
+            />
+
+            <TextField
+              name="password"
+              required
+              fullWidth
+              label="Password"
+              type="password"
+              autoComplete="new-password"
+              value={formData.password}
+              onChange={handleChange}
+              error={!!errors.password}
+              helperText={errors.password}
+            />
+
+            <TextField
+              name="confirmPassword"
+              required
+              fullWidth
+              label="Confirm Password"
+              type="password"
+              autoComplete="new-password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              error={!!errors.confirmPassword}
+              helperText={errors.confirmPassword}
+            />
+
+            {userType === "patient" && (
+              <>
+                <Divider>Patient Information</Divider>
+                <TextField
+                  name="address"
+                  required
+                  fullWidth
+                  label="Address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  error={!!errors.address}
+                  helperText={errors.address}
+                  multiline
+                  rows={2}
+                />
+                <TextField
+                  name="phone"
+                  required
+                  fullWidth
+                  label="Phone Number"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  error={!!errors.phone}
+                  helperText={errors.phone}
+                  placeholder="(123) 456-7890"
+                  inputProps={{
+                    inputMode: 'numeric',
+                    pattern: '[0-9]*'
+                  }}
+                />
+              </>
+            )}
 
             {userType === "doctor" && (
               <>
-                <Grid item xs={12}>
-                  <TextField
-                    name="specialization"
-                    required
-                    fullWidth
-                    label="Specialization"
-                    value={formData.specialization}
-                    onChange={handleChange}
-                    error={!!errors.specialization}
-                    helperText={errors.specialization}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    name="licenseNumber"
-                    required
-                    fullWidth
-                    label="License Number"
-                    value={formData.licenseNumber}
-                    onChange={handleChange}
-                    error={!!errors.licenseNumber}
-                    helperText={errors.licenseNumber}
-                  />
-                </Grid>
+                <Divider>Doctor Information</Divider>
+                <TextField
+                  select
+                  name="specialization"
+                  required
+                  fullWidth
+                  label="Specialization"
+                  value={formData.specialization}
+                  onChange={handleChange}
+                  error={!!errors.specialization}
+                  helperText={errors.specialization}
+                >
+                  {SPECIALTIES.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </TextField>
+                <TextField
+                  name="licenseNumber"
+                  required
+                  fullWidth
+                  label="License Number"
+                  value={formData.licenseNumber}
+                  onChange={handleChange}
+                  error={!!errors.licenseNumber}
+                  helperText={errors.licenseNumber}
+                />
+                <TextField
+                  name="phone"
+                  required
+                  fullWidth
+                  label="Phone Number"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  error={!!errors.phone}
+                  helperText={errors.phone}
+                  placeholder="(123) 456-7890"
+                  inputProps={{
+                    inputMode: 'numeric',
+                    pattern: '[0-9]*'
+                  }}
+                />
               </>
             )}
 
             {userType === "pharmacist" && (
               <>
-                <Grid item xs={12}>
-                  <TextField
-                    name="pharmacyName"
-                    required
-                    fullWidth
-                    label="Pharmacy Name"
-                    value={formData.pharmacyName}
-                    onChange={handleChange}
-                    error={!!errors.pharmacyName}
-                    helperText={errors.pharmacyName}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    name="pharmacyAddress"
-                    required
-                    fullWidth
-                    label="Pharmacy Address"
-                    value={formData.pharmacyAddress}
-                    onChange={handleChange}
-                    error={!!errors.pharmacyAddress}
-                    helperText={errors.pharmacyAddress}
-                  />
-                </Grid>
+                <Divider>Pharmacy Information</Divider>
+                <TextField
+                  name="pharmacyName"
+                  required
+                  fullWidth
+                  label="Pharmacy Name"
+                  value={formData.pharmacyName}
+                  onChange={handleChange}
+                  error={!!errors.pharmacyName}
+                  helperText={errors.pharmacyName}
+                />
+                <TextField
+                  name="pharmacyAddress"
+                  required
+                  fullWidth
+                  label="Pharmacy Address"
+                  value={formData.pharmacyAddress}
+                  onChange={handleChange}
+                  error={!!errors.pharmacyAddress}
+                  helperText={errors.pharmacyAddress}
+                />
+                <TextField
+                  name="pharmacyPhone"
+                  required
+                  fullWidth
+                  label="Pharmacy Phone Number"
+                  value={formData.pharmacyPhone}
+                  onChange={handleChange}
+                  error={!!errors.pharmacyPhone}
+                  helperText={errors.pharmacyPhone}
+                  placeholder="(123) 456-7890"
+                  inputProps={{
+                    inputMode: 'numeric',
+                    pattern: '[0-9]*'
+                  }}
+                />
+                <TextField
+                  name="pharmacyZipCode"
+                  required
+                  fullWidth
+                  label="ZIP Code"
+                  value={formData.pharmacyZipCode}
+                  onChange={handleChange}
+                  error={!!errors.pharmacyZipCode}
+                  helperText={errors.pharmacyZipCode}
+                  placeholder="12345"
+                  inputProps={{
+                    inputMode: 'numeric',
+                    pattern: '[0-9-]*',
+                    maxLength: 10
+                  }}
+                />
               </>
             )}
 
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="agreeToTerms"
-                    color="primary"
-                    checked={formData.agreeToTerms}
-                    onChange={handleChange}
-                  />
-                }
-                label="I agree to the terms and conditions"
-              />
-              {errors.agreeToTerms && (
-                <Typography color="error" variant="caption" display="block">
-                  {errors.agreeToTerms}
-                </Typography>
-              )}
-            </Grid>
-          </Grid>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Sign Up
-          </Button>
-          <Grid container justifyContent="flex-end">
-            <Grid item>
-              <Link href="#" variant="body2">
-                Already have an account? Sign in
-              </Link>
-            </Grid>
-          </Grid>
-        </Box>
-        {submitSuccess && (
-          <Alert severity="success" sx={{ mt: 2, width: "100%" }}>
-            Signup successful! Welcome aboard.
-          </Alert>
-        )}
-      </Paper>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="agreeToTerms"
+                  checked={formData.agreeToTerms}
+                  onChange={handleChange}
+                  color="primary"
+                />
+              }
+              label="I agree to the terms and conditions"
+            />
+            {errors.agreeToTerms && (
+              <Typography color="error" variant="caption">
+                {errors.agreeToTerms}
+              </Typography>
+            )}
+
+            {submitError && (
+              <Alert severity="error">
+                {submitError}
+              </Alert>
+            )}
+
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              size="large"
+            >
+              Sign Up
+            </Button>
+
+            <Typography
+              variant="body2"
+              align="center"
+              sx={{ mt: 2 }}
+            >
+              Already have an account?{' '}
+              <RouterLink
+                to="/signin"
+                style={{
+                  color: 'primary.main',
+                  textDecoration: 'none',
+                }}
+              >
+                Sign in
+              </RouterLink>
+            </Typography>
+          </Stack>
+        </Paper>
+      </Stack>
     </Container>
   );
 };
