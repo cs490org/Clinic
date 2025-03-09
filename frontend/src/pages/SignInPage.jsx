@@ -65,8 +65,11 @@ const SignInPage = () => {
     event.preventDefault();
     if (validateForm()) {
       try {
-        // Mock login until backend is ready
-        const data = await login(formData.email, formData.password, userType.toUpperCase());
+        const data = await login({
+          email: formData.email,
+          password: formData.password,
+          role: userType.toUpperCase()
+        });
         
         // Navigate based on role
         switch (data.role) {

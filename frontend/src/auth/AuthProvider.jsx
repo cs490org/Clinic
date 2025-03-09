@@ -7,6 +7,7 @@ import {
 } from "react";
 
 import axios from "axios";
+import { CircularProgress } from "@mui/material";
 const AuthContext = createContext(null);
 
 export const useAuth = () => {
@@ -23,57 +24,126 @@ const api = axios.create({
 });
 
 export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState(null);
-  const [userDetails, setUserDetails] = useState({
-    email: null,
-    role: null,
-    firstName: null,
-    lastName: null,
-    token: null
-  });
+  const [isLoading, setIsLoading] = useState(true);
 
-  const login = async (email, password, role) => {
-    const mockUserData = {
-      email,
-      role,
-      firstName: "Test",
-      lastName: "User",
-      token: "mock-jwt-token" 
-    };
+  const login = async (credentials) => {
+    try {
+      setIsLoading(true);
+      
+      const mockUser = {
+        id: "123",
+        email: credentials.email,
+        firstName: "Test",
+        lastName: "User",
+        role: credentials.role,
+        img_uri: null, // profile image? 
+      };
 
-    setIsAuthenticated(true);
-    setUserRole(role);
-    setUserDetails(mockUserData);
-    
-    return mockUserData;
+      // TODO: HIT LOGIN ENDPOINT
+      const mockResponse = {
+        token: "mock-jwt-token",
+        user: mockUser
+      };
+
+      localStorage.setItem('token', mockResponse.token);
+      
+      setUser(mockResponse.user);
+      setIsAuthenticated(true);
+
+      return mockResponse.user;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const register = async (userData) => {
-    const mockUserData = {
-      ...userData,
-      id: Math.random().toString(36).substr(2, 9),
-      token: "mock-jwt-token" 
+    try {
+      setIsLoading(true);
+      
+      const mockUser = {
+        id: Math.random().toString(36).substr(2, 9),
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        role: userData.role,
+        img_uri: null, 
+      };
+
+      // TODO: HIT REGISTER ENDPOINT
+      const mockResponse = {
+        token: "mock-jwt-token",
+        user: mockUser
+      };
+
+      localStorage.setItem('token', mockResponse.token);
+      
+      setUser(mockResponse.user);
+      setIsAuthenticated(true);
+
+      return mockResponse.user;
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const logout = () => {
+    setIsLoading(true);
+    localStorage.removeItem('token');
+    setUser(null);
+    setIsAuthenticated(false);
+    setIsLoading(false);
+  };
+
+  // const updateProfile = async (updates) => {
+  //   try {
+  //     const updatedUser = {
+  //       ...user,
+  //       ...updates
+  //     };
+  //     setUser(updatedUser);
+  //     return updatedUser;
+  //   } catch (error) {
+  //     console.error('Profile update error:', error);
+  //     throw error;
+  //   }
+  // };
+
+  // token verification on app load
+  useEffect(() => {
+    const initAuth = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          
+          // TODO: HIT VERIFY TOKEN ENDPOINT
+          setUser({
+            id: "123",
+            email: "test@example.com",
+            firstName: "Test",
+            lastName: "User",
+            role: "PATIENT",
+            img_uri: null
+          });
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+        localStorage.removeItem('token'); // Clear invalid token
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    setIsAuthenticated(true);
-    setUserRole(userData.role);
-    setUserDetails(mockUserData);
-
-    return mockUserData;
-  };
-  const logout = () => {
-    setIsAuthenticated(false);
-    setUserRole(null);
-    setUserDetails({
-      email: null,
-      role: null,
-      firstName: null,
-      lastName: null,
-      token: null
-    });
-  };
-
+    initAuth();
+  }, []);
 
   /*
     if token defined, add it to authorization headers.
@@ -81,8 +151,8 @@ export const AuthProvider = ({ children }) => {
   useLayoutEffect(() => {
     const authInterceptor = api.interceptors.request.use((config) => {
       config.headers.Authorization =
-        !config._retry && isAuthenticated && userDetails?.token
-          ? `Bearer ${userDetails.token}`
+        !config._retry && isAuthenticated && user?.token
+          ? `Bearer ${user.token}`
           : config.headers.Authorization;
       return config;
     });
@@ -90,7 +160,7 @@ export const AuthProvider = ({ children }) => {
     return () => {
       api.interceptors.request.eject(authInterceptor);
     };
-  }, [isAuthenticated, userDetails?.token]);
+  }, [isAuthenticated, user?.token]);
 
   /**
    * If unauthorized status code, refrehs token.
@@ -110,12 +180,12 @@ export const AuthProvider = ({ children }) => {
             // TODO: HIT REFRESH TOKEN ENDPOINT
             const accessToken = "mock-jwt-token";
             setIsAuthenticated(true);
-            setUserDetails((prev) => ({ ...prev, token: accessToken }));
+            setUser((prev) => ({ ...prev, token: accessToken }));
             originalRequest.headers.Authorization = `Bearer ${accessToken}`;
             originalRequest._retry = true;
             return api(originalRequest);
           } catch {
-            logout(); // Use the logout function to reset all auth state
+            logout();
           }
         }
         return Promise.reject(error);
@@ -125,16 +195,24 @@ export const AuthProvider = ({ children }) => {
       api.interceptors.response.eject(refreshInterceptor);
     };
   }, []);
-  return (
-    <AuthContext.Provider value={{
-      isAuthenticated,
-      userRole,
-      userDetails,
-      login,
-      logout,
-      register
-    }}>
-      {children}
-    </AuthContext.Provider>
-  );
+
+  const value = {
+    user,            
+    isAuthenticated,
+    isLoading,
+    login,
+    register,
+    logout,
+    // updateProfile   // updating profile (including img_uri)
+  };
+
+  // prevent rendering until auth is initialized
+  // ie, we dont want to access undefined user data
+  if (isLoading) {
+    return <CircularProgress></CircularProgress>;
+  }
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
+
+export default AuthProvider;

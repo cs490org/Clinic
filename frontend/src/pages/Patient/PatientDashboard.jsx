@@ -2,7 +2,7 @@ import { Container, Typography, Paper, Grid, Box } from '@mui/material';
 import { useAuth } from '../../auth/AuthProvider';
 
 const PatientDashboard = () => {
-  const { userDetails } = useAuth();
+  const { user } = useAuth();
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -13,7 +13,7 @@ const PatientDashboard = () => {
         <Grid item xs={12} md={8}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
-              Welcome, {userDetails.firstName} {userDetails.lastName}
+              Welcome, {user?.firstName} {user?.lastName}
             </Typography>
             <Typography variant="body1">
               This is your patient dashboard. Here you'll be able to:

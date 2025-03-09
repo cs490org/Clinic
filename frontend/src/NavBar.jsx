@@ -10,7 +10,7 @@ import { useAuth } from "./auth/AuthProvider";
 export default function NavBar() {
   const navigate = useNavigate();
   const theme = useTheme();
-  const { isAuthenticated, logout, userRole } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
 
   const handleLogout = () => {
     logout();
@@ -82,7 +82,7 @@ export default function NavBar() {
                       ...buttonStyles.base,
                       ...buttonStyles.transparent
                     }}
-                    onClick={() => navigate(`/${userRole.toLowerCase()}/dashboard`)}
+                    onClick={() => navigate(`/${user?.role?.toLowerCase()}/dashboard`)}
                   >
                     Dashboard
                   </StyledButton>
