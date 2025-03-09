@@ -1,5 +1,5 @@
 import { Container, Typography, Paper, Grid, Box } from '@mui/material';
-import { useAuth } from '../auth/AuthProvider';
+import { useAuth } from '../../auth/AuthProvider';
 
 const DoctorDashboard = () => {
   const { userDetails } = useAuth();

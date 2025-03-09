@@ -3,13 +3,13 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import { AuthProvider } from './auth/AuthProvider';
 import SignInPage from './pages/SignInPage';
 import SignupPage from './pages/SignupPage';
-import PatientDashboard from './pages/PatientDashboard';
-import DoctorDashboard from './pages/DoctorDashboard';
-import PharmacistDashboard from './pages/PharmacistDashboard';
+import PatientDashboard from './pages/Patient/PatientDashboard';
+import DoctorDashboard from './pages/Doctor/DoctorDashboard';
+import PharmacistDashboard from './pages/Pharmacy/PharmacistDashboard';
 import ProtectedRoute from './auth/ProtectedRoute';
 import NavBar from "./NavBar";
 import theme from "./theme";
-import LandingPage from './pages/LandingPage';
+import LandingPage from './pages/LandingPage/LandingPage';
 
 function App() {
   return (
