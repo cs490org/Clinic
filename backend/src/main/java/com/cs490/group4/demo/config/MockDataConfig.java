@@ -14,8 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 public class MockDataConfig {
 
-    // @Autowired
-    // private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     UserRepository userRepository;
@@ -82,6 +82,14 @@ public class MockDataConfig {
                     doctorRepository
                 );
             }
+            if(userRepository.count() == 0) {
+                createMockUser(
+                    "test@clinic.com",
+                    "password",
+                    "Test",
+                    "User"
+                );
+            }
         };
     }
 
@@ -95,14 +103,6 @@ public class MockDataConfig {
             UserRepository userRepository,
             DoctorRepository doctorRepository
     ) {
-        // User user = new User();
-        // user.setEmail(email);
-        // user.setPassword(passwordEncoder.encode("password123")); 
-        // user.setFirstName(firstName);
-        // user.setLastName(lastName);
-        // user.setRole(Role.USER);
-        // userRepository.save(user);
-
         Doctor doctor = new Doctor();
         doctor.setFirstName(firstName);
         doctor.setLastName(lastName);
@@ -111,5 +111,20 @@ public class MockDataConfig {
         doctor.setSpecialty(specialty);
         doctor.setLicenseNumber(licenseNumber);
         doctorRepository.save(doctor);
+    }
+
+    private void createMockUser(
+        String email,
+        String password,
+        String firstName,
+        String lastName
+    ) {
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(password)); 
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setRole(Role.USER);
+        userRepository.save(user);
     }
 } 

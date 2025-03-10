@@ -13,6 +13,34 @@ public class Doctor {
     private String firstName, lastName, email, phone, specialty;
     private Long licenseNumber;
 
+    public Integer getId() {
+        return id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getSpecialty() {
+        return specialty;
+    }
+
+    public Long getLicenseNumber() {
+        return licenseNumber;
+    }
+
     public void setId(Integer id) {
         this.id = id;
     }
@@ -40,5 +68,4 @@ public class Doctor {
     public void setLicenseNumber(Long licenseNumber) {
         this.licenseNumber = licenseNumber;
     }
-
 }

@@ -1,44 +1,86 @@
-import { Container, Typography, Paper, Grid, Box } from '@mui/material';
-import { useAuth } from '../../auth/AuthProvider';
+import { useState, useEffect } from 'react';
+import { 
+  Container, 
+  Typography, 
+  Paper, 
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  CircularProgress,
+  Box,
+} from '@mui/material';
+import { API_URL } from '../../utils/constants';
 
 const PatientDashboard = () => {
-  const { user } = useAuth();
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await fetch(`${API_URL}/doctors`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch doctors');
+        }
+        const data = await response.json();
+        setDoctors(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Typography variant="h4" gutterBottom>
         Patient Dashboard
       </Typography>
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Welcome, {user?.firstName} {user?.lastName}
-            </Typography>
-            <Typography variant="body1">
-              This is your patient dashboard. Here you'll be able to:
-            </Typography>
-            <Box component="ul">
-              <Typography component="li">View your prescriptions</Typography>
-              <Typography component="li">Schedule appointments</Typography>
-              <Typography component="li">View your medical history</Typography>
-              <Typography component="li">Message your healthcare providers</Typography>
-            </Box>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Quick Actions
-            </Typography>
-            <Box component="ul">
-              <Typography component="li">Request prescription refill</Typography>
-              <Typography component="li">Book appointment</Typography>
-              <Typography component="li">View test results</Typography>
-            </Box>
-          </Paper>
-        </Grid>
-      </Grid>
+
+
+      <Typography variant="h5" gutterBottom mt={4}>
+      Doctors
+      </Typography>
+
+      {loading ? (
+        <Box display="flex" justifyContent="center" p={4}>
+          <CircularProgress />
+        </Box>
+      ) : error ? (
+        <Paper sx={{ p: 3, textAlign: 'center' }}>
+          <Typography color="error">{error}</Typography>
+        </Paper>
+      ) : (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell><strong>Name</strong></TableCell>
+                <TableCell><strong>Specialty</strong></TableCell>
+                <TableCell><strong>Email</strong></TableCell>
+                <TableCell><strong>Phone</strong></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {doctors.map((doctor) => (
+                <TableRow key={doctor.id}>
+                  <TableCell>Dr. {doctor.firstName} {doctor.lastName}</TableCell>
+                  <TableCell>{doctor.specialty}</TableCell>
+                  <TableCell>{doctor.email}</TableCell>
+                  <TableCell>{doctor.phone}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
     </Container>
   );
 };

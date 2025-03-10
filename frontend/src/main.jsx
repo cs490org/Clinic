@@ -9,6 +9,7 @@ import Auth from './auth/AuthProvider';
 import LandingPage from './pages/LandingPage/LandingPage.jsx';
 import SignInPage from './pages/SignInPage.jsx';
 import SignupPage from './pages/SignupPage.jsx';
+import PatientDashboard from './pages/Patient/PatientDashboard.jsx';
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,13 @@ const router = createBrowserRouter([
     element:
       <Auth>
         <SignupPage />
+      </Auth>
+  },
+  {
+    path: '/patient/dashboard',
+    element:
+      <Auth>
+        <PatientDashboard />
       </Auth>
   }
 ])

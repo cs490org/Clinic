@@ -82,9 +82,9 @@ export default function NavBar() {
                       ...buttonStyles.base,
                       ...buttonStyles.transparent
                     }}
-                    onClick={() => navigate(`/${user?.role?.toLowerCase()}/dashboard`)}
+                    onClick={() => navigate(`/patient/dashboard`)}
                   >
-                    Dashboard
+                    Patient Dashboard
                   </StyledButton>
                   <StyledButton
                     sx={{
