@@ -1,16 +1,16 @@
-import * as React from "react";
+import { useContext } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import { useNavigate } from "react-router";
 import StyledButton from "./components/StyledButton";
 import { styled, Typography, useTheme, Container } from "@mui/material";
-import { useAuth } from "./auth/AuthProvider";
+import { UserContext } from './contexts/UserContext';
 
 export default function NavBar() {
   const navigate = useNavigate();
   const theme = useTheme();
-  const { isAuthenticated, logout, user } = useAuth();
+  const { user } = useContext(UserContext);
 
   const handleLogout = () => {
     logout();
@@ -75,7 +75,7 @@ export default function NavBar() {
             </StyledButton>
 
             <Box display="flex" gap={{ xs: 1, sm: 2 }}>
-              {isAuthenticated ? (
+              {user ? (
                 <>
                   <StyledButton
                     sx={{
@@ -103,7 +103,7 @@ export default function NavBar() {
                       ...buttonStyles.base,
                       ...buttonStyles.transparent
                     }}
-                    onClick={() => navigate("signin")}
+                    onClick={() => navigate("/signin")}
                   >
                     Sign In
                   </StyledButton>
@@ -112,7 +112,7 @@ export default function NavBar() {
                       ...buttonStyles.base,
                       ...buttonStyles.white
                     }}
-                    onClick={() => navigate("signup")}
+                    onClick={() => navigate("/signup")}
                   >
                     Sign Up
                   </StyledButton>
