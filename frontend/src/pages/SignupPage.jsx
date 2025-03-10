@@ -1,10 +1,3 @@
-"use client";
-
-// most of this was ai generated:/
-// going to create a signin page thats going to work like this
-
-// Upon submitting, JSON object will contain ALL data
-// to determine what values to read, userType field will containg either patient, doctor, or pharmacist
 import { useState } from "react";
 import {
   Container,
@@ -21,8 +14,8 @@ import {
   Divider,
   MenuItem,
 } from "@mui/material";
-import { useNavigate, Link as RouterLink } from "react-router";
-import { useAuth } from "../auth/AuthProvider";
+import { useNavigate } from "react-router-dom";
+import { API_URL } from "../utils/constants";
 
 const SPECIALTIES = [
   "Weight Loss",
@@ -33,27 +26,25 @@ const SPECIALTIES = [
 
 const SignupPage = () => {
   const navigate = useNavigate();
-  const { register } = useAuth();
   const urlParams = new URLSearchParams(window.location.search);
   const initialUserType = urlParams.get("userType") || "patient";
 
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [termsAgreed, setTermsAgreed] = useState('');
+  const [address, setAddress] = useState('');
+  const [phone, setPhone] = useState('');
+  const [specialization, setSpecialization] = useState('');
+  const [licenseNumber, setLicenseNumber] = useState('');
+  const [pharmacyName, setPharmacyName] = useState('');
+  const [pharmacyAddress, setPharmacyAddress] = useState('');
+  const [pharmacyPhone, setPharmacyPhone] = useState('');
+  const [pharmacyZipCode, setPharmacyZipCode] = useState('');
+
   const [userType, setUserType] = useState(initialUserType);
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    agreeToTerms: false,
-    address: "",
-    phone: "",
-    specialization: "",
-    licenseNumber: "",
-    pharmacyName: "",
-    pharmacyAddress: "",
-    pharmacyPhone: "",
-    pharmacyZipCode: "",
-  });
 
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState("");
@@ -63,131 +54,143 @@ const SignupPage = () => {
     setErrors({});
   };
 
-  const handleChange = (event) => {
-    const { name, value, checked } = event.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: name === "agreeToTerms" ? checked : value,
-    }));
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+  const register = async () => {
+    const res = await fetch(API_URL + '/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: password
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include'
+    })
+
+    if (res.status == 200) {
+      navigate('/');
+    } else if (res.status == 202) {
+      // TODO: introduce error displays
+      // setError('Account already exists.')
     }
-  };
+  }
 
-  const validateForm = () => {
-    const newErrors = {};
 
-    if (!formData.firstName.trim())
-      newErrors.firstName = "First name is required";
-    if (!formData.lastName.trim()) 
-      newErrors.lastName = "Last name is required";
+  // const validateForm = () => {
+  //   const newErrors = {};
 
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid";
-    }
+  //   if (!formData.firstName.trim())
+  //     newErrors.firstName = "First name is required";
+  //   if (!formData.lastName.trim())
+  //     newErrors.lastName = "Last name is required";
 
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters long";
-    }
+  //   if (!formData.email.trim()) {
+  //     newErrors.email = "Email is required";
+  //   } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+  //     newErrors.email = "Email is invalid";
+  //   }
 
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
+  //   if (!formData.password) {
+  //     newErrors.password = "Password is required";
+  //   } else if (formData.password.length < 8) {
+  //     newErrors.password = "Password must be at least 8 characters long";
+  //   }
 
-    if (!formData.agreeToTerms) {
-      newErrors.agreeToTerms = "You must agree to the terms and conditions";
-    }
+  //   if (formData.password !== formData.confirmPassword) {
+  //     newErrors.confirmPassword = "Passwords do not match";
+  //   }
 
-    if (userType === "patient") {
-      if (!formData.address)
-        newErrors.address = "Address is required";
-      if (!formData.phone)
-        newErrors.phone = "Phone number is required";
-      else if (!/^\d{10}$/.test(formData.phone.replace(/\D/g, '')))
-        newErrors.phone = "Please enter a valid 10-digit phone number";
-    }
+  //   if (!formData.agreeToTerms) {
+  //     newErrors.agreeToTerms = "You must agree to the terms and conditions";
+  //   }
 
-    if (userType === "doctor") {
-      if (!formData.specialization)
-        newErrors.specialization = "Specialization is required";
-      if (!formData.licenseNumber)
-        newErrors.licenseNumber = "License number is required";
-      if (!formData.phone)
-        newErrors.phone = "Phone number is required";
-      else if (!/^\d{10}$/.test(formData.phone.replace(/\D/g, '')))
-        newErrors.phone = "Please enter a valid 10-digit phone number";
-    }
+  //   if (userType === "patient") {
+  //     if (!formData.address)
+  //       newErrors.address = "Address is required";
+  //     if (!formData.phone)
+  //       newErrors.phone = "Phone number is required";
+  //     else if (!/^\d{10}$/.test(formData.phone.replace(/\D/g, '')))
+  //       newErrors.phone = "Please enter a valid 10-digit phone number";
+  //   }
 
-    if (userType === "pharmacist") {
-      if (!formData.pharmacyName)
-        newErrors.pharmacyName = "Pharmacy name is required";
-      if (!formData.pharmacyAddress)
-        newErrors.pharmacyAddress = "Pharmacy address is required";
-      if (!formData.pharmacyPhone)
-        newErrors.pharmacyPhone = "Pharmacy phone number is required";
-      else if (!/^\d{10}$/.test(formData.pharmacyPhone.replace(/\D/g, '')))
-        newErrors.pharmacyPhone = "Please enter a valid 10-digit phone number";
-      if (!formData.pharmacyZipCode)
-        newErrors.pharmacyZipCode = "ZIP code is required";
-      else if (!/^\d{5}(-\d{4})?$/.test(formData.pharmacyZipCode))
-        newErrors.pharmacyZipCode = "Please enter a valid ZIP code (e.g., 12345 or 12345-6789)";
-    }
+  //   if (userType === "doctor") {
+  //     if (!formData.specialization)
+  //       newErrors.specialization = "Specialization is required";
+  //     if (!formData.licenseNumber)
+  //       newErrors.licenseNumber = "License number is required";
+  //     if (!formData.phone)
+  //       newErrors.phone = "Phone number is required";
+  //     else if (!/^\d{10}$/.test(formData.phone.replace(/\D/g, '')))
+  //       newErrors.phone = "Please enter a valid 10-digit phone number";
+  //   }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  //   if (userType === "pharmacist") {
+  //     if (!formData.pharmacyName)
+  //       newErrors.pharmacyName = "Pharmacy name is required";
+  //     if (!formData.pharmacyAddress)
+  //       newErrors.pharmacyAddress = "Pharmacy address is required";
+  //     if (!formData.pharmacyPhone)
+  //       newErrors.pharmacyPhone = "Pharmacy phone number is required";
+  //     else if (!/^\d{10}$/.test(formData.pharmacyPhone.replace(/\D/g, '')))
+  //       newErrors.pharmacyPhone = "Please enter a valid 10-digit phone number";
+  //     if (!formData.pharmacyZipCode)
+  //       newErrors.pharmacyZipCode = "ZIP code is required";
+  //     else if (!/^\d{5}(-\d{4})?$/.test(formData.pharmacyZipCode))
+  //       newErrors.pharmacyZipCode = "Please enter a valid ZIP code (e.g., 12345 or 12345-6789)";
+  //   }
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (validateForm()) {
-      try {
-        const requestData = {
-          email: formData.email,
-          password: formData.password,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          role: userType.toUpperCase(),
-        };
+  //   setErrors(newErrors);
+  //   return Object.keys(newErrors).length === 0;
+  // };
 
-        if (userType === "patient") {
-          requestData.address = formData.address;
-          requestData.phone = formData.phone;
-        } else if (userType === "doctor") {
-          requestData.specialty = formData.specialization;
-          requestData.licenseNumber = formData.licenseNumber;
-          requestData.phone = formData.phone;
-        } else if (userType === "pharmacist") {
-          requestData.pharmacyName = formData.pharmacyName;
-          requestData.address = formData.pharmacyAddress;
-          requestData.phone = formData.pharmacyPhone;
-          requestData.zipCode = formData.pharmacyZipCode;
-        }
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault();
+  //   if (validateForm()) {
+  //     try {
+  //       const requestData = {
+  //         email: formData.email,
+  //         password: formData.password,
+  //         firstName: formData.firstName,
+  //         lastName: formData.lastName,
+  //         role: userType.toUpperCase(),
+  //       };
 
-        const data = await register(requestData);
-        
-        switch (data.role) {
-          case "PATIENT":
-            navigate("/patient/dashboard");
-            break;
-          case "DOCTOR":
-            navigate("/doctor/dashboard");
-            break;
-          case "PHARMACIST":
-            navigate("/pharmacist/dashboard");
-            break;
-          default:
-            navigate("/dashboard");
-        }
-      } catch (error) {
-        setSubmitError(error.response?.data?.message || "Registration failed");
-      }
-    }
-  };
+  //       if (userType === "patient") {
+  //         requestData.address = formData.address;
+  //         requestData.phone = formData.phone;
+  //       } else if (userType === "doctor") {
+  //         requestData.specialty = formData.specialization;
+  //         requestData.licenseNumber = formData.licenseNumber;
+  //         requestData.phone = formData.phone;
+  //       } else if (userType === "pharmacist") {
+  //         requestData.pharmacyName = formData.pharmacyName;
+  //         requestData.address = formData.pharmacyAddress;
+  //         requestData.phone = formData.pharmacyPhone;
+  //         requestData.zipCode = formData.pharmacyZipCode;
+  //       }
+
+  //       const data = await register(requestData);
+
+  //       switch (data.role) {
+  //         case "PATIENT":
+  //           navigate("/patient/dashboard");
+  //           break;
+  //         case "DOCTOR":
+  //           navigate("/doctor/dashboard");
+  //           break;
+  //         case "PHARMACIST":
+  //           navigate("/pharmacist/dashboard");
+  //           break;
+  //         default:
+  //           navigate("/dashboard");
+  //       }
+  //     } catch (error) {
+  //       setSubmitError(error.response?.data?.message || "Registration failed");
+  //     }
+  //   }
+  // };
 
   return (
     <Container maxWidth="sm" sx={{ maxWidth: '700px' }}>
@@ -225,7 +228,7 @@ const SignupPage = () => {
             <Tab label="Pharmacist" value="pharmacist" />
           </Tabs>
 
-          <Stack component="form" onSubmit={handleSubmit} spacing={2} sx={{ width: '100%' }}>
+          <Stack spacing={2} sx={{ width: '100%' }}>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
               <TextField
                 name="firstName"
@@ -233,8 +236,8 @@ const SignupPage = () => {
                 fullWidth
                 label="First Name"
                 autoComplete="given-name"
-                value={formData.firstName}
-                onChange={handleChange}
+                value={firstName}
+                onChange={(e) => setFirstName(e.currentTarget.value)}
                 error={!!errors.firstName}
                 helperText={errors.firstName}
               />
@@ -245,8 +248,8 @@ const SignupPage = () => {
                 fullWidth
                 label="Last Name"
                 autoComplete="family-name"
-                value={formData.lastName}
-                onChange={handleChange}
+                value={lastName}
+                onChange={(e) => setLastName(e.currentTarget.value)}
                 error={!!errors.lastName}
                 helperText={errors.lastName}
               />
@@ -258,8 +261,8 @@ const SignupPage = () => {
               fullWidth
               label="Email Address"
               autoComplete="email"
-              value={formData.email}
-              onChange={handleChange}
+              value={email}
+              onChange={(e) => setEmail(e.currentTarget.value)}
               error={!!errors.email}
               helperText={errors.email}
             />
@@ -271,8 +274,8 @@ const SignupPage = () => {
               label="Password"
               type="password"
               autoComplete="new-password"
-              value={formData.password}
-              onChange={handleChange}
+              value={password}
+              onChange={(e) => setPassword(e.currentTarget.value)}
               error={!!errors.password}
               helperText={errors.password}
             />
@@ -284,8 +287,8 @@ const SignupPage = () => {
               label="Confirm Password"
               type="password"
               autoComplete="new-password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.currentTarget.value)}
               error={!!errors.confirmPassword}
               helperText={errors.confirmPassword}
             />
@@ -298,8 +301,8 @@ const SignupPage = () => {
                   required
                   fullWidth
                   label="Address"
-                  value={formData.address}
-                  onChange={handleChange}
+                  value={address}
+                  onChange={(e) => setAddress(e.currentTarget.value)}
                   error={!!errors.address}
                   helperText={errors.address}
                   multiline
@@ -310,8 +313,8 @@ const SignupPage = () => {
                   required
                   fullWidth
                   label="Phone Number"
-                  value={formData.phone}
-                  onChange={handleChange}
+                  value={phone}
+                  onChange={(e) => setPhone(e.currentTarget.value)}
                   error={!!errors.phone}
                   helperText={errors.phone}
                   placeholder="(123) 456-7890"
@@ -332,8 +335,8 @@ const SignupPage = () => {
                   required
                   fullWidth
                   label="Specialization"
-                  value={formData.specialization}
-                  onChange={handleChange}
+                  value={specialization}
+                  onChange={(e) => setSpecialization(e.currentTarget.value)}
                   error={!!errors.specialization}
                   helperText={errors.specialization}
                 >
@@ -348,8 +351,8 @@ const SignupPage = () => {
                   required
                   fullWidth
                   label="License Number"
-                  value={formData.licenseNumber}
-                  onChange={handleChange}
+                  value={licenseNumber}
+                  onChange={(e) => setLicenseNumber(e.currentTarget.value)}
                   error={!!errors.licenseNumber}
                   helperText={errors.licenseNumber}
                 />
@@ -358,8 +361,8 @@ const SignupPage = () => {
                   required
                   fullWidth
                   label="Phone Number"
-                  value={formData.phone}
-                  onChange={handleChange}
+                  value={phone}
+                  onChange={(e) => setPhone(e.currentTarget.value)}
                   error={!!errors.phone}
                   helperText={errors.phone}
                   placeholder="(123) 456-7890"
@@ -379,8 +382,8 @@ const SignupPage = () => {
                   required
                   fullWidth
                   label="Pharmacy Name"
-                  value={formData.pharmacyName}
-                  onChange={handleChange}
+                  value={pharmacyName}
+                  onChange={(e) => setPharmacyName(e.currentTarget.value)}
                   error={!!errors.pharmacyName}
                   helperText={errors.pharmacyName}
                 />
@@ -389,8 +392,8 @@ const SignupPage = () => {
                   required
                   fullWidth
                   label="Pharmacy Address"
-                  value={formData.pharmacyAddress}
-                  onChange={handleChange}
+                  value={pharmacyAddress}
+                  onChange={(e) => setPharmacyAddress(e.currentTarget.value)}
                   error={!!errors.pharmacyAddress}
                   helperText={errors.pharmacyAddress}
                 />
@@ -399,8 +402,8 @@ const SignupPage = () => {
                   required
                   fullWidth
                   label="Pharmacy Phone Number"
-                  value={formData.pharmacyPhone}
-                  onChange={handleChange}
+                  value={pharmacyPhone}
+                  onChange={(e) => setPharmacyPhone(e.currentTarget.value)}
                   error={!!errors.pharmacyPhone}
                   helperText={errors.pharmacyPhone}
                   placeholder="(123) 456-7890"
@@ -414,8 +417,8 @@ const SignupPage = () => {
                   required
                   fullWidth
                   label="ZIP Code"
-                  value={formData.pharmacyZipCode}
-                  onChange={handleChange}
+                  value={pharmacyZipCode}
+                  onChange={(e) => setPharmacyZipCode(e.currentTarget.value)}
                   error={!!errors.pharmacyZipCode}
                   helperText={errors.pharmacyZipCode}
                   placeholder="12345"
@@ -432,8 +435,8 @@ const SignupPage = () => {
               control={
                 <Checkbox
                   name="agreeToTerms"
-                  checked={formData.agreeToTerms}
-                  onChange={handleChange}
+                  checked={termsAgreed}
+                  onChange={(e) => setTermsAgreed(e.currentTarget.checked)}
                   color="primary"
                 />
               }
@@ -452,7 +455,7 @@ const SignupPage = () => {
             )}
 
             <Button
-              type="submit"
+              onClick={register}
               fullWidth
               variant="contained"
               size="large"
@@ -460,22 +463,7 @@ const SignupPage = () => {
               Sign Up
             </Button>
 
-            <Typography
-              variant="body2"
-              align="center"
-              sx={{ mt: 2 }}
-            >
-              Already have an account?{' '}
-              <RouterLink
-                to="/signin"
-                style={{
-                  color: 'primary.main',
-                  textDecoration: 'none',
-                }}
-              >
-                Sign in
-              </RouterLink>
-            </Typography>
+
           </Stack>
         </Paper>
       </Stack>

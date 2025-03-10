@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import {
   Container,
@@ -12,84 +10,41 @@ import {
   Tabs,
   Tab,
 } from "@mui/material";
-import { useAuth } from "../auth/AuthProvider";
-import { useNavigate, Link as RouterLink } from "react-router";
+import { useNavigate } from "react-router-dom";
+import { API_URL } from "../utils/constants";
 
 const SignInPage = () => {
+
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const [status, setStatus] = useState('');
+  const [errors, setErrors] = useState('');
+
+  const login = async () => {
+    const res = await fetch(API_URL + '/auth/authenticate', {
+      method: 'POST',
+      body: JSON.stringify({
+        email: email,
+        password: password
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include'
+    })
+
+    if (res.status == 200) {
+      navigate('/', { replace: true });
+    } else if (res.status == 202) {
+      setErrors("Incorrect username/password. Please verify your login credentials and try again.");
+    } else {
+      setErrors("Login failed. Try reloading the page or opening a new browser window.");
+    }
+  }
+
   const [userType, setUserType] = useState("patient");
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
-  const [errors, setErrors] = useState({});
-  const [submitError, setSubmitError] = useState("");
-
-  const handleUserTypeChange = (event, newValue) => {
-    setUserType(newValue);
-    setErrors({});
-  };
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid";
-    }
-
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (validateForm()) {
-      try {
-        const data = await login({
-          email: formData.email,
-          password: formData.password,
-          role: userType.toUpperCase()
-        });
-        
-        // Navigate based on role
-        switch (data.role) {
-          case "PATIENT":
-            navigate("/patient/dashboard");
-            break;
-          case "DOCTOR":
-            navigate("/doctor/dashboard");
-            break;
-          case "PHARMACIST":
-            navigate("/pharmacist/dashboard");
-            break;
-          default:
-            navigate("/");
-        }
-      } catch (error) {
-        setSubmitError("Invalid credentials");
-      }
-    }
-  };
 
   return (
     <Container maxWidth="xs">
@@ -118,7 +73,7 @@ const SignInPage = () => {
 
           <Tabs
             value={userType}
-            onChange={handleUserTypeChange}
+            // onChange={handleUserTypeChange}
             variant="fullWidth"
             sx={{ width: '100%', mb: 3 }}
           >
@@ -127,7 +82,7 @@ const SignInPage = () => {
             <Tab label="Pharmacist" value="pharmacist" />
           </Tabs>
 
-          <Stack component="form" onSubmit={handleSubmit} spacing={2} sx={{ width: '100%', mt: 2 }}>
+          <Stack spacing={2} sx={{ width: '100%', mt: 2 }}>
             <TextField
               name="email"
               required
@@ -135,8 +90,8 @@ const SignInPage = () => {
               label="Email Address"
               autoComplete="email"
               autoFocus
-              value={formData.email}
-              onChange={handleChange}
+              value={email}
+              onChange={(e) => setEmail(e.currentTarget.value)}
               error={!!errors.email}
               helperText={errors.email}
             />
@@ -148,20 +103,20 @@ const SignInPage = () => {
               label="Password"
               type="password"
               autoComplete="current-password"
-              value={formData.password}
-              onChange={handleChange}
+              value={password}
+              onChange={(e) => setPassword(e.currentTarget.value)}
               error={!!errors.password}
               helperText={errors.password}
             />
 
-            {submitError && (
+            {errors && (
               <Alert severity="error">
-                {submitError}
+                {errors}
               </Alert>
             )}
 
             <Button
-              type="submit"
+              onClick={login}
               fullWidth
               variant="contained"
               size="large"
@@ -169,22 +124,6 @@ const SignInPage = () => {
               Sign In
             </Button>
 
-            <Typography
-              variant="body2"
-              align="center"
-              sx={{ mt: 2 }}
-            >
-              Don't have an account?{' '}
-              <RouterLink
-                to={`/signup?userType=${userType}`}
-                style={{
-                  color: 'primary.main',
-                  textDecoration: 'none',
-                }}
-              >
-                Sign up
-              </RouterLink>
-            </Typography>
           </Stack>
         </Paper>
       </Stack>

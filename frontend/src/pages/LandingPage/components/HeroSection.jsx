@@ -1,12 +1,12 @@
 import { Box, Typography, useTheme } from "@mui/material";
 import StyledButton from "../../../components/StyledButton";
 import { useNavigate } from "react-router";
-import { useAuth } from "../../../auth/AuthProvider";
+
 
 const HeroSection = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+
 
   const buttonStyles = {
     base: {
@@ -67,44 +67,6 @@ const HeroSection = () => {
             Connect with specialized doctors, track your progress, and achieve
             your weight loss goals with our comprehensive healthcare platform.
           </Typography>
-          {!isAuthenticated && (
-            <Box 
-              display="flex" 
-              gap={2}
-              flexDirection={{ xs: "column", sm: "row" }}
-            >
-              <StyledButton
-                sx={{
-                  ...buttonStyles.base,
-                  ...buttonStyles.primary,
-                  flex: { xs: '1', sm: '0 1 auto' }
-                }}
-                onClick={() => navigate("/signup?userType=patient")}
-              >
-                Join as Patient
-              </StyledButton>
-              <StyledButton
-                sx={{
-                  ...buttonStyles.base,
-                  ...buttonStyles.secondary,
-                  flex: { xs: '1', sm: '0 1 auto' }
-                }}
-                onClick={() => navigate("/signup?userType=doctor")}
-              >
-                Join as Doctor
-              </StyledButton>
-              <StyledButton
-                sx={{
-                  ...buttonStyles.base,
-                  ...buttonStyles.secondary,
-                  flex: { xs: '1', sm: '0 1 auto' }
-                }}
-                onClick={() => navigate("/signup?userType=pharmacist")}
-              >
-                Join as Pharmacist
-              </StyledButton>
-            </Box>
-          )}
         </Box>
         <Box 
           sx={{ 
