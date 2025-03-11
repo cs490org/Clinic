@@ -5,6 +5,8 @@ import com.cs490.group4.demo.dao.DoctorRepository;
 import com.cs490.group4.demo.security.Role;
 import com.cs490.group4.demo.security.User;
 import com.cs490.group4.demo.security.UserRepository;
+import com.cs490.group4.demo.dao.Patient;
+import com.cs490.group4.demo.dao.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -22,9 +24,11 @@ public class MockDataConfig {
 
     @Autowired
     DoctorRepository doctorRepository;
+    @Autowired
+    PatientRepository patientRepository;
 
     @Bean
-    CommandLineRunner commandLineRunner() {
+    CommandLineRunner mockDataInitializer() {
         return args -> {
             if (doctorRepository.count() == 0) {
                 createMockDoctor(
@@ -33,9 +37,7 @@ public class MockDataConfig {
                     "Mario",
                     "1234567890",
                     "Weight Loss",
-                    1L,
-                    userRepository,
-                    doctorRepository
+                    1L
                 );
 
                 createMockDoctor(
@@ -44,9 +46,7 @@ public class MockDataConfig {
                     "Mario",
                     "1234567891",
                     "Dietitian",
-                    2L,
-                    userRepository,
-                    doctorRepository
+                    2L
                 );
 
                 createMockDoctor(
@@ -55,9 +55,7 @@ public class MockDataConfig {
                     "Toadstool",
                     "1234567892",
                     "Dietitian",
-                    3L,
-                    userRepository,
-                    doctorRepository
+                    3L
                 );
 
                 createMockDoctor(
@@ -66,9 +64,7 @@ public class MockDataConfig {
                     "Muschakoopas",
                     "1234567893",
                     "Weight Loss",
-                    4L,
-                    userRepository,
-                    doctorRepository
+                    4L
                 );
 
                 createMockDoctor(
@@ -77,10 +73,17 @@ public class MockDataConfig {
                     "Toadstool",
                     "1234567894",
                     "Dietitian",
-                    5L,
-                    userRepository,
-                    doctorRepository
+                    5L
                 );
+
+                createMockPatient(
+                    "patient@clinic.com",
+                    "Test",
+                    "Patient",
+                    "1234567890",
+                    "somewhere"
+                );
+                
             }
             if(userRepository.count() == 0) {
                 createMockUser(
@@ -99,9 +102,7 @@ public class MockDataConfig {
             String lastName,
             String phone,
             String specialty,
-            Long licenseNumber,
-            UserRepository userRepository,
-            DoctorRepository doctorRepository
+            Long licenseNumber
     ) {
         Doctor doctor = new Doctor();
         doctor.setFirstName(firstName);
@@ -111,6 +112,26 @@ public class MockDataConfig {
         doctor.setSpecialty(specialty);
         doctor.setLicenseNumber(licenseNumber);
         doctorRepository.save(doctor);
+
+        createMockUser(email, "Password123!", firstName, lastName);
+    }
+
+    private void createMockPatient(
+        String email,
+        String firstName,
+        String lastName,
+        String phone,
+        String address
+    ) {
+        Patient patient = new Patient();
+        patient.setEmail(email);
+        patient.setFirstName(firstName);
+        patient.setLastName(lastName);
+        patient.setPhone(phone);
+        patient.setAddress(address);
+        patientRepository.save(patient);
+
+        createMockUser(email, "Password123!", firstName, lastName);
     }
 
     private void createMockUser(

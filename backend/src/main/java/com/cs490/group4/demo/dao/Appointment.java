@@ -3,8 +3,9 @@ package com.cs490.group4.demo.dao;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
-
+import lombok.Data;
 @Entity
+@Data
 public class Appointment {
 
     @Id

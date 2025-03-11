@@ -24,7 +24,7 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs from 'dayjs';
 import { API_URL } from '../../utils/constants';
 import StyledButton from '../../components/StyledButton';
-
+import axios from 'axios';
 const PatientDashboard = () => {
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -66,6 +66,20 @@ const PatientDashboard = () => {
   };
 
   const handleBookAppointment = () => {
+    const appointment = {
+      doctorId: selectedDoctor.id,
+      patientId: patient.id,
+      appointmentDateTime: selectedDateTime.toISOString()
+    };
+
+    axios.post(`${API_URL}/appointments`, appointment)
+      .then(response => {
+        console.log('Appointment created:', response.data);
+      })
+      .catch(error => {
+        console.error('Error creating appointment:', error);
+      });
+      
     console.log('Booking appointment with:', {
       doctor: selectedDoctor,
       dateTime: selectedDateTime.format('YYYY-MM-DD HH:mm:ss')
