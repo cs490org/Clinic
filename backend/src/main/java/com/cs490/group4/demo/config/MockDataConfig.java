@@ -85,7 +85,7 @@ public class MockDataConfig {
             if(userRepository.count() == 0) {
                 createMockUser(
                     "test@clinic.com",
-                    "password",
+                    "Password123!",
                     "Test",
                     "User"
                 );

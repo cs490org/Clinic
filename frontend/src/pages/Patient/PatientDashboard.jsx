@@ -11,13 +11,29 @@ import {
   TableRow,
   CircularProgress,
   Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
 } from '@mui/material';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import dayjs from 'dayjs';
 import { API_URL } from '../../utils/constants';
+import StyledButton from '../../components/StyledButton';
 
 const PatientDashboard = () => {
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  //booking appointment
+  const [openBooking, setOpenBooking] = useState(false);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [selectedDateTime, setSelectedDateTime] = useState(dayjs());
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -38,15 +54,33 @@ const PatientDashboard = () => {
     fetchDoctors();
   }, []);
 
+  const handleBookClick = (doctor) => {
+    setSelectedDoctor(doctor);
+    setOpenBooking(true);
+  };
+
+  const handleCloseBooking = () => {
+    setOpenBooking(false);
+    setSelectedDoctor(null);
+    setSelectedDateTime(dayjs());
+  };
+
+  const handleBookAppointment = () => {
+    console.log('Booking appointment with:', {
+      doctor: selectedDoctor,
+      dateTime: selectedDateTime.format('YYYY-MM-DD HH:mm:ss')
+    });
+    handleCloseBooking();
+  };
+
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Typography variant="h4" gutterBottom>
         Patient Dashboard
       </Typography>
 
-
       <Typography variant="h5" gutterBottom mt={4}>
-      Doctors
+        Doctors
       </Typography>
 
       {loading ? (
@@ -66,6 +100,7 @@ const PatientDashboard = () => {
                 <TableCell><strong>Specialty</strong></TableCell>
                 <TableCell><strong>Email</strong></TableCell>
                 <TableCell><strong>Phone</strong></TableCell>
+                <TableCell><strong>Book Appointment</strong></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -75,12 +110,47 @@ const PatientDashboard = () => {
                   <TableCell>{doctor.specialty}</TableCell>
                   <TableCell>{doctor.email}</TableCell>
                   <TableCell>{doctor.phone}</TableCell>
+                  <TableCell>
+                    <StyledButton 
+                      variant="contained" 
+                      color="primary"
+                      onClick={() => handleBookClick(doctor)}
+                    >
+                      Book Appointment
+                    </StyledButton>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
       )}
+
+      <Dialog open={openBooking} onClose={handleCloseBooking}>
+        <DialogTitle>Book Appointment</DialogTitle>
+        <DialogContent>
+          <Typography mb={4}>
+            Dr. {selectedDoctor?.firstName} {selectedDoctor?.lastName}
+          </Typography>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateTimePicker
+              label="Appointment Date & Time"
+              value={selectedDateTime}
+              onChange={(newValue) => setSelectedDateTime(newValue)}
+              renderInput={(params) => <TextField {...params} fullWidth />}
+              minDateTime={dayjs()}
+            />
+          </LocalizationProvider>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseBooking}>Cancel</Button>
+          <Button onClick={handleBookAppointment} variant="contained" color="primary">
+            Book
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+
     </Container>
   );
 };
