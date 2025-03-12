@@ -26,11 +26,11 @@ import { API_URL } from '../../utils/constants';
 import StyledButton from '../../components/StyledButton';
 import axios from 'axios';
 const PatientDashboard = () => {
+
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  //booking appointment
   const [openBooking, setOpenBooking] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [selectedDateTime, setSelectedDateTime] = useState(dayjs());
@@ -54,6 +54,29 @@ const PatientDashboard = () => {
     fetchDoctors();
   }, []);
 
+  const handleBookAppointment = () => {
+    const appointment = {
+      doctor:{
+        id: selectedDoctor.id
+      },
+      // TODO: get patient id from user context
+      patient: {
+        id: 1
+      },
+      appointmentTimestamp: selectedDateTime.toISOString()
+    };
+
+    axios.post(`${API_URL}/appointments`, appointment)
+      .then(response => {
+        console.log('Appointment created:', response.data);
+      })
+      .catch(error => {
+        console.error('Error creating appointment:', error);
+      });
+      
+    handleCloseBooking();
+  };
+
   const handleBookClick = (doctor) => {
     setSelectedDoctor(doctor);
     setOpenBooking(true);
@@ -65,27 +88,6 @@ const PatientDashboard = () => {
     setSelectedDateTime(dayjs());
   };
 
-  const handleBookAppointment = () => {
-    const appointment = {
-      doctorId: selectedDoctor.id,
-      patientId: patient.id,
-      appointmentDateTime: selectedDateTime.toISOString()
-    };
-
-    axios.post(`${API_URL}/appointments`, appointment)
-      .then(response => {
-        console.log('Appointment created:', response.data);
-      })
-      .catch(error => {
-        console.error('Error creating appointment:', error);
-      });
-      
-    console.log('Booking appointment with:', {
-      doctor: selectedDoctor,
-      dateTime: selectedDateTime.format('YYYY-MM-DD HH:mm:ss')
-    });
-    handleCloseBooking();
-  };
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
