@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -6,15 +6,28 @@ import { useNavigate } from "react-router";
 import StyledButton from "./components/StyledButton";
 import { styled, Typography, useTheme, Container } from "@mui/material";
 import { UserContext } from './contexts/UserContext';
-
+import { API_URL } from './utils/constants';
 export default function NavBar() {
   const navigate = useNavigate();
   const theme = useTheme();
   const { user } = useContext(UserContext);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
+  const handleLogout = async () => {
+    const res = await fetch(API_URL + '/auth/logout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include'
+    })
+
+    if (res.status == 200) {
+      navigate('/', { replace: true });
+    } else {
+      console.log("Logout failed. Try reloading the page or opening a new browser window.");
+    }
+    // is this the best way to handle this?
+    window.location.reload();
   };
 
   const buttonStyles = {
