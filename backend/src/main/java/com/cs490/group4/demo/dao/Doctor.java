@@ -16,8 +16,7 @@ public class Doctor {
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User user;
 
-    private String firstName, lastName, email, phone, specialty;
-    private Long licenseNumber;
+    private String firstName, lastName, email, phone, specialty, licenseNumber;
 
     private LocalDateTime createTimestamp, updateTimestamp;
 
