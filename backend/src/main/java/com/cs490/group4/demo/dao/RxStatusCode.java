@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class RxStatusCode {
 
@@ -12,6 +14,8 @@ public class RxStatusCode {
     private Integer id;
 
     private String status;
+
+    private LocalDateTime createTimestamp, updateTimestamp;
     
 
 }

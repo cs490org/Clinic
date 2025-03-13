@@ -2,6 +2,8 @@ package com.cs490.group4.demo.dao;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class PrescriptionPharmacyLink {
 
@@ -16,5 +18,7 @@ public class PrescriptionPharmacyLink {
     @ManyToOne
     @JoinColumn(name = "pharmacy_id", referencedColumnName = "id")
     private Pharmacy pharmacy;
+
+    private LocalDateTime createTimestamp, updateTimestamp;
 
 }

@@ -1,21 +1,22 @@
 package com.cs490.group4.demo.dao;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
 @Entity
-public class AppointmentStatusCode {
+public class WeeklySurvey {
 
     @Id
     @GeneratedValue
     private Integer id;
 
-    private String status;
+    @ManyToOne
+    @JoinColumn(name = "patient_id", referencedColumnName = "id")
+    private Patient patient;
+
+    private Float weight;
 
     private LocalDateTime createTimestamp, updateTimestamp;
-    
 
 }

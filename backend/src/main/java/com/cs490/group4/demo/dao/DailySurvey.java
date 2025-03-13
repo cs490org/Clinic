@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-public class PatientChart {
+public class DailySurvey {
 
     @Id
     @GeneratedValue
@@ -15,11 +15,9 @@ public class PatientChart {
     @JoinColumn(name = "patient_id", referencedColumnName = "id")
     private Patient patient;
 
-    private Integer age;
+    private Integer caloriesEaten;
 
-    private Float weight, height;
-
-    private String sex;
+    private String mood;
 
     private LocalDateTime createTimestamp, updateTimestamp;
 

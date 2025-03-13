@@ -6,18 +6,21 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-public class Doctor {
+public class RecipeComment {
 
     @Id
     @GeneratedValue
     private Integer id;
 
+    private String comment;
+
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    private User user;
+    private User author;
 
-    private String firstName, lastName, email, phone, specialty;
-    private Long licenseNumber;
+    @ManyToOne
+    @JoinColumn(name = "recipe_id", referencedColumnName = "user_id")
+    private Recipe recipe;
 
     private LocalDateTime createTimestamp, updateTimestamp;
 

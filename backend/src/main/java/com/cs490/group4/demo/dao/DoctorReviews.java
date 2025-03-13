@@ -2,6 +2,8 @@ package com.cs490.group4.demo.dao;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class DoctorReviews {
 
@@ -19,5 +21,7 @@ public class DoctorReviews {
 
     private String title;
     private Integer rating;
+
+    private LocalDateTime createTimestamp, updateTimestamp;
 
 }

@@ -1,8 +1,9 @@
 package com.cs490.group4.demo.dao;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.cs490.group4.demo.security.User;
+import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 public class Pharmacy {
@@ -10,6 +11,13 @@ public class Pharmacy {
     @Id
     @GeneratedValue
     private Integer id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    private User user;
+
     private String name, zipCode, phone, address;
+
+    private LocalDateTime createTimestamp, updateTimestamp;
 
 }
