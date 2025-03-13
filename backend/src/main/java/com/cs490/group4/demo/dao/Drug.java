@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 public class Drug {
@@ -15,5 +16,7 @@ public class Drug {
     private String name, description, dosage;
 
     private BigDecimal price;
+
+    private LocalDateTime createTimestamp, updateTimestamp;
 
 }

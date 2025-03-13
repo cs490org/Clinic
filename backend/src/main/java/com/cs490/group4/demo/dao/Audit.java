@@ -7,15 +7,14 @@ import jakarta.persistence.Id;
 import java.time.LocalDateTime;
 
 @Entity
-public class AppointmentStatusCode {
+public class Audit {
 
     @Id
     @GeneratedValue
     private Integer id;
 
-    private String status;
+    private String eventLog;
 
     private LocalDateTime createTimestamp, updateTimestamp;
-    
 
 }

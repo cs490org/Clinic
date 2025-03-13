@@ -2,6 +2,8 @@ package com.cs490.group4.demo.dao;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class MedicalCondition {
 
@@ -14,5 +16,7 @@ public class MedicalCondition {
     private PatientChart patientChart;
 
     private String name, description;
+
+    private LocalDateTime createTimestamp, updateTimestamp;
 
 }
