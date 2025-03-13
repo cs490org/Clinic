@@ -2,6 +2,8 @@ package com.cs490.group4.demo.dao;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class ChosenDoctor {
 
@@ -16,5 +18,7 @@ public class ChosenDoctor {
     @ManyToOne
     @JoinColumn(name = "patient_id", referencedColumnName = "id")
     private Patient patient;
+
+    private LocalDateTime createTimestamp, updateTimestamp;
 
 }

@@ -29,4 +29,6 @@ public class Prescription {
 
     private LocalDateTime rxExpiryTimestamp;
 
+    private LocalDateTime createTimestamp, updateTimestamp;
+
 }
