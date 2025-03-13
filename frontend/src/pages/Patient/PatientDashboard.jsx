@@ -38,7 +38,13 @@ const PatientDashboard = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await fetch(`${API_URL}/doctors`);
+        const response = await fetch(`${API_URL}/doctors`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
         if (!response.ok) {
           throw new Error('Failed to fetch doctors');
         }
