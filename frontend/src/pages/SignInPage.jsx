@@ -22,7 +22,8 @@ const SignInPage = () => {
   const [status, setStatus] = useState('');
   const [errors, setErrors] = useState('');
 
-  const login = async () => {
+  const login = async (event) => {
+    event.preventDefault();
     const res = await fetch(API_URL + '/auth/authenticate', {
       method: 'POST',
       body: JSON.stringify({
@@ -71,7 +72,7 @@ const SignInPage = () => {
             Sign In
           </Typography>
 
-          <Tabs
+          {/* <Tabs
             value={userType}
             // onChange={handleUserTypeChange}
             variant="fullWidth"
@@ -80,55 +81,56 @@ const SignInPage = () => {
             <Tab label="Patient" value="patient" />
             <Tab label="Doctor" value="doctor" />
             <Tab label="Pharmacist" value="pharmacist" />
-          </Tabs>
+          </Tabs> */}
 
-          <Stack spacing={2} sx={{ width: '100%', mt: 2 }}>
-            <TextField
-              name="email"
-              required
-              fullWidth
-              label="Email Address"
-              autoComplete="email"
-              autoFocus
-              value={email}
-              onChange={(e) => setEmail(e.currentTarget.value)}
-              error={!!errors.email}
-              helperText={errors.email}
-            />
+          <form onSubmit={login} style={{ width: '100%' }}>
+            <Stack spacing={2} sx={{ width: '100%', mt: 2 }}>
+              <TextField
+                name="email"
+                required
+                fullWidth
+                label="Email Address"
+                autoComplete="email"
+                autoFocus
+                value={email}
+                onChange={(e) => setEmail(e.currentTarget.value)}
+                error={!!errors.email}
+                helperText={errors.email}
+              />
 
-            <TextField
-              name="password"
-              required
-              fullWidth
-              label="Password"
-              type="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.currentTarget.value)}
-              error={!!errors.password}
-              helperText={errors.password}
-            />
+              <TextField
+                name="password"
+                required
+                fullWidth
+                label="Password"
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.currentTarget.value)}
+                error={!!errors.password}
+                helperText={errors.password}
+              />
 
-            {errors && (
-              <Alert severity="error">
-                {errors}
-              </Alert>
-            )}
+              {errors && (
+                <Alert severity="error">
+                  {errors}
+                </Alert>
+              )}
 
-            <Button
-              onClick={login}
-              fullWidth
-              variant="contained"
-              size="large"
-            >
-              Sign In
-            </Button>
-
-          </Stack>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                size="large"
+              >
+                Sign In
+              </Button>
+            </Stack>
+          </form>
         </Paper>
       </Stack>
     </Container>
   );
 };
 
-export default SignInPage; 
+export default SignInPage;
