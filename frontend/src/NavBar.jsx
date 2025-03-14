@@ -4,13 +4,20 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import { useNavigate } from "react-router";
 import StyledButton from "./components/StyledButton";
-import { styled, Typography, useTheme, Container } from "@mui/material";
+import { styled, Typography, useTheme, Container, IconButton, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Divider } from "@mui/material";
 import { UserContext } from './contexts/UserContext';
 import { API_URL } from './utils/constants';
+import MenuIcon from '@mui/icons-material/Menu';
+
 export default function NavBar() {
   const navigate = useNavigate();
   const theme = useTheme();
   const { user } = useContext(UserContext);
+
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const toggleDrawer = (newOpen) => () => {
+    setDrawerOpen(newOpen);
+  };
 
   const handleLogout = async () => {
     const res = await fetch(API_URL + '/auth/logout', {
@@ -19,14 +26,14 @@ export default function NavBar() {
         'Content-Type': 'application/json'
       },
       credentials: 'include'
-    })
+    });
 
     if (res.status == 200) {
       navigate('/', { replace: true });
     } else {
       console.log("Logout failed. Try reloading the page or opening a new browser window.");
     }
-    // is this the best way to handle this?
+// is this the best way to handle this?
     window.location.reload();
   };
 
@@ -67,30 +74,52 @@ export default function NavBar() {
 
   return (
     <>
+      <Drawer open={drawerOpen} onClose={toggleDrawer(false)}>
+        <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
+          
+          <List>
+            <ListItem key={"you"} disablePadding>
+                <ListItemText primary={`${user?.firstName} ${user?.lastName}`}/>
+            </ListItem>
+              <ListItem key={"dashboard"} disablePadding>
+                <ListItemButton onClick={() => navigate("/patient/dashboard")}>
+                  <ListItemIcon>
+                  </ListItemIcon>
+                  <ListItemText primary={"Dashboard"} />
+                </ListItemButton>
+              </ListItem>
+          </List>
+        </Box>
+      </Drawer>
       <AppBar position="fixed" elevation={0}>
         <Container maxWidth="xl">
           <Toolbar 
             disableGutters 
             sx={{
               py: { xs: 1, sm: 1.5 },
-              display: 'flex',
-              justifyContent: 'space-between'
             }}
           >
-            <StyledButton
-              sx={{
-                ...buttonStyles.base,
-                ...buttonStyles.logo
-              }}
-              onClick={() => navigate("/")}
-            >
-              Clinic Name
-            </StyledButton>
+            <Box sx={{display:"flex", gap:"1rem",flexGrow:1}}> 
+              {user &&
+              <IconButton onClick={toggleDrawer(true)}>
+                <MenuIcon sx={{ color: "white",  }} />
+              </IconButton>
+      }
+              <StyledButton
+                sx={{
+                  ...buttonStyles.base,
+                  ...buttonStyles.logo,
+                }}
+                onClick={() => navigate("/")}
+              >
+                You Win, You Lose Clinic
+              </StyledButton>
+            </Box>
 
             <Box display="flex" gap={{ xs: 1, sm: 2 }}>
               {user ? (
                 <>
-                  <StyledButton
+                  {/* <StyledButton
                     sx={{
                       ...buttonStyles.base,
                       ...buttonStyles.transparent
@@ -98,7 +127,7 @@ export default function NavBar() {
                     onClick={() => navigate(`/patient/dashboard`)}
                   >
                     Patient Dashboard
-                  </StyledButton>
+                  </StyledButton> */}
                   <StyledButton
                     sx={{
                       ...buttonStyles.base,
