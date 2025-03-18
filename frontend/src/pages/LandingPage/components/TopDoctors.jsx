@@ -1,10 +1,11 @@
 import { Box, Typography, Grid, Container, Avatar } from "@mui/material";
-import Card from "./Card";
 import PersonIcon from '@mui/icons-material/Person';
+import StyledCard from "../../../components/StyledCard.jsx";
 
 const DoctorCard = ({ name, specialty, description }) => (
   <Grid item xs={12} sm={6} lg={4}>
-    <Card centered>
+    <StyledCard>
+      <Box display={"flex"} flexDirection={"column"} alignItems={"center"}>
       <Avatar
         sx={{
           width: 120,
@@ -21,10 +22,11 @@ const DoctorCard = ({ name, specialty, description }) => (
       <Typography variant="subtitle1" color="text.secondary" mb={2}>
         {specialty}
       </Typography>
-      <Typography color="text.secondary">
+      <Typography textAlign={"center"} color="text.secondary">
         {description}
       </Typography>
-    </Card>
+      </Box>
+    </StyledCard>
   </Grid>
 );
 
@@ -52,7 +54,7 @@ const TopDoctors = () => {
       sx={{ 
         py: { xs: 6, md: 10 },
         px: { xs: 2, sm: 4, md: 6 },
-        backgroundColor: '#f5f5f5'
+        backgroundColor: 'background.secondary'
       }}
     >
       <Container maxWidth="lg">

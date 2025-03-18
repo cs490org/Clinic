@@ -1,5 +1,5 @@
-import { Box, Typography, Grid, Container } from "@mui/material";
-import Card from "./Card";
+import {Box, Typography, Grid, Container, useTheme, Card, Stack} from "@mui/material";
+import StyledCard from "../../../components/StyledCard.jsx";
 
 const features = [
   {
@@ -21,16 +21,14 @@ const features = [
 ];
 
 const FeatureCard = ({ title, description }) => (
-  <Grid item xs={12} sm={6} md={3}>
-    <Card>
+    <StyledCard>
       <Typography variant="h6" fontWeight="bold" mb={2}>
         {title}
       </Typography>
       <Typography color="text.secondary">
         {description}
       </Typography>
-    </Card>
-  </Grid>
+    </StyledCard>
 );
 
 const AboutUs = () => {
@@ -39,7 +37,7 @@ const AboutUs = () => {
       sx={{ 
         py: { xs: 6, md: 10 },
         px: { xs: 2, sm: 4, md: 6 },
-        backgroundColor: '#f5f5f5'
+        backgroundColor:"background.secondary"
       }}
     >
       <Container maxWidth="lg">
@@ -66,11 +64,11 @@ const AboutUs = () => {
           weight management and overall wellness.
         </Typography>
 
-        <Grid container spacing={4}>
+        <Stack direction={"row"} spacing={4} justifyContent={"center"}>
           {features.map((feature, index) => (
             <FeatureCard key={index} {...feature} />
           ))}
-        </Grid>
+        </Stack>
       </Container>
     </Box>
   );

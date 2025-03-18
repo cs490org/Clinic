@@ -33,7 +33,7 @@ export default function Auth({ children, notRequired }) {
 
   return (
     <UserContext.Provider value={{ user: user, loading: loading }}>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={theme} defaultMode={"light"}>
         <CssBaseline />
         <NavBar />
         {children}

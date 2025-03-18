@@ -3,11 +3,27 @@ import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import { useNavigate } from "react-router";
-import {Button, styled, Typography, useTheme, Container, IconButton, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Divider } from "@mui/material";
+import {
+  Button,
+  styled,
+  Typography,
+  useTheme,
+  Container,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  useColorScheme
+} from "@mui/material";
 import { UserContext } from './contexts/UserContext';
 import { API_URL } from './utils/constants';
 import MenuIcon from '@mui/icons-material/Menu';
-
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -18,6 +34,9 @@ export default function NavBar() {
   const toggleDrawer = (newOpen) => () => {
     setDrawerOpen(newOpen);
   };
+
+  // light | dark | system
+  const {mode,setMode} = useColorScheme()
 
   const handleLogout = async () => {
     const res = await fetch(API_URL + '/auth/logout', {
@@ -77,7 +96,6 @@ export default function NavBar() {
     <>
       <Drawer open={drawerOpen} onClose={toggleDrawer(false)}>
         <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
-          
           <List>
             <ListItem key={"you"} >
                 <ListItemText primary={`${user?.firstName} ${user?.lastName}`}/>
@@ -99,7 +117,7 @@ export default function NavBar() {
           </List>
         </Box>
       </Drawer>
-      <AppBar position="fixed" elevation={0}>
+      <AppBar position="fixed" elevation={0} sx={{backgroundColor:"primary.main"}}>
         <Container maxWidth="xl">
           <Toolbar 
             disableGutters 
@@ -125,17 +143,16 @@ export default function NavBar() {
             </Box>
 
             <Box display="flex" gap={{ xs: 1, sm: 2 }}>
+              <IconButton
+                  sx={{color:"white"}}
+                  onClick={()=>{
+                setMode(mode==="light" ? "dark" : "light")
+              }}>
+                {mode==="light"? <LightModeIcon/> : <DarkModeIcon/>}
+
+              </IconButton>
               {user ? (
                 <>
-                  {/* <Button
-                    sx={{
-                      ...buttonStyles.base,
-                      ...buttonStyles.transparent
-                    }}
-                    onClick={() => navigate(`/patient/dashboard`)}
-                  >
-                    Patient Dashboard
-                  </Button> */}
                   <Button
                     sx={{
                       ...buttonStyles.base,

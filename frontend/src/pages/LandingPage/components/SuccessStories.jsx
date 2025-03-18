@@ -1,9 +1,8 @@
-import { Box, Typography, Avatar, Grid, Container } from "@mui/material";
-import Card from "./Card";
+import {Box, Typography, Avatar, Grid, Container, Stack} from "@mui/material";
+import StyledCard from "../../../components/StyledCard.jsx";
 
 const TestimonialCard = ({ initial, achievement, testimonial }) => (
-  <Grid item xs={12} sm={6} lg={4}>
-    <Card withBorder>
+    <StyledCard>
       <Box display="flex" alignItems="center" mb={2}>
         <Avatar sx={{ bgcolor: 'grey.800', mr: 2 }}>{initial}</Avatar>
         <Box>
@@ -12,8 +11,7 @@ const TestimonialCard = ({ initial, achievement, testimonial }) => (
         </Box>
       </Box>
       <Typography color="text.secondary">{testimonial}</Typography>
-    </Card>
-  </Grid>
+    </StyledCard>
 );
 
 const testimonials = [
@@ -64,11 +62,11 @@ const SuccessStories = () => {
           Hear from our patients who have achieved their health and weight loss goals.
         </Typography>
 
-        <Grid container spacing={4} justifyContent="center">
+        <Stack direction="row" spacing={4} justifyContent="center">
           {testimonials.map((testimonial, index) => (
             <TestimonialCard key={index} {...testimonial} />
           ))}
-        </Grid>
+        </Stack>
       </Container>
     </Box>
   );
