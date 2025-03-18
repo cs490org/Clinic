@@ -20,7 +20,7 @@ public class Appointment {
     @JoinColumn(name = "patient_id", referencedColumnName = "id")
     private Patient patient;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "appointment_status_code_id", referencedColumnName = "id")
     private AppointmentStatusCode appointmentStatusCode;
 
