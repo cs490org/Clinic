@@ -27,7 +27,6 @@ export default function Auth({ children, notRequired }) {
         setLoading(false);
       }
     }
-
     run();
   }, [notRequired]);
 
