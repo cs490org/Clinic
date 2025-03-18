@@ -1,6 +1,8 @@
 package com.cs490.group4.demo.config;
+
 import com.cs490.group4.demo.dao.Patient;
 import com.cs490.group4.demo.dao.PatientRepository;
+import com.cs490.group4.demo.security.Role;
 import com.cs490.group4.demo.security.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,7 +23,7 @@ public class MockPatient {
             String phone,
             String address) {
         Patient patient = new Patient();
-        User user = mockUser.createMockUser(email, "password", firstName, lastName);
+        User user = mockUser.createMockUser(Role.USER, email, "password", firstName, lastName);
         patient.setEmail(email);
         patient.setFirstName(firstName);
         patient.setLastName(lastName);

@@ -14,7 +14,9 @@ public class MockUser {
     private UserRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     public User createMockUser(
+            Role role,
             String email,
             String password,
             String firstName,
@@ -24,7 +26,7 @@ public class MockUser {
         user.setPassword(passwordEncoder.encode(password));
         user.setFirstName(firstName);
         user.setLastName(lastName);
-        user.setRole(Role.USER);
+        user.setRole(role);
         userRepository.save(user);
         return user;
     }
