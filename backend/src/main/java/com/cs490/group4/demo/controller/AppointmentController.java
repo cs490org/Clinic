@@ -14,17 +14,33 @@ public class AppointmentController {
     private AppointmentService appointmentService;
 
     @GetMapping()
-    private ResponseEntity<?> getAllAppointments(){
+    private ResponseEntity<?> getAllAppointments() {
         return ResponseEntity.ok(appointmentService.getAllAppointments());
     }
 
+
+    // Get appointments by doctor id, optionally filtering by status code
     @GetMapping("/{doctor_id}")
-    private ResponseEntity<?> getAppointmentById(@PathVariable Integer doctor_id){
+    private ResponseEntity<?> getAppointmentById(@PathVariable Integer doctor_id,
+                                                 @RequestParam(required = false) String status) {
+        if (status != null) {
+            switch (status) {
+                case "PENDING":
+                    return ResponseEntity.ok(appointmentService.findByStatusCodeIdAndDoctorId(1, doctor_id));
+                case "CONFIRMED":
+                    return ResponseEntity.ok(appointmentService.findByStatusCodeIdAndDoctorId(2, doctor_id));
+                case "CANCELLED":
+                    return ResponseEntity.ok(appointmentService.findByStatusCodeIdAndDoctorId(3, doctor_id));
+                default:
+                    return ResponseEntity.badRequest().body("Invalid status value: " + status);
+            }
+        }
         return ResponseEntity.ok(appointmentService.findByDoctorId(doctor_id));
     }
 
+
     @PostMapping()
-    private ResponseEntity<?> createAppointment(@RequestBody Appointment appointment){
+    private ResponseEntity<?> createAppointment(@RequestBody Appointment appointment) {
         appointmentService.createAppointment(appointment);
         return ResponseEntity.ok(appointment);
     }

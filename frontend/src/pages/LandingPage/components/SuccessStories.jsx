@@ -1,75 +1,74 @@
-import {Box, Typography, Avatar, Grid, Container, Stack} from "@mui/material";
-import StyledCard from "../../../components/StyledCard.jsx";
+import {Box, Typography, Avatar, Grid, Container, Stack, Paper} from "@mui/material";
 
-const TestimonialCard = ({ initial, achievement, testimonial }) => (
-    <StyledCard>
-      <Box display="flex" alignItems="center" mb={2}>
-        <Avatar sx={{ bgcolor: 'grey.800', mr: 2 }}>{initial}</Avatar>
-        <Box>
-          <Typography fontWeight="medium">Anonymous User</Typography>
-          <Typography variant="body2" color="text.secondary">{achievement}</Typography>
+const TestimonialCard = ({initial, achievement, testimonial}) => (
+    <Paper sx={{p: 2}}>
+        <Box display="flex" alignItems="center" mb={2}>
+            <Avatar sx={{bgcolor: 'grey.800', mr: 2}}>{initial}</Avatar>
+            <Box>
+                <Typography fontWeight="medium">Anonymous User</Typography>
+                <Typography variant="body2" color="text.secondary">{achievement}</Typography>
+            </Box>
         </Box>
-      </Box>
-      <Typography color="text.secondary">{testimonial}</Typography>
-    </StyledCard>
+        <Typography color="text.secondary">{testimonial}</Typography>
+    </Paper>
 );
 
 const testimonials = [
-  {
-    initial: "J",
-    achievement: "Lost 30 pounds in 6 months",
-    testimonial: "The personalized care and top tier doctors helped me stay accountable. My doctor was always available to give advice and adjust my plan as needed."
-  },
-  {
-    initial: "J",
-    achievement: "Managed diabetes effectively",
-    testimonial: "The integration with pharmacy made getting my medication and managing it much easier. My health metrics have significantly improved over time."
-  },
-  {
-    initial: "C",
-    achievement: "Improved eating habits",
-    testimonial: "The personalized meal plans helped me lose weight and develop healthier eating habits. Using the discussion board helped with creating new recipes."
-  }
+    {
+        initial: "J",
+        achievement: "Lost 30 pounds in 6 months",
+        testimonial: "The personalized care and top tier doctors helped me stay accountable. My doctor was always available to give advice and adjust my plan as needed."
+    },
+    {
+        initial: "J",
+        achievement: "Managed diabetes effectively",
+        testimonial: "The integration with pharmacy made getting my medication and managing it much easier. My health metrics have significantly improved over time."
+    },
+    {
+        initial: "C",
+        achievement: "Improved eating habits",
+        testimonial: "The personalized meal plans helped me lose weight and develop healthier eating habits. Using the discussion board helped with creating new recipes."
+    }
 ];
 
 const SuccessStories = () => {
-  return (
-    <Box 
-      sx={{ 
-        py: { xs: 6, md: 10 },
-        px: { xs: 2, sm: 4, md: 6 },
-      }}
-    >
-      <Container maxWidth="lg">
-        <Typography
-          variant="h2"
-          component="h2"
-          textAlign="center"
-          fontSize={{ xs: "2rem", md: "3.5rem" }}
-          fontWeight="bold"
-          mb={3}
+    return (
+        <Box
+            sx={{
+                py: {xs: 6, md: 10},
+                px: {xs: 2, sm: 4, md: 6},
+            }}
         >
-          Success Stories
-        </Typography>
-        
-        <Typography
-          textAlign="center"
-          fontSize={{ xs: "1rem", md: "1.25rem" }}
-          mb={8}
-          maxWidth="800px"
-          mx="auto"
-        >
-          Hear from our patients who have achieved their health and weight loss goals.
-        </Typography>
+            <Container maxWidth="lg">
+                <Typography
+                    variant="h2"
+                    component="h2"
+                    textAlign="center"
+                    fontSize={{xs: "2rem", md: "3.5rem"}}
+                    fontWeight="bold"
+                    mb={3}
+                >
+                    Success Stories
+                </Typography>
 
-        <Stack direction="row" spacing={4} justifyContent="center">
-          {testimonials.map((testimonial, index) => (
-            <TestimonialCard key={index} {...testimonial} />
-          ))}
-        </Stack>
-      </Container>
-    </Box>
-  );
+                <Typography
+                    textAlign="center"
+                    fontSize={{xs: "1rem", md: "1.25rem"}}
+                    mb={8}
+                    maxWidth="800px"
+                    mx="auto"
+                >
+                    Hear from our patients who have achieved their health and weight loss goals.
+                </Typography>
+
+                <Stack direction="row" spacing={4} justifyContent="center">
+                    {testimonials.map((testimonial, index) => (
+                        <TestimonialCard key={index} {...testimonial} />
+                    ))}
+                </Stack>
+            </Container>
+        </Box>
+    );
 };
 
 export default SuccessStories; 
