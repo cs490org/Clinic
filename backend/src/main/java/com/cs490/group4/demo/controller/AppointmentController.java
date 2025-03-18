@@ -14,28 +14,24 @@ public class AppointmentController {
     private AppointmentService appointmentService;
 
     @GetMapping()
-    private ResponseEntity<?> getAllAppointments() {
-        return ResponseEntity.ok(appointmentService.getAllAppointments());
-    }
-
-
-    // Get appointments by doctor id, optionally filtering by status code
-    @GetMapping("/{doctor_id}")
-    private ResponseEntity<?> getAppointmentById(@PathVariable Integer doctor_id,
-                                                 @RequestParam(required = false) String status) {
-        if (status != null) {
-            switch (status) {
-                case "PENDING":
-                    return ResponseEntity.ok(appointmentService.findByStatusCodeIdAndDoctorId(1, doctor_id));
-                case "CONFIRMED":
-                    return ResponseEntity.ok(appointmentService.findByStatusCodeIdAndDoctorId(2, doctor_id));
-                case "CANCELLED":
-                    return ResponseEntity.ok(appointmentService.findByStatusCodeIdAndDoctorId(3, doctor_id));
-                default:
-                    return ResponseEntity.badRequest().body("Invalid status value: " + status);
+    private ResponseEntity<?> getAppointments(@RequestParam(required = false) Integer doctor_id,
+                                              @RequestParam(required = false) String status) {
+        if (doctor_id != null) {
+            if (status != null) {
+                switch (status) {
+                    case "PENDING":
+                        return ResponseEntity.ok(appointmentService.findByStatusCodeIdAndDoctorId(1, doctor_id));
+                    case "CONFIRMED":
+                        return ResponseEntity.ok(appointmentService.findByStatusCodeIdAndDoctorId(2, doctor_id));
+                    case "CANCELLED":
+                        return ResponseEntity.ok(appointmentService.findByStatusCodeIdAndDoctorId(3, doctor_id));
+                    default:
+                        return ResponseEntity.badRequest().body("Invalid status value: " + status);
+                }
             }
+            return ResponseEntity.ok(appointmentService.findByDoctorId(doctor_id));
         }
-        return ResponseEntity.ok(appointmentService.findByDoctorId(doctor_id));
+        return ResponseEntity.ok(appointmentService.getAllAppointments());
     }
 
 
@@ -44,4 +40,15 @@ public class AppointmentController {
         appointmentService.createAppointment(appointment);
         return ResponseEntity.ok(appointment);
     }
+
+    @PatchMapping("/{appointment_id}/confirm")
+    private ResponseEntity<?> confirmAppointment(@PathVariable Integer appointment_id) {
+        boolean updated = appointmentService.confirmAppointment(appointment_id);
+        if (updated) {
+            return ResponseEntity.ok("Appointment confirmed successfully");
+        } else {
+            return ResponseEntity.badRequest().body("Appointment not found or not in pending state");
+        }
+    }
+
 }
