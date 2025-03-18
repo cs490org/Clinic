@@ -63,16 +63,17 @@ public class UserService {
         PasswordResetToken resetToken = new PasswordResetToken(token, user);
 
         /**
-         * If a token already exists for this user, delete it before creating a new one to avoid a key constraint violation.
+         * If a token already exists for this user, delete it before creating a new one
+         * to avoid a key constraint violation.
          * There is no protection for many password reset attempts here.
          */
-        tokenResetRepository.findByUserId(user.getUserId()).ifPresent(passwordResetToken ->
-                tokenResetRepository.delete(passwordResetToken));
+        tokenResetRepository.findByUserId(user.getUserId())
+                .ifPresent(passwordResetToken -> tokenResetRepository.delete(passwordResetToken));
 
         tokenResetRepository.save(resetToken);
     }
 
-    public void updateUserProfileImageUri(Integer userId, String imageUri){
+    public void updateUserProfileImageUri(Integer userId, String imageUri) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userId", userId);
         params.addValue("imageUri", imageUri);
@@ -86,7 +87,7 @@ public class UserService {
 
         boolean matches = Objects.equals(passwordResetToken.getToken(), token);
 
-        if(matches) {
+        if (matches) {
             tokenResetRepository.delete(passwordResetToken);
         }
 
@@ -119,6 +120,5 @@ public class UserService {
 
         return true;
     }
-
 
 }

@@ -1,55 +1,112 @@
-import { Container, Typography, Paper, Grid, Box } from '@mui/material';
-import { useAuth } from '../../auth/AuthProvider';
+import {
+    Container,
+    Typography,
+    Paper,
+    Box,
+    TableContainer,
+    TableHead,
+    TableCell,
+    Table,
+    TableBody,
+    CircularProgress, Skeleton, TableRow, Stack, Button, Divider
+} from '@mui/material';
+import {useState, useEffect} from "react";
+import {API_URL} from "../../utils/constants.js";
+import StyledCard from "../../components/StyledCard.jsx";
+import dayjs from "dayjs";
+
 
 const DoctorDashboard = () => {
-  const { user } = useAuth();
+
+    // TODO: get this from usercontext
+    const doctor_id = 1
+
+
+    const [appointments, setAppointments] = useState([])
+    const [loading,setLoading] = useState(true)
+    const [error,setError] = useState("");
+
+
+    useEffect(() => {
+       const fetchAppointments = async () => {
+           try {
+               const response = await fetch(`${API_URL}/appointments/${doctor_id}`,
+                   {
+                       method: 'GET',
+                       credentials: 'include',
+                       headers: {
+                           'Content-Type': 'application/json'
+                       }
+                   })
+               if(!response.ok){
+                   throw new Error("Failed to fetch upcoming appointments")
+
+               }
+               const data = await response.json()
+               setAppointments(data)
+           } catch(err){
+               setError(err.message)
+           } finally{
+               setLoading(false)
+           }
+       }
+       fetchAppointments()
+    }, []);
+
+    const AppointmentCard = ({name,time}) => {
+        return (
+            <StyledCard>
+                <Stack spacing={1}>
+                    <Box>
+                        <Typography fontSize={"1.2rem"} fontWeight={"bold"}>{name}</Typography>
+                    </Box>
+                    <Box>
+                        <Typography>{dayjs(time).format("MMMM D, YYYY")}</Typography>
+                        <Typography>{dayjs(time).format("h:mm A")}</Typography>
+                    </Box>
+                   <Divider></Divider>
+                    <Stack direction={"row"} justifyContent={"flex-end"} gap={.5}>
+                        <Button variant={"contained"}>Accept</Button>
+                        <Button variant={"outlined"}>Reject</Button>
+                    </Stack>
+                </Stack>
+            </StyledCard>
+        )
+    }
+
+
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+    <Container  sx={{ mt: 4}}>
       <Typography variant="h4" gutterBottom>
         Doctor Dashboard
       </Typography>
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Welcome, Dr. {user?.lastName}
-            </Typography>
-            <Typography variant="body1">
-              Specialty: {user?.specialization}
-            </Typography>
-            <Typography variant="body1" sx={{ mt: 2 }}>
-              Your doctor dashboard provides access to:
-            </Typography>
-            <Box component="ul">
-              <Typography component="li">Patient appointments</Typography>
-              <Typography component="li">Patient records</Typography>
-              <Typography component="li">Prescription management</Typography>
-              <Typography component="li">Treatment plans</Typography>
-            </Box>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Today's Schedule
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              No appointments scheduled
-            </Typography>
-          </Paper>
-          <Paper sx={{ p: 3, mt: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              Quick Actions
-            </Typography>
-            <Box component="ul">
-              <Typography component="li">Write prescription</Typography>
-              <Typography component="li">View patient history</Typography>
-              <Typography component="li">Schedule appointment</Typography>
-            </Box>
-          </Paper>
-        </Grid>
-      </Grid>
+      <Stack spacing={2} maxWidth={300}>
+        <Typography variant="h5"> Appointment Requests</Typography>
+          {loading ?
+              <Box display="flex" justifyContent="center" p={4}>
+                  <CircularProgress />
+              </Box>
+              :
+              error ?
+                  <Paper sx={{ p: 3, textAlign: 'center' }}>
+                      <Typography color="error">{error}</Typography>
+                  </Paper>
+                  :
+                  <Stack>
+                      {
+                          appointments.map((appointment,index) =>
+                              <AppointmentCard
+                                  key={index}
+                                  name={ `${appointment.patient.user.firstName} ${appointment.patient.user.firstName}`}
+                                  time={ appointment.appointmentTimestamp}
+                              />
+                          )
+                      }
+                  </Stack>
+          }
+
+      </Stack>
     </Container>
   );
 };

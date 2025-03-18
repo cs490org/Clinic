@@ -1,5 +1,4 @@
 import { Box, Typography, useTheme } from "@mui/material";
-import StyledButton from "../../../components/StyledButton";
 import { useNavigate } from "react-router";
 
 

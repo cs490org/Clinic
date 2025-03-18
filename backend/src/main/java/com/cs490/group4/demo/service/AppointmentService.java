@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import com.cs490.group4.demo.dao.AppointmentStatusCode;
 import com.cs490.group4.demo.dao.AppointmentStatusCodeRepository;
 
 @Service
@@ -18,14 +17,14 @@ public class AppointmentService {
     @Autowired
     private AppointmentStatusCodeRepository appointmentStatusCodeRepository;
 
-     public List<Appointment> getAllAppointments(){
-         return appointmentRepository.findAll();
-     }
+    public List<Appointment> getAllAppointments() {
+        return appointmentRepository.findAll();
+    }
+    public List<Appointment> findByDoctorId(Integer doctorId) {return appointmentRepository.findByDoctorId(doctorId);}
 
-     public void createAppointment(Appointment appointment){
-        // appointment.setAppointmentStatusCode(AppointmentStatusCode.PENDING);
+    public void createAppointment(Appointment appointment) {
         appointment.setAppointmentStatusCode(appointmentStatusCodeRepository.findByStatus("PENDING"));
         appointmentRepository.save(appointment);
-     }
+    }
 
 }

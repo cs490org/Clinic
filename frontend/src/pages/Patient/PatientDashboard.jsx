@@ -23,7 +23,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs from 'dayjs';
 import { API_URL } from '../../utils/constants';
-import StyledButton from '../../components/StyledButton';
 import axios from 'axios';
 const PatientDashboard = () => {
 
@@ -72,7 +71,7 @@ const PatientDashboard = () => {
       appointmentTimestamp: selectedDateTime.toISOString()
     };
 
-    axios.post(`${API_URL}/appointments`, appointment)
+    axios.post(`${API_URL}/appointments`, appointment,{withCredentials:true})
       .then(response => {
         console.log('Appointment created:', response.data);
       })
@@ -126,20 +125,20 @@ const PatientDashboard = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {doctors.map((doctor) => (
-                <TableRow key={doctor.id}>
+              {doctors.map((doctor,index) => (
+                <TableRow key={index}>
                   <TableCell>Dr. {doctor.firstName} {doctor.lastName}</TableCell>
                   <TableCell>{doctor.specialty}</TableCell>
                   <TableCell>{doctor.email}</TableCell>
                   <TableCell>{doctor.phone}</TableCell>
                   <TableCell>
-                    <StyledButton 
+                    <Button
                       variant="contained" 
                       color="primary"
                       onClick={() => handleBookClick(doctor)}
                     >
                       Book Appointment
-                    </StyledButton>
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

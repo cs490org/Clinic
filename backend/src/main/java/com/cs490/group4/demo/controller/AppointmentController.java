@@ -3,24 +3,27 @@ package com.cs490.group4.demo.controller;
 import com.cs490.group4.demo.service.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 import com.cs490.group4.demo.dao.Appointment;
 
 @RestController
+@RequestMapping("/appointments")
 public class AppointmentController {
 
     @Autowired
     private AppointmentService appointmentService;
 
-    @GetMapping("/appointments")
+    @GetMapping()
     private ResponseEntity<?> getAllAppointments(){
         return ResponseEntity.ok(appointmentService.getAllAppointments());
     }
 
-    @PostMapping("/appointments")
+    @GetMapping("/{doctor_id}")
+    private ResponseEntity<?> getAppointmentById(@PathVariable Integer doctor_id){
+        return ResponseEntity.ok(appointmentService.findByDoctorId(doctor_id));
+    }
+
+    @PostMapping()
     private ResponseEntity<?> createAppointment(@RequestBody Appointment appointment){
         appointmentService.createAppointment(appointment);
         return ResponseEntity.ok(appointment);

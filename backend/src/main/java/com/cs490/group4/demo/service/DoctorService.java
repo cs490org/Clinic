@@ -7,16 +7,18 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
 @Service
 public class DoctorService {
 
-    // inject DoctorRepo here
     @Autowired
     private DoctorRepository doctorRepository;
 
-     public List<Doctor> getAllDoctors(){
-         return doctorRepository.findAll();
-     }
+    public List<Doctor> getAllDoctors() {
+        return doctorRepository.findAll();
+    }
+
+    public boolean isEmpty() {
+        return doctorRepository.count() == 0;
+    }
 
 }

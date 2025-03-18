@@ -10,6 +10,7 @@ import LandingPage from './pages/LandingPage/LandingPage.jsx';
 import SignInPage from './pages/SignInPage.jsx';
 import SignupPage from './pages/SignupPage.jsx';
 import PatientDashboard from './pages/Patient/PatientDashboard.jsx';
+import DoctorDashboard from "./pages/Doctor/DoctorDashboard.jsx";
 
 const router = createBrowserRouter([
   {
@@ -39,6 +40,13 @@ const router = createBrowserRouter([
       <Auth>
         <PatientDashboard />
       </Auth>
+  },
+  {
+    path: '/doctor/dashboard',
+    element:
+        <Auth>
+          <DoctorDashboard/>
+        </Auth>
   }
 ])
 
