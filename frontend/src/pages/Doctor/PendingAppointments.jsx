@@ -31,8 +31,7 @@ const PendingAppointments = () => {
             mutationFn: (id) => fetch(`${API_URL}/appointments/${id}/confirm`, {method: "PATCH", credentials: 'include'}),
             onSuccess: () => {
                 //https://tanstack.com/query/latest/docs/framework/react/guides/invalidations-from-mutations
-                queryClient.invalidateQueries({queryKey: queryKeys.appointments.pending(doctor_id)});
-                queryClient.invalidateQueries({queryKey: queryKeys.appointments.confirmed(doctor_id)});
+                queryClient.invalidateQueries({queryKey: queryKeys.appointments.all});
             }
         }
     );

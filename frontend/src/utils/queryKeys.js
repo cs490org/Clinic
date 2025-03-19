@@ -1,3 +1,9 @@
+// fetched data will get cached corresponding to these keys
+
+// when updating data, invalidate the query key which will automatically be refetched
+//  for ex: changing appointment from pending to confirmed, invalidate the all key,
+//  all appointments will be refetched and the new data will be automatically displayed throughout the app.
+//  (it will call the queryFn in the useQuery hook)
 export const queryKeys = {
     appointments: {
         all: ["appointments"],
@@ -5,4 +11,7 @@ export const queryKeys = {
         confirmed: (doctorId) => ["appointments", "confirmed", doctorId],
         // cancelled: (doctorId) => ["appointments", "cancelled", doctorId],
     },
+    pharmacies: {
+        all: ["pharmacies"]
+    }
 };
