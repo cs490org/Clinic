@@ -50,7 +50,8 @@ public class JWTService {
         Map<String, String> tokens = new HashMap<>();
 
         String accessToken, refreshToken;
-        if (userDetails.getRole().equals(Role.ADMIN)) {
+//        if (userDetails.getRole().equals(Role.ADMIN)) {
+        if (userDetails.getRole().equals(Role.PHARMACIST)) {
             accessToken = Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername()).setIssuedAt(
                             new Date(System.currentTimeMillis())).setExpiration(new Date(System.currentTimeMillis() + ADMIN_ACCESS_TOKEN_EXPIRATION))
                     .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();

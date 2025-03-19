@@ -41,7 +41,8 @@ public class AuthenticationService {
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER).build();
+                .role(request.getRole()).build();
+//                .role(Role.USER).build();
         if (repository.findByEmail(user.getEmail()).isEmpty()) {
             User savedUser = repository.save(user);
             /*
@@ -61,7 +62,7 @@ public class AuthenticationService {
     public AuthenticationResponseDTO authenticate(AuthenticationRequestDTO request) throws Exception {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        } catch(Exception e){
+        } catch (Exception e) {
             throw new Exception("Account not found");
         }
         // user successfully authenticated, so generate a token and send it back to the client

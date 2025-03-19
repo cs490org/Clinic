@@ -30,7 +30,7 @@ public class MockPharmacy {
         pharmacy.setName(name);
         pharmacy.setPhone(phone);
         pharmacy.setZipCode(zipCode);
-        User user = mockUser.createMockUser(Role.ADMIN, email, "password", "ADMIN", "ACCOUNT");
+        User user = mockUser.createMockUser(Role.PHARMACIST, email, "password", "ADMIN", "ACCOUNT");
         pharmacy.setUser(user);
         pharmacyRepository.save(pharmacy);
 
