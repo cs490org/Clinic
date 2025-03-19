@@ -4,11 +4,8 @@ public enum Role {
 
     PATIENT,
     DOCTOR,
-    PHARMACIST;
-
-    // left these in because authentication stuff relies on it
-//    USER,
-//    ADMIN
+    PHARMACIST,
+    ADMIN;
 
     public boolean isUser() {
         return this == PATIENT || this == DOCTOR;
