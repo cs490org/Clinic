@@ -1,7 +1,9 @@
 package com.cs490.group4.demo.controller;
 
 import com.cs490.group4.demo.service.DoctorService;
+import com.cs490.group4.demo.service.PatientPharmacyService;
 import com.cs490.group4.demo.service.PatientService;
+import com.cs490.group4.demo.service.PharmacyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,9 @@ public class PatientController {
     @Autowired
     private PatientService patientService;
 
+    @Autowired
+    private PatientPharmacyService patientPharmacyService;
+
     @GetMapping()
     private ResponseEntity<?> getPatients(@RequestParam(required = false) Integer userId) {
         if (userId != null) {
@@ -24,4 +29,10 @@ public class PatientController {
             return ResponseEntity.ok(patientService.getAllPatients());
         }
     }
+
+    @GetMapping("/preferred_pharmacy")
+    private ResponseEntity<?> getPreferredPharmacy(@RequestParam(required = true) Integer patientId) {
+        return ResponseEntity.ok(patientPharmacyService.getByPatientId(patientId));
+    }
+
 }
