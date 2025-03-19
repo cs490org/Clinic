@@ -13,6 +13,10 @@ public class DoctorService {
     @Autowired
     private DoctorRepository doctorRepository;
 
+    public Doctor getDoctorByUserId(Integer userId) {
+        return doctorRepository.findByUserId(userId);
+    }
+
     public List<Doctor> getAllDoctors() {
         return doctorRepository.findAll();
     }

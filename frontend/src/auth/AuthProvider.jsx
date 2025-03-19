@@ -5,14 +5,13 @@ import {API_URL} from '../utils/constants.js';
 import theme from '../theme.js';
 import {CssBaseline, ThemeProvider} from "@mui/material";
 import NavBar from '../NavBar.jsx';
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 
 
-const queryClient = new QueryClient()
 export default function Auth({children, notRequired}) {
     const navigate = useNavigate();
 
     const [user, setUser] = useState();
+    const [roleData, setRoleData] = useState()
     const [loading, setLoading] = useState(true);
 
     // Check if user is already logged in
@@ -22,9 +21,9 @@ export default function Auth({children, notRequired}) {
                 credentials: 'include'
             })
 
-            if (res.status == 200) {
+            if (res.status === 200) {
                 setUser(await res.json());
-                setLoading(false);
+                // setLoading(false);
             } else {
                 !notRequired && navigate('/signin', {replace: true})
                 setLoading(false);
@@ -34,15 +33,40 @@ export default function Auth({children, notRequired}) {
         run();
     }, [notRequired]);
 
+    //right now this runs every mount :/
+    useEffect(() => {
+        async function fetchRoleData() {
+            if (!user) return
+            let url = ""
+            if (user.role === "PATIENT") {
+                url = API_URL + `/patients?userId=${user.id}`
+            } else if (user.role === "DOCTOR") {
+                url = API_URL + `/doctors?userId=${user.id}`
+            } else if (user.role === "PHARACIST") {
+                url = API_URL + `/pharmacists?userId=${user.id}`
+            } else {
+                throw new Error("Role undefined")
+            }
+            const res = await fetch(url, {
+                credentials: 'include'
+            })
+
+            if (res.status === 200) {
+                setRoleData(await res.json());
+            }
+            setLoading(false);
+        }
+
+        fetchRoleData();
+    }, [user]);
+
     return (
-        <QueryClientProvider client={queryClient}>
-            <UserContext.Provider value={{user: user, loading: loading}}>
-                <ThemeProvider theme={theme} defaultMode={"light"}>
-                    <CssBaseline/>
-                    <NavBar/>
-                    {children}
-                </ThemeProvider>
-            </UserContext.Provider>
-        </QueryClientProvider>
+        <UserContext.Provider value={{user, roleData, loading}}>
+            <ThemeProvider theme={theme} defaultMode={"light"}>
+                <CssBaseline/>
+                <NavBar/>
+                {children}
+            </ThemeProvider>
+        </UserContext.Provider>
     )
 }

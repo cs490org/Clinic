@@ -1,6 +1,7 @@
 package com.cs490.group4.demo.controller;
 
 import com.cs490.group4.demo.service.DoctorService;
+import com.cs490.group4.demo.service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,18 +10,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/doctors")
-public class DoctorController {
+@RequestMapping("/patients")
+public class PatientController {
 
     @Autowired
-    private DoctorService doctorService;
+    private PatientService patientService;
 
     @GetMapping()
-    private ResponseEntity<?> getDoctors(@RequestParam(required = false) Integer userId) {
+    private ResponseEntity<?> getPatients(@RequestParam(required = false) Integer userId) {
         if (userId != null) {
-            return ResponseEntity.ok(doctorService.getDoctorByUserId(userId));
+            return ResponseEntity.ok(patientService.getPatientByUserId(userId));
         } else {
-            return ResponseEntity.ok(doctorService.getAllDoctors());
+            return ResponseEntity.ok(patientService.getAllPatients());
         }
     }
 }
