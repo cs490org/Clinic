@@ -58,7 +58,12 @@ const SignupPage = () => {
     }
 
     return (
-        <Container maxWidth="sm">
+        <Container maxWidth="sm" sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh'
+        }}>
             <Paper
                 elevation={3}
                 sx={{p: 4}}

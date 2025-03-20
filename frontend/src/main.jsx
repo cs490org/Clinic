@@ -13,7 +13,7 @@ import PatientDashboard from './pages/Patient/PatientDashboard.jsx';
 import DoctorDashboard from "./pages/Doctor/DoctorDashboard.jsx";
 import CompletePatientProfile from './pages/Patient/CompletePatientProfile.jsx';
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-
+import {Toaster} from 'sonner';
 
 const queryClient = new QueryClient()
 const router = createBrowserRouter([
@@ -63,6 +63,10 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <QueryClientProvider client={queryClient}>
+
+        {/* https://sonner.emilkowal.ski/getting-started */}
+        <Toaster expand={true}position="bottom-center" theme="light"/>
+
         <RouterProvider router={router}/>
     </QueryClientProvider>
 )

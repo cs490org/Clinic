@@ -25,6 +25,7 @@ import dayjs from 'dayjs';
 import {API_URL} from '../../utils/constants';
 import axios from 'axios';
 import SelectPharmacy from "./SelectPharmacy.jsx";
+import { toast } from 'sonner';
 
 const PatientDashboard = () => {
 
@@ -75,6 +76,7 @@ const PatientDashboard = () => {
 
         axios.post(`${API_URL}/appointments`, appointment, {withCredentials: true})
             .then(response => {
+                toast.success('Appointment created successfully!');
                 console.log('Appointment created:', response.data);
             })
             .catch(error => {

@@ -12,14 +12,12 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "../utils/constants";
+import { toast } from "sonner";
 
 const SignInPage = () => {
-
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const [status, setStatus] = useState('');
   const [errors, setErrors] = useState('');
 
   const login = async (event) => {
@@ -36,28 +34,30 @@ const SignInPage = () => {
       credentials: 'include'
     })
 
-    if (res.status == 200) {
-      navigate('/', { replace: true });
-    } else if (res.status == 202) {
+    if (res.status === 200) {
+      const userRes = await fetch(API_URL + '/user', {
+        credentials: 'include'
+      });
+
+      if (userRes.status === 200) {
+        const userData = await userRes.json();
+        toast("Welcome, " + userData.firstName + "!");
+        navigate("/", { replace: true });
+      }
+    } else if (res.status === 202) {
       setErrors("Incorrect username/password. Please verify your login credentials and try again.");
     } else {
       setErrors("Login failed. Try reloading the page or opening a new browser window.");
     }
   }
 
-  const [userType, setUserType] = useState("patient");
-
   return (
-    <Container maxWidth="xs">
-      <Stack
-        spacing={3}
-        sx={{
-          minHeight: '100vh',
-          py: 8,
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
-      >
+    <Container maxWidth="xs" sx={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height:"100vh"
+    }}>
         <Paper
           elevation={3}
           sx={{
@@ -72,19 +72,8 @@ const SignInPage = () => {
             Sign In
           </Typography>
 
-          {/* <Tabs
-            value={userType}
-            // onChange={handleUserTypeChange}
-            variant="fullWidth"
-            sx={{ width: '100%', mb: 3 }}
-          >
-            <Tab label="Patient" value="patient" />
-            <Tab label="Doctor" value="doctor" />
-            <Tab label="Pharmacist" value="pharmacist" />
-          </Tabs> */}
-
           <form onSubmit={login} style={{ width: '100%' }}>
-            <Stack spacing={2} sx={{ width: '100%', mt: 2 }}>
+            <Stack spacing={2} sx={{ mt: 2 }}>
               <TextField
                 name="email"
                 required
@@ -128,7 +117,6 @@ const SignInPage = () => {
             </Stack>
           </form>
         </Paper>
-      </Stack>
     </Container>
   );
 };

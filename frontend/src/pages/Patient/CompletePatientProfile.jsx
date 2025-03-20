@@ -18,6 +18,7 @@ import { API_URL } from "../../utils/constants";
 import { UserContext } from "../../contexts/UserContext";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../utils/queryKeys";
+import { toast } from 'sonner';
 
 const CompletePatientProfile = () => {
     const navigate = useNavigate();
@@ -63,6 +64,7 @@ const CompletePatientProfile = () => {
             });
 
             if (res.ok) {
+                toast.success('Profile completed successfully!');
                 navigate('/patient/dashboard');
             } 
         } catch (err) {
