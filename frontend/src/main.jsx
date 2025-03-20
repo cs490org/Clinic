@@ -11,6 +11,7 @@ import SignInPage from './pages/SignInPage.jsx';
 import SignupPage from './pages/SignupPage.jsx';
 import PatientDashboard from './pages/Patient/PatientDashboard.jsx';
 import DoctorDashboard from "./pages/Doctor/DoctorDashboard.jsx";
+import CompletePatientProfile from './pages/Patient/CompletePatientProfile.jsx';
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 
 
@@ -49,6 +50,13 @@ const router = createBrowserRouter([
         element:
             <Auth>
                 <DoctorDashboard/>
+            </Auth>
+    },
+    {
+        path: '/patient/complete-profile',
+        element:
+            <Auth>
+                <CompletePatientProfile/>
             </Auth>
     }
 ])

@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import lombok.Data;
 
 @RestController
 @RequestMapping("/patients")
@@ -35,4 +38,22 @@ public class PatientController {
         return ResponseEntity.ok(patientPharmacyService.getByPatientId(patientId));
     }
 
+    @PostMapping()
+    private ResponseEntity<?> createPatient(@RequestBody PatientCreateRequest request) {
+        return ResponseEntity.ok(patientService.createPatient(
+            request.getUserId(),
+            request.getPhone(),
+            request.getAddress(),
+            request.getPharmacyId()
+        ));
+    }
+}
+
+// these fields will be passed from the patient complete profile page
+@Data
+class PatientCreateRequest {
+    private Integer userId;
+    private String phone;
+    private String address;
+    private Integer pharmacyId;
 }

@@ -53,6 +53,16 @@ export default function Auth({children, notRequired}) {
 
             if (res.status === 200) {
                 setRoleData(await res.json());
+            } else if (res.status === 404) {
+                if (user.role === "PATIENT") {
+                    navigate('/patient/complete-profile');
+                } else if (user.role === "DOCTOR") {
+                    navigate('/doctor/complete-profile');
+                } else if (user.role === "PHARACIST") {
+                    navigate('/pharmacist/complete-profile');
+                }
+            } else {
+                throw new Error("Role data fetch failed")
             }
             setLoading(false);
         }
