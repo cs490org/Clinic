@@ -1,32 +1,30 @@
-import {Box, CircularProgress, Paper, Stack, Typography} from "@mui/material";
+import { Box, CircularProgress, Paper, Stack, Typography } from "@mui/material";
 import dayjs from "dayjs";
-import {useContext} from "react";
-import {API_URL} from "../../../utils/constants.js";
-import {useQuery} from "@tanstack/react-query";
-import {queryKeys} from "../../../utils/queryKeys.js";
-import {UserContext} from "../../../contexts/UserContext.jsx";
+import { useContext } from "react";
+import { API_URL } from "../../../utils/constants.js";
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "../../../utils/queryKeys.js";
+import { UserContext } from "../../../contexts/UserContext.jsx";
 
 const ConfirmedAppointments = () => {
-    const {user} = useContext(UserContext);
+    const { user, roleData } = useContext(UserContext);
 
-    const {data: appointments, isLoading, error} = useQuery({
-
-            queryKey: queryKeys.appointments.confirmed(user.id),
-            queryFn: () => fetch(`${API_URL}/appointments?doctor_id=${user.id}&status=CONFIRMED`,
-                {
-                    method: 'GET',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+    const { data: appointments, isLoading, error } = useQuery({
+        queryKey: queryKeys.appointments.confirmed(roleData?.id),
+        queryFn: () => fetch(`${API_URL}/appointments?doctor_id=${roleData?.id}&status=CONFIRMED`,
+            {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
                 }
-            ).then(res => res.json())
-        }
-    )
+            }
+        ).then(res => res.json())
+    });
 
-    const ConfirmedAppointmentCard = ({name, time}) => {
+    const ConfirmedAppointmentCard = ({ name, time }) => {
         return (
-            <Paper sx={{p: 2}}>
+            <Paper sx={{ p: 2 }}>
                 <Stack direction={"row"} justifyContent={"space-between"}>
                     <Box>
                         <Box>
@@ -44,20 +42,20 @@ const ConfirmedAppointments = () => {
     return (
 
         <Stack direction={"row"}>
-            <Paper variant="outlined" sx={{p: 2}}>
+            <Paper variant="outlined" sx={{ p: 2 }}>
                 <Typography variant="h5"> Confirmed Appointments</Typography>
                 {isLoading ?
                     <Box display="flex" justifyContent="center" p={4}>
-                        <CircularProgress/>
+                        <CircularProgress />
                     </Box>
                     :
                     error ?
-                        <Paper sx={{p: 3, textAlign: "center"}}>
+                        <Paper sx={{ p: 3, textAlign: "center" }}>
                             <Typography color="error">{error}</Typography>
                         </Paper>
                         :
                         appointments.length === 0 ?
-                            <Paper sx={{p: 3}}>
+                            <Paper sx={{ p: 3 }}>
                                 <Typography>You have no confirmed appointments</Typography>
                             </Paper>
                             :
@@ -66,7 +64,7 @@ const ConfirmedAppointments = () => {
                                     appointments.map((appointment, index) =>
                                         <ConfirmedAppointmentCard
                                             key={index}
-                                            name={`${appointment.patient.user.firstName} ${appointment.patient.user.firstName}`}
+                                            name={`${appointment.patient.user.firstName} ${appointment.patient.user.lastName}`}
                                             time={appointment.appointmentTimestamp}
                                         />
                                     )

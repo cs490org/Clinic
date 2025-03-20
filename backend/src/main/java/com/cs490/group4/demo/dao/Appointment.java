@@ -1,9 +1,10 @@
 package com.cs490.group4.demo.dao;
 
 import jakarta.persistence.*;
-
 import java.sql.Timestamp;
 import lombok.Data;
+import java.util.List;
+
 @Entity
 @Data
 public class Appointment {
@@ -24,6 +25,6 @@ public class Appointment {
     @JoinColumn(name = "appointment_status_code_id", referencedColumnName = "id")
     private AppointmentStatusCode appointmentStatusCode;
 
-    private Timestamp appointmentTimestamp, createTimestamp, updateTimestamp;
 
+    private Timestamp appointmentTimestamp, createTimestamp, updateTimestamp;
 }

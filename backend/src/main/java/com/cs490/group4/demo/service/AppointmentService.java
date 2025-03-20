@@ -1,14 +1,16 @@
 package com.cs490.group4.demo.service;
 
-import com.cs490.group4.demo.dao.Appointment;
-import com.cs490.group4.demo.dao.AppointmentRepository;
+import com.cs490.group4.demo.dao.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import lombok.Data;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.sql.Timestamp;
 
-import com.cs490.group4.demo.dao.AppointmentStatusCodeRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public class AppointmentService {
@@ -19,13 +21,28 @@ public class AppointmentService {
     @Autowired
     private AppointmentStatusCodeRepository appointmentStatusCodeRepository;
 
-    public List<Appointment> getAllAppointments() {
-        return appointmentRepository.findAll();
+    @Autowired
+    private AppointmentSymptomsRepository appointmentSymptomsRepository;
+
+    public List<AppointmentDTO> getAllAppointments() {
+        return appointmentRepository.findAll().stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
     }
 
-    public void createAppointment(Appointment appointment) {
+    @Transactional
+    public void createAppointment(Appointment appointment, String symptomsDescription) {
         appointment.setAppointmentStatusCode(appointmentStatusCodeRepository.findByStatus("PENDING"));
-        appointmentRepository.save(appointment);
+
+        Appointment savedAppointment = appointmentRepository.save(appointment);
+
+        // Create and save the symptoms
+        if (symptomsDescription != null && !symptomsDescription.trim().isEmpty()) {
+            AppointmentSymptoms symptoms = new AppointmentSymptoms();
+            symptoms.setAppointment(savedAppointment);
+            symptoms.setDescription(symptomsDescription.trim());
+            appointmentSymptomsRepository.save(symptoms);
+        }
     }
 
     public boolean confirmAppointment(Integer appointmentId) {
@@ -62,13 +79,42 @@ public class AppointmentService {
         return true;
     }
 
-    public List<Appointment> findByDoctorId(Integer doctorId) {
-        return appointmentRepository.findByDoctorId(doctorId);
+    public List<AppointmentDTO> findByDoctorId(Integer doctorId) {
+        return appointmentRepository.findByDoctorId(doctorId).stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
     }
 
-    public List<Appointment> findByStatusCodeIdAndDoctorId(Integer statusId, Integer doctorId) {
-        return appointmentRepository.findByAppointmentStatusCodeIdAndDoctorId(statusId, doctorId);
+    public List<AppointmentDTO> findByStatusCodeIdAndDoctorId(Integer statusId, Integer doctorId) {
+        return appointmentRepository.findByAppointmentStatusCodeIdAndDoctorId(statusId, doctorId).stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
     }
 
+    private AppointmentDTO convertToDTO(Appointment appointment) {
+        AppointmentDTO dto = new AppointmentDTO();
+        dto.setId(appointment.getId());
+        dto.setDoctor(appointment.getDoctor());
+        dto.setPatient(appointment.getPatient());
+        dto.setAppointmentStatusCode(appointment.getAppointmentStatusCode());
+        dto.setAppointmentTimestamp(appointment.getAppointmentTimestamp());
+        
+        // Fetch and set symptoms
+        List<AppointmentSymptoms> symptoms = appointmentSymptomsRepository.findByAppointmentId(appointment.getId());
+        if (!symptoms.isEmpty()) {
+            dto.setSymptoms(symptoms.get(0).getDescription());
+        }
+        
+        return dto;
+    }
+}
 
+@Data
+class AppointmentDTO {
+    private Integer id;
+    private Doctor doctor;
+    private Patient patient;
+    private AppointmentStatusCode appointmentStatusCode;
+    private Timestamp appointmentTimestamp;
+    private String symptoms;
 }

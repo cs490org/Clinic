@@ -37,6 +37,7 @@ const PatientDashboard = () => {
     const [openBooking, setOpenBooking] = useState(false);
     const [selectedDoctor, setSelectedDoctor] = useState(null);
     const [selectedDateTime, setSelectedDateTime] = useState(dayjs());
+    const [symptoms, setSymptoms] = useState('');
 
     useEffect(() => {
         const fetchDoctors = async () => {
@@ -57,24 +58,27 @@ const PatientDashboard = () => {
     }, []);
 
     const handleBookAppointment = async () => {
-        const appointment = {
-            doctor: {
-                id: selectedDoctor.id
+        const request = {
+            appointment: {
+                doctor: {
+                    id: selectedDoctor.id
+                },
+                patient: {
+                    id: roleData.id
+                },
+                appointmentTimestamp: selectedDateTime.toISOString()
             },
-            patient: {
-                id: roleData.id
-            },
-            appointmentTimestamp: selectedDateTime.toISOString()
+            symptoms: symptoms.trim()
         };
 
         try {
-            const response = await axios.post(`${API_URL}/appointments`, appointment, { withCredentials: true });
+            const response = await axios.post(`${API_URL}/appointments`, request, { withCredentials: true });
             toast.success('Appointment created successfully!');
             console.log('Appointment created:', response.data);
         } catch (error) {
             console.error('Error creating appointment:', error);
+            toast.error('Failed to create appointment');
         }
-
 
         handleCloseBooking();
     };
@@ -88,6 +92,7 @@ const PatientDashboard = () => {
         setOpenBooking(false);
         setSelectedDoctor(null);
         setSelectedDateTime(dayjs());
+        setSymptoms('');
     };
 
 
@@ -167,6 +172,16 @@ const PatientDashboard = () => {
                             minDateTime={dayjs()}
                         />
                     </LocalizationProvider>
+                    <TextField
+                        fullWidth
+                        multiline
+                        rows={4}
+                        margin="normal"
+                        label="Symptoms"
+                        placeholder="Please describe your symptoms"
+                        value={symptoms}
+                        onChange={(e) => setSymptoms(e.target.value)}
+                    />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseBooking}>Cancel</Button>

@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.cs490.group4.demo.dao.Appointment;
+import com.cs490.group4.demo.dao.AppointmentStatusCodeRepository;
+import lombok.Data;
 
 @RestController
 @RequestMapping("/appointments")
@@ -13,32 +15,29 @@ public class AppointmentController {
     @Autowired
     private AppointmentService appointmentService;
 
+    @Autowired
+    private AppointmentStatusCodeRepository appointmentStatusCodeRepository;
+
     @GetMapping()
     private ResponseEntity<?> getAppointments(@RequestParam(required = false) Integer doctor_id,
                                               @RequestParam(required = false) String status) {
         if (doctor_id != null) {
             if (status != null) {
-                switch (status) {
-                    case "PENDING":
-                        return ResponseEntity.ok(appointmentService.findByStatusCodeIdAndDoctorId(1, doctor_id));
-                    case "CONFIRMED":
-                        return ResponseEntity.ok(appointmentService.findByStatusCodeIdAndDoctorId(2, doctor_id));
-                    case "CANCELLED":
-                        return ResponseEntity.ok(appointmentService.findByStatusCodeIdAndDoctorId(3, doctor_id));
-                    default:
-                        return ResponseEntity.badRequest().body("Invalid status value: " + status);
+                var statusCode = appointmentStatusCodeRepository.findByStatus(status);
+                if (statusCode == null) {
+                    return ResponseEntity.badRequest().body("Invalid status value: " + status);
                 }
+                return ResponseEntity.ok(appointmentService.findByStatusCodeIdAndDoctorId(statusCode.getId(), doctor_id));
             }
             return ResponseEntity.ok(appointmentService.findByDoctorId(doctor_id));
         }
         return ResponseEntity.ok(appointmentService.getAllAppointments());
     }
 
-
     @PostMapping()
-    private ResponseEntity<?> createAppointment(@RequestBody Appointment appointment) {
-        appointmentService.createAppointment(appointment);
-        return ResponseEntity.ok(appointment);
+    private ResponseEntity<?> createAppointment(@RequestBody AppointmentCreateRequest request) {
+        appointmentService.createAppointment(request.getAppointment(), request.getSymptoms());
+        return ResponseEntity.ok(request.getAppointment());
     }
 
     @PatchMapping("/{appointment_id}/confirm")
@@ -60,5 +59,10 @@ public class AppointmentController {
             return ResponseEntity.badRequest().body("Appointment not found or not in pending state");
         }
     }
+}
 
+@Data
+class AppointmentCreateRequest {
+    private Appointment appointment;
+    private String symptoms;
 }

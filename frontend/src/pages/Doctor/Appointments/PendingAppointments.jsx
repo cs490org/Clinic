@@ -8,12 +8,12 @@ import { UserContext } from "../../../contexts/UserContext.jsx";
 import { toast } from "sonner";
 
 const PendingAppointments = () => {
-    const { user } = useContext(UserContext);
+    const { user, roleData } = useContext(UserContext);
 
     const queryClient = useQueryClient();
     const { data: appointments, isLoading, error } = useQuery({
-        queryKey: queryKeys.appointments.pending(user.id),
-        queryFn: () => fetch(`${API_URL}/appointments?doctor_id=${user.id}&status=PENDING`,
+        queryKey: queryKeys.appointments.pending(roleData.id),
+        queryFn: () => fetch(`${API_URL}/appointments?doctor_id=${roleData.id}&status=PENDING`,
             {
                 method: 'GET',
                 credentials: 'include',
@@ -46,7 +46,7 @@ const PendingAppointments = () => {
         rejectMutation.mutate(id);
     };
 
-    const PendingAppointmentCard = ({ appointmentId, name, time }) => {
+    const PendingAppointmentCard = ({ appointmentId, name, time, symptoms }) => {
         return (
             <Paper sx={{ p: 2 }}>
                 <Stack direction={"row"} justifyContent={"space-between"}>
@@ -57,6 +57,16 @@ const PendingAppointments = () => {
                         <Box>
                             <Typography>{dayjs(time).format("MMMM D, YYYY")}</Typography>
                             <Typography>{dayjs(time).format("h:mm A")}</Typography>
+                            {symptoms && (
+                                <Box mt={1}>
+                                    <Typography color="text.secondary" fontSize={"0.9rem"}>
+                                        <strong>Reason for visit:</strong>
+                                    </Typography>
+                                    <Typography color="text.secondary" fontSize={"0.9rem"}>
+                                        {symptoms}
+                                    </Typography>
+                                </Box>
+                            )}
                         </Box>
                     </Box>
                     <Stack spacing={.5}>
@@ -92,14 +102,18 @@ const PendingAppointments = () => {
                     </Paper>
                 ) : (
                     <Stack spacing={2}>
-                        {appointments.map((appointment, index) => (
-                            <PendingAppointmentCard
-                                key={index}
-                                appointmentId={appointment.id}
-                                name={`${appointment.patient.user.firstName} ${appointment.patient.user.lastName}`}
-                                time={appointment.appointmentTimestamp}
-                            />
-                        ))}
+                        {console.log(appointments)}
+                        {
+                            appointments.map((appointment, index) => (
+
+                                <PendingAppointmentCard
+                                    key={index}
+                                    appointmentId={appointment.id}
+                                    name={`${appointment.patient.user.firstName} ${appointment.patient.user.lastName}`}
+                                    time={appointment.appointmentTimestamp}
+                                    symptoms={appointment.symptoms}
+                                />
+                            ))}
                     </Stack>
                 )}
             </Paper>
