@@ -40,7 +40,7 @@ export default function NavBar() {
   };
 
   // light | dark | system
-  const {mode,setMode} = useColorScheme()
+  const { mode, setMode } = useColorScheme()
 
   const handleLogout = async () => {
     const res = await fetch(API_URL + '/auth/logout', {
@@ -56,7 +56,7 @@ export default function NavBar() {
     } else {
       console.log("Logout failed. Try reloading the page or opening a new browser window.");
     }
-// is this the best way to handle this?
+    // is this the best way to handle this?
     window.location.reload();
   };
 
@@ -68,7 +68,7 @@ export default function NavBar() {
       fontWeight: 500,
       borderRadius: 1.5,
       minWidth: { xs: '80px', sm: '100px' },
-      textTransform:"none"
+      textTransform: "none"
     },
     logo: {
       color: "white",
@@ -98,11 +98,11 @@ export default function NavBar() {
 
   return (
     <>
-      <Drawer 
-        open={drawerOpen} 
+      <Drawer
+        open={drawerOpen}
         onClose={toggleDrawer(false)}
       >
-        <Box sx={{ p:2, display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
           <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
             <PersonIcon />
           </Avatar>
@@ -126,7 +126,7 @@ export default function NavBar() {
             }}>
               <ListItemIcon>
                 <DashboardIcon />
-            </ListItemIcon>
+              </ListItemIcon>
               <ListItemText primary="Patient Dashboard" />
             </ListItemButton>
           )}
@@ -137,14 +137,14 @@ export default function NavBar() {
             }}>
               <ListItemIcon>
                 <DashboardIcon />
-            </ListItemIcon>
+              </ListItemIcon>
               <ListItemText primary="Doctor Dashboard" />
             </ListItemButton>
           )}
         </List>
 
         <Divider />
-        
+
         <List>
           <ListItemButton onClick={() => {
             handleLogout();
@@ -159,24 +159,25 @@ export default function NavBar() {
       </Drawer>
 
 
-      <AppBar position="fixed" elevation={0} sx={{backgroundColor:"primary.main"}}>
+      <AppBar position="fixed" elevation={0} sx={{ backgroundColor: "primary.main" }}>
         <Container maxWidth="xl">
-          <Toolbar 
-            disableGutters 
+          <Toolbar
+            disableGutters
             sx={{
               py: { xs: 1, sm: 1.5 },
             }}
           >
-            <Box sx={{display:"flex", gap:"1rem",flexGrow:1}}> 
+            <Box sx={{ display: "flex", gap: "1rem", flexGrow: 1 }}>
               {user &&
-              <IconButton onClick={toggleDrawer(true)}>
-                <MenuIcon sx={{ color: "white" }} />
-              </IconButton>
+                <IconButton onClick={toggleDrawer(true)}>
+                  <MenuIcon sx={{ color: "white" }} />
+                </IconButton>
               }
               <Button
                 sx={{
                   ...buttonStyles.base,
                   ...buttonStyles.logo,
+                  display: { xs: "none", sm: "block" }
                 }}
                 onClick={() => navigate("/")}
               >
@@ -186,11 +187,11 @@ export default function NavBar() {
 
             <Box display="flex" gap={{ xs: 1, sm: 2 }}>
               <IconButton
-                  sx={{color:"white"}}
-                  onClick={()=>{
-                setMode(mode==="light" ? "dark" : "light")
-              }}>
-                {mode==="light"? <LightModeIcon/> : <DarkModeIcon/>}
+                sx={{ color: "white" }}
+                onClick={() => {
+                  setMode(mode === "light" ? "dark" : "light")
+                }}>
+                {mode === "light" ? <LightModeIcon /> : <DarkModeIcon />}
               </IconButton>
               {user ? (
                 <>

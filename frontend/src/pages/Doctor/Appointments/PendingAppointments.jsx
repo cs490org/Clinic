@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Paper, Stack, Typography } from "@mui/material";
+import { Avatar, Box, Button, CircularProgress, Divider, Paper, Stack, Typography } from "@mui/material";
 import dayjs from "dayjs";
 import { useEffect, useState, useContext } from "react";
 import { API_URL } from "../../../utils/constants.js";
@@ -48,27 +48,34 @@ const PendingAppointments = () => {
 
     const PendingAppointmentCard = ({ appointmentId, name, time, symptoms }) => {
         return (
-            <Paper sx={{ p: 2 }}>
-                <Stack direction={"row"} justifyContent={"space-between"}>
-                    <Box>
+            <Paper sx={{ p: 2, minWidth: "300px" }}>
+                <Stack>
+                    <Stack spacing={1}>
+                        <Stack direction={"row"} gap={2}>
+                            <Avatar />
+                            <Typography fontSize={"1.6rem"} fontWeight={"medium"}>{name}</Typography>
+                        </Stack>
+
+                        <Divider />
                         <Box>
-                            <Typography fontSize={"1.2rem"} fontWeight={"bold"}>{name}</Typography>
-                        </Box>
-                        <Box>
-                            <Typography>{dayjs(time).format("MMMM D, YYYY")}</Typography>
-                            <Typography>{dayjs(time).format("h:mm A")}</Typography>
+                            <Stack direction={"row"} flexWrap={"wrap"} justifyContent={"space-between"}>
+                                <Typography>{dayjs(time).format("MMMM D, YYYY")}</Typography>
+                                <Typography>{dayjs(time).format("h:mm A")}</Typography>
+                            </Stack>
                             {symptoms && (
-                                <Box mt={1}>
-                                    <Typography color="text.secondary" fontSize={"0.9rem"}>
-                                        <strong>Reason for visit:</strong>
-                                    </Typography>
-                                    <Typography color="text.secondary" fontSize={"0.9rem"}>
-                                        {symptoms}
-                                    </Typography>
-                                </Box>
+                                <>
+                                    <Box mt={1}>
+                                        <Typography color="text.secondary" fontSize={"1rem"}>
+                                            <strong>Reason for visit:</strong>
+                                        </Typography>
+                                        <Typography color="text.secondary" fontSize={"0.9rem"}>
+                                            {symptoms}
+                                        </Typography>
+                                    </Box>
+                                </>
                             )}
                         </Box>
-                    </Box>
+                    </Stack>
                     <Stack spacing={.5}>
                         <Button onClick={() => {
                             confirmAppointment(appointmentId);
@@ -85,39 +92,37 @@ const PendingAppointments = () => {
     };
 
     return (
-        <Stack direction={"row"}>
-            <Paper variant="outlined" sx={{ p: 2 }}>
-                <Typography variant="h5">Appointment Requests</Typography>
-                {isLoading ? (
-                    <Box display="flex" justifyContent="center" p={4}>
-                        <CircularProgress />
-                    </Box>
-                ) : error ? (
-                    <Paper sx={{ p: 3, textAlign: 'center' }}>
-                        <Typography color="error">There was an error when trying to get appointments.</Typography>
-                    </Paper>
-                ) : appointments.length === 0 ? (
-                    <Paper sx={{ p: 3 }}>
-                        <Typography>You have no appointment requests.</Typography>
-                    </Paper>
-                ) : (
-                    <Stack spacing={2}>
-                        {console.log(appointments)}
-                        {
-                            appointments.map((appointment, index) => (
+        <Paper variant="outlined" sx={{ p: 2, flex: 2 }}>
+            <Typography variant="h5" fontWeight={"bold"}>Appointment Requests</Typography>
+            {isLoading ? (
+                <Box display="flex" justifyContent="center" p={4}>
+                    <CircularProgress />
+                </Box>
+            ) : error ? (
+                <Paper sx={{ p: 3, textAlign: 'center' }}>
+                    <Typography color="error">There was an error when trying to get appointments.</Typography>
+                </Paper>
+            ) : appointments.length === 0 ? (
+                <Paper sx={{ p: 3 }}>
+                    <Typography>You have no appointment requests.</Typography>
+                </Paper>
+            ) : (
+                <Stack spacing={2}>
+                    {console.log(appointments)}
+                    {
+                        appointments.map((appointment, index) => (
 
-                                <PendingAppointmentCard
-                                    key={index}
-                                    appointmentId={appointment.id}
-                                    name={`${appointment.patient.user.firstName} ${appointment.patient.user.lastName}`}
-                                    time={appointment.appointmentTimestamp}
-                                    symptoms={appointment.symptoms}
-                                />
-                            ))}
-                    </Stack>
-                )}
-            </Paper>
-        </Stack>
+                            <PendingAppointmentCard
+                                key={index}
+                                appointmentId={appointment.id}
+                                name={`${appointment.patient.user.firstName} ${appointment.patient.user.lastName}`}
+                                time={appointment.appointmentTimestamp}
+                                symptoms={appointment.symptoms}
+                            />
+                        ))}
+                </Stack>
+            )}
+        </Paper>
     );
 };
 
