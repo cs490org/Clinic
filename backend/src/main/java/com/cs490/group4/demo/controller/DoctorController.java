@@ -31,6 +31,15 @@ public class DoctorController {
                 request.getLicenseNumber()
         ));
     }
+
+    @PatchMapping("/{id}/accepting-status")
+    private ResponseEntity<?> updateAcceptingStatus(
+            @PathVariable Integer id,
+            @RequestBody UpdateAcceptingStatusRequest request
+    ) {
+        doctorService.updateAcceptingStatus(id, request.getAcceptingNewPatients());
+        return ResponseEntity.ok().build();
+    }
 }
 
 @Data
@@ -39,4 +48,9 @@ class DoctorCreateRequest {
     private String phone;
     private String specialty;
     private Long licenseNumber;
+}
+
+@Data
+class UpdateAcceptingStatusRequest {
+    private Boolean acceptingNewPatients;
 }

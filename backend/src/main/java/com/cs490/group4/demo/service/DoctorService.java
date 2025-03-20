@@ -47,6 +47,13 @@ public class DoctorService {
         return doctorRepository.save(doctor);
     }
 
+    public void updateAcceptingStatus(Integer doctorId, Boolean acceptingNewPatients) {
+        Doctor doctor = doctorRepository.findById(doctorId)
+                .orElseThrow(() -> new EntityNotFoundException("Doctor not found with ID: " + doctorId));
+        doctor.setAcceptingNewPatients(acceptingNewPatients);
+        doctorRepository.save(doctor);
+    }
+
     public boolean isEmpty() {
         return doctorRepository.count() == 0;
     }

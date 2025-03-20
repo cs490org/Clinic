@@ -23,6 +23,7 @@ public class Doctor {
 
     private String firstName, lastName, email, phone, specialty;
     private Long licenseNumber;
+    private Boolean acceptingNewPatients = true;
 
     private LocalDateTime createTimestamp, updateTimestamp;
 

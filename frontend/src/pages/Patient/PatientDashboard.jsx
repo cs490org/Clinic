@@ -134,8 +134,15 @@ const PatientDashboard = () => {
                                             variant="contained"
                                             color="primary"
                                             onClick={() => handleBookClick(doctor)}
+                                            disabled={!doctor.acceptingNewPatients}
+                                            sx={{
+                                                opacity: doctor.acceptingNewPatients ? 1 : 0.5,
+                                                '&:hover': {
+                                                    opacity: doctor.acceptingNewPatients ? 0.9 : 0.5
+                                                }
+                                            }}
                                         >
-                                            Book Appointment
+                                            {doctor.acceptingNewPatients ? 'Book Appointment' : 'Not Accepting Patients'}
                                         </Button>
                                     </TableCell>
                                 </TableRow>
