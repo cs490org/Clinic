@@ -45,6 +45,23 @@ public class AppointmentService {
         return true;
     }
 
+    public boolean rejectAppointment(Integer appointmentId) {
+        Optional<Appointment> optionalAppointment = appointmentRepository.findById(appointmentId);
+        if (optionalAppointment.isEmpty()) {
+            return false;
+        }
+
+        Appointment appointment = optionalAppointment.get();
+
+        if (!"PENDING".equals(appointment.getAppointmentStatusCode().getStatus())) {
+            return false;
+        }
+
+        appointment.setAppointmentStatusCode(appointmentStatusCodeRepository.findByStatus("CANCELLED"));
+        appointmentRepository.save(appointment);
+        return true;
+    }
+
     public List<Appointment> findByDoctorId(Integer doctorId) {
         return appointmentRepository.findByDoctorId(doctorId);
     }

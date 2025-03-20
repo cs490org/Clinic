@@ -51,4 +51,14 @@ public class AppointmentController {
         }
     }
 
+    @PatchMapping("/{appointment_id}/reject")
+    private ResponseEntity<?> rejectAppointment(@PathVariable Integer appointment_id) {
+        boolean updated = appointmentService.rejectAppointment(appointment_id);
+        if (updated) {
+            return ResponseEntity.ok("Appointment rejected successfully");
+        } else {
+            return ResponseEntity.badRequest().body("Appointment not found or not in pending state");
+        }
+    }
+
 }

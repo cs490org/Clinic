@@ -1,4 +1,4 @@
-import {useState, useEffect, useContext} from 'react';
+import { useState, useEffect, useContext } from 'react';
 import {
     Container,
     Typography,
@@ -18,18 +18,18 @@ import {
     Button,
     TextField,
 } from '@mui/material';
-import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
-import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
-import {DateTimePicker} from '@mui/x-date-pickers/DateTimePicker';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs from 'dayjs';
-import {API_URL} from '../../utils/constants';
+import { API_URL } from '../../utils/constants';
 import axios from 'axios';
 import SelectPharmacy from "./Pharmacy/SelectPharmacy.jsx";
-import {toast} from 'sonner';
-import {UserContext} from '../../contexts/UserContext';
+import { toast } from 'sonner';
+import { UserContext } from '../../contexts/UserContext';
 
 const PatientDashboard = () => {
-    const {user} = useContext(UserContext);
+    const { user, roleData } = useContext(UserContext);
     const [doctors, setDoctors] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -41,17 +41,10 @@ const PatientDashboard = () => {
     useEffect(() => {
         const fetchDoctors = async () => {
             try {
-                const response = await fetch(`${API_URL}/doctors`, {
-                    method: 'GET',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+                const { data } = await axios.get(`${API_URL}/doctors`, {
+                    withCredentials: true
                 });
-                if (!response.ok) {
-                    throw new Error('Failed to fetch doctors');
-                }
-                const data = await response.json();
+                // console.log(data);
                 setDoctors(data);
             } catch (err) {
                 setError(err.message);
@@ -63,26 +56,25 @@ const PatientDashboard = () => {
         fetchDoctors();
     }, []);
 
-    const handleBookAppointment = () => {
+    const handleBookAppointment = async () => {
         const appointment = {
             doctor: {
                 id: selectedDoctor.id
             },
-
             patient: {
-                id: user.id
+                id: roleData.id
             },
             appointmentTimestamp: selectedDateTime.toISOString()
         };
 
-        axios.post(`${API_URL}/appointments`, appointment, {withCredentials: true})
-            .then(response => {
-                toast.success('Appointment created successfully!');
-                console.log('Appointment created:', response.data);
-            })
-            .catch(error => {
-                console.error('Error creating appointment:', error);
-            });
+        try {
+            const response = await axios.post(`${API_URL}/appointments`, appointment, { withCredentials: true });
+            toast.success('Appointment created successfully!');
+            console.log('Appointment created:', response.data);
+        } catch (error) {
+            console.error('Error creating appointment:', error);
+        }
+
 
         handleCloseBooking();
     };
@@ -100,7 +92,7 @@ const PatientDashboard = () => {
 
 
     return (
-        <Container maxWidth="lg" sx={{mt: 4, mb: 4}}>
+        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Typography variant="h4" gutterBottom>
                 Patient Dashboard
             </Typography>
@@ -112,10 +104,10 @@ const PatientDashboard = () => {
 
             {loading ? (
                 <Box display="flex" justifyContent="center" p={4}>
-                    <CircularProgress/>
+                    <CircularProgress />
                 </Box>
             ) : error ? (
-                <Paper sx={{p: 3, textAlign: 'center'}}>
+                <Paper sx={{ p: 3, textAlign: 'center' }}>
                     <Typography color="error">{error}</Typography>
                 </Paper>
             ) : (
@@ -164,7 +156,7 @@ const PatientDashboard = () => {
                             label="Appointment Date & Time"
                             value={selectedDateTime}
                             onChange={(newValue) => setSelectedDateTime(newValue)}
-                            renderInput={(params) => <TextField {...params} fullWidth/>}
+                            renderInput={(params) => <TextField {...params} fullWidth />}
                             minDateTime={dayjs()}
                         />
                     </LocalizationProvider>
