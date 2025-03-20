@@ -6,8 +6,7 @@ import theme from '../theme.js';
 import {CssBaseline, ThemeProvider} from "@mui/material";
 import NavBar from '../NavBar.jsx';
 
-
-export default function Auth({children, notRequired}) {
+export default function Auth({children, notRequired, allowedRoles}) {
     const navigate = useNavigate();
 
     const [user, setUser] = useState();
@@ -22,8 +21,13 @@ export default function Auth({children, notRequired}) {
             })
 
             if (res.status === 200) {
-                setUser(await res.json());
-                // setLoading(false);
+                const userData = await res.json();
+                setUser(userData);
+                
+                // Check role-based access if allowedRoles is specified
+                if (allowedRoles && !allowedRoles.includes(userData.role)) {
+                    navigate('/', { replace: true });
+                }
             } else {
                 !notRequired && navigate('/signin', {replace: true})
                 setLoading(false);
@@ -31,9 +35,8 @@ export default function Auth({children, notRequired}) {
         }
 
         run();
-    }, [notRequired]);
+    }, [notRequired ]);
 
-    //right now this runs every mount :/
     useEffect(() => {
         async function fetchRoleData() {
             if (!user) return
@@ -68,7 +71,8 @@ export default function Auth({children, notRequired}) {
         }
 
         fetchRoleData();
-    }, [user]);
+    }, [user ]);
+
 
     return (
         <UserContext.Provider value={{user, roleData, loading}}>

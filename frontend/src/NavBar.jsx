@@ -17,13 +17,17 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
-  useColorScheme
+  useColorScheme,
+  Avatar,
 } from "@mui/material";
 import { UserContext } from './contexts/UserContext';
 import { API_URL } from './utils/constants';
 import MenuIcon from '@mui/icons-material/Menu';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import PersonIcon from '@mui/icons-material/Person';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -94,29 +98,67 @@ export default function NavBar() {
 
   return (
     <>
-      <Drawer open={drawerOpen} onClose={toggleDrawer(false)}>
-        <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
-          <List>
-            <ListItem key={"you"} >
-                <ListItemText primary={`${user?.firstName} ${user?.lastName}`}/>
-            </ListItem>
-            <ListItem key={"dashboard"} >
-              <ListItemButton onClick={() => navigate("/patient/dashboard")}>
-                <ListItemIcon>
-                </ListItemIcon>
-                <ListItemText primary={"Patient Dashboard"} />
-              </ListItemButton>
-            </ListItem>
-            <ListItem key={"dashboard"} >
-              <ListItemButton onClick={() => navigate("/doctor/dashboard")}>
-                <ListItemIcon>
-                </ListItemIcon>
-                <ListItemText primary={"Doctor Dashboard"} />
-              </ListItemButton>
-            </ListItem>
-          </List>
+      <Drawer 
+        open={drawerOpen} 
+        onClose={toggleDrawer(false)}
+      >
+        <Box sx={{ p:2, display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
+            <PersonIcon />
+          </Avatar>
+          <Box>
+            <Typography variant="subtitle1" fontWeight="bold">
+              {user?.firstName} {user?.lastName}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {user?.email}
+            </Typography>
+          </Box>
         </Box>
+
+        <Divider />
+
+        <List>
+          {user?.role === "PATIENT" && (
+            <ListItemButton onClick={() => {
+              navigate("/patient/dashboard");
+              setDrawerOpen(false);
+            }}>
+              <ListItemIcon>
+                <DashboardIcon />
+            </ListItemIcon>
+              <ListItemText primary="Patient Dashboard" />
+            </ListItemButton>
+          )}
+          {user?.role === "DOCTOR" && (
+            <ListItemButton onClick={() => {
+              navigate("/doctor/dashboard");
+              setDrawerOpen(false);
+            }}>
+              <ListItemIcon>
+                <DashboardIcon />
+            </ListItemIcon>
+              <ListItemText primary="Doctor Dashboard" />
+            </ListItemButton>
+          )}
+        </List>
+
+        <Divider />
+        
+        <List>
+          <ListItemButton onClick={() => {
+            handleLogout();
+            setDrawerOpen(false);
+          }}>
+            <ListItemIcon>
+              <LogoutIcon />
+            </ListItemIcon>
+            <ListItemText primary="Logout" />
+          </ListItemButton>
+        </List>
       </Drawer>
+
+
       <AppBar position="fixed" elevation={0} sx={{backgroundColor:"primary.main"}}>
         <Container maxWidth="xl">
           <Toolbar 
@@ -128,9 +170,9 @@ export default function NavBar() {
             <Box sx={{display:"flex", gap:"1rem",flexGrow:1}}> 
               {user &&
               <IconButton onClick={toggleDrawer(true)}>
-                <MenuIcon sx={{ color: "white",  }} />
+                <MenuIcon sx={{ color: "white" }} />
               </IconButton>
-      }
+              }
               <Button
                 sx={{
                   ...buttonStyles.base,
@@ -149,7 +191,6 @@ export default function NavBar() {
                 setMode(mode==="light" ? "dark" : "light")
               }}>
                 {mode==="light"? <LightModeIcon/> : <DarkModeIcon/>}
-
               </IconButton>
               {user ? (
                 <>

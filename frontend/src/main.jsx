@@ -41,21 +41,21 @@ const router = createBrowserRouter([
     {
         path: '/patient/dashboard',
         element:
-            <Auth>
+            <Auth allowedRoles={["PATIENT"]}>
                 <PatientDashboard/>
             </Auth>
     },
     {
         path: '/doctor/dashboard',
         element:
-            <Auth>
+            <Auth allowedRoles={["DOCTOR"]}>
                 <DoctorDashboard/>
             </Auth>
     },
     {
         path: '/patient/complete-profile',
         element:
-            <Auth>
+            <Auth allowedRoles={["PATIENT"]}>
                 <CompletePatientProfile/>
             </Auth>
     }
