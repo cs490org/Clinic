@@ -3,8 +3,9 @@ import {UserContext} from '../contexts/UserContext';
 import {useNavigate} from 'react-router-dom';
 import {API_URL} from '../utils/constants.js';
 import theme from '../theme.js';
-import {CssBaseline, ThemeProvider} from "@mui/material";
+import {CssBaseline, ThemeProvider, Typography} from "@mui/material";
 import NavBar from '../NavBar.jsx';
+import Box from "@mui/material/Box";
 
 export default function Auth({children, notRequired, allowedRoles}) {
     const navigate = useNavigate();
@@ -23,10 +24,10 @@ export default function Auth({children, notRequired, allowedRoles}) {
             if (res.status === 200) {
                 const userData = await res.json();
                 setUser(userData);
-                
+
                 // Check role-based access if allowedRoles is specified
                 if (allowedRoles && !allowedRoles.includes(userData.role)) {
-                    navigate('/', { replace: true });
+                    navigate('/', {replace: true});
                 }
             } else {
                 !notRequired && navigate('/signin', {replace: true})
@@ -35,7 +36,7 @@ export default function Auth({children, notRequired, allowedRoles}) {
         }
 
         run();
-    }, [notRequired ]);
+    }, [notRequired]);
 
     useEffect(() => {
         async function fetchRoleData() {
@@ -55,14 +56,16 @@ export default function Auth({children, notRequired, allowedRoles}) {
             })
 
             if (res.status === 200) {
-                setRoleData(await res.json());
+                const roleData = await res.json()
+                setRoleData(roleData)
+
             } else if (res.status === 404) {
                 if (user.role === "PATIENT") {
-                    navigate('/patient/complete-profile');
+                    navigate('/patient/complete-profile')
                 } else if (user.role === "DOCTOR") {
-                    navigate('/doctor/complete-profile');
-                } else if (user.role === "PHARACIST") {
-                    navigate('/pharmacist/complete-profile');
+                    navigate('/doctor/complete-profile')
+                } else if (user.role === "PHARMACIST") {
+                    navigate('/pharmacist/complete-profile')
                 }
             } else {
                 throw new Error("Role data fetch failed")
@@ -71,15 +74,63 @@ export default function Auth({children, notRequired, allowedRoles}) {
         }
 
         fetchRoleData();
-    }, [user ]);
+    }, [user]);
 
+    // we dont have auth data yet
+    const LoadingScreen = () => {
+        return (
+            <Box sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "80vh",
+                p: 4
 
+            }}>
+                <Box
+                    sx={{
+                        animation: 'float 3s ease-in-out infinite',
+                        maxWidth: '200px'
+                    }}
+                >
+                    <img
+                        style={{
+                            width: '100%',
+                            display: 'block'
+                        }}
+                        src="chips.png"
+                        alt="Weight loss journey"
+                    />
+                    <style>
+                        {`
+              @keyframes float {
+                0% { transform: translateY(0px); }
+                50% { transform: translateY(-30px); }
+                100% { transform: translateY(0px); }
+              }
+            `}
+                    </style>
+                </Box>
+                <Typography textAlign={"center"} fontSize={"1.5rem"} fontWeight={"bold"} gutterBottom> Our servers
+                    are
+                    loading...</Typography>
+                <Typography fontSize={".7rem"} sx={{color: "text.secondary"}}>Did you forget to run the
+                    backend?</Typography>
+            </Box>
+        )
+    }
     return (
         <UserContext.Provider value={{user, roleData, loading}}>
             <ThemeProvider theme={theme} defaultMode={"light"}>
                 <CssBaseline/>
-                <NavBar/>
-                {children}
+                {loading ? <LoadingScreen/>
+                    :
+                    <>
+                        <NavBar/>
+                        {children}
+                    </>
+                }
             </ThemeProvider>
         </UserContext.Provider>
     )

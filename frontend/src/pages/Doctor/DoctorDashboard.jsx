@@ -3,8 +3,8 @@ import {
     Typography,
     Stack
 } from '@mui/material';
-import PendingAppointments from "./PendingAppointments.jsx";
-import ConfirmedAppointments from "./ConfirmedAppointments.jsx";
+import PendingAppointments from "./Appointments/PendingAppointments.jsx";
+import ConfirmedAppointments from "./Appointments/ConfirmedAppointments.jsx";
 
 
 const DoctorDashboard = () => {

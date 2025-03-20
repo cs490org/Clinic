@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {API_URL} from "../../utils/constants.js";
+import {API_URL} from "../../../utils/constants.js";
 import {
     Button,
     FormControl,
@@ -10,7 +10,7 @@ import {
     Typography
 } from "@mui/material";
 import {useQuery} from "@tanstack/react-query";
-import {queryKeys} from "../../utils/queryKeys.js";
+import {queryKeys} from "../../../utils/queryKeys.js";
 
 export default function SelectPharmacy() {
 

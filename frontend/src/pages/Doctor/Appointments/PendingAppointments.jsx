@@ -1,21 +1,19 @@
 import {Box, Button, CircularProgress, Paper, Stack, Typography} from "@mui/material";
 import dayjs from "dayjs";
-import {useEffect, useState} from "react";
-import {API_URL} from "../../utils/constants.js";
+import {useEffect, useState, useContext} from "react";
+import {API_URL} from "../../../utils/constants.js";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {queryKeys} from "../../utils/queryKeys.js";
+import {queryKeys} from "../../../utils/queryKeys.js";
+import {UserContext} from "../../../contexts/UserContext.jsx";
 
 const PendingAppointments = () => {
-
-    // TODO: get this from usercontext
-    const doctor_id = 1
-
+    const {user} = useContext(UserContext);
 
     const queryClient = useQueryClient();
     const {data: appointments, isLoading, error} = useQuery({
 
-            queryKey: queryKeys.appointments.pending(doctor_id),
-            queryFn: () => fetch(`${API_URL}/appointments?doctor_id=${doctor_id}&status=PENDING`,
+            queryKey: queryKeys.appointments.pending(user.id),
+            queryFn: () => fetch(`${API_URL}/appointments?doctor_id=${user.id}&status=PENDING`,
                 {
                     method: 'GET',
                     credentials: 'include',

@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from 'react';
+import {useContext, useState, useEffect} from 'react';
 import {
     Container,
     Paper,
@@ -13,23 +13,23 @@ import {
     MenuItem,
     Skeleton,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { API_URL } from "../../utils/constants";
-import { UserContext } from "../../contexts/UserContext";
-import { useQuery } from "@tanstack/react-query";
-import { queryKeys } from "../../utils/queryKeys";
-import { toast } from 'sonner';
+import {useNavigate} from "react-router-dom";
+import {API_URL} from "../../utils/constants";
+import {UserContext} from "../../contexts/UserContext";
+import {useQuery} from "@tanstack/react-query";
+import {queryKeys} from "../../utils/queryKeys";
+import {toast} from 'sonner';
 
 const CompletePatientProfile = () => {
     const navigate = useNavigate();
-    const { user } = useContext(UserContext);
+    const {user} = useContext(UserContext);
     const [formData, setFormData] = useState({
         phone: '',
         address: '',
         pharmacyId: ''
     });
 
-    const { data: pharmacies, isLoading: isLoadingPharmacies } = useQuery({
+    const {data: pharmacies, isLoading: isLoadingPharmacies} = useQuery({
         queryKey: queryKeys.pharmacies.all,
         queryFn: async () => {
             const res = await fetch(API_URL + '/pharmacies', {
@@ -66,20 +66,28 @@ const CompletePatientProfile = () => {
             if (res.ok) {
                 toast.success('Profile completed successfully!');
                 navigate('/patient/dashboard');
-            } 
+
+                // ensure we get role info
+                window.location.reload()
+            }
         } catch (err) {
             console.error(err);
         }
     };
 
     return (
-        <Container maxWidth="sm">
-            <Paper elevation={3} sx={{ p: 4}} >
+        <Container maxWidth="sm" sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '80vh'
+        }}>
+            <Paper elevation={3} sx={{p: 4}}>
                 <Stack spacing={2}>
                     <Typography variant="h5" component="h1" gutterBottom>
                         Welcome {user.firstName}! Your profile is almost complete.
                     </Typography>
-                    
+
                     <Typography variant="body1" color="text.secondary">
                         Please provide your information to complete your patient profile.
                     </Typography>

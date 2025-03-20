@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {API_URL} from "../utils/constants";
+import {toast} from "sonner";
 
 
 const SignupPage = () => {
@@ -50,10 +51,23 @@ const SignupPage = () => {
         })
 
         if (res.status == 200) {
-            navigate(`/${userType.toLowerCase()}/dashboard`);
+            const userRes = await fetch(API_URL + '/user', {
+                credentials: 'include'
+            });
+
+            if (userRes.status === 200) {
+                // get user response
+                window.location.reload();
+            } else {
+                // WTF
+                toast.error("There was an error when creating the account.")
+                throw new Error("Error while creating account")
+            }
+
         } else if (res.status == 202) {
             // TODO: introduce error displays
             // setError('Account already exists.')
+            toast.error(`An account with the email \"${email}\" already exists.`)
         }
     }
 
@@ -62,7 +76,7 @@ const SignupPage = () => {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            height: '100vh'
+            height: '80vh'
         }}>
             <Paper
                 elevation={3}
@@ -95,8 +109,6 @@ const SignupPage = () => {
                                     autoComplete="given-name"
                                     value={firstName}
                                     onChange={(e) => setFirstName(e.currentTarget.value)}
-                                    error={!!errors.firstName}
-                                    helperText={errors.firstName}
                                 />
 
                                 <TextField
@@ -107,8 +119,6 @@ const SignupPage = () => {
                                     autoComplete="family-name"
                                     value={lastName}
                                     onChange={(e) => setLastName(e.currentTarget.value)}
-                                    error={!!errors.lastName}
-                                    helperText={errors.lastName}
                                 />
                             </Stack>
 
@@ -119,8 +129,6 @@ const SignupPage = () => {
                                 autoComplete="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.currentTarget.value)}
-                                error={!!errors.email}
-                                helperText={errors.email}
                             />
 
                             <TextField
@@ -131,8 +139,6 @@ const SignupPage = () => {
                                 autoComplete="new-password"
                                 value={password}
                                 onChange={(e) => setPassword(e.currentTarget.value)}
-                                error={!!errors.password}
-                                helperText={errors.password}
                             />
 
 

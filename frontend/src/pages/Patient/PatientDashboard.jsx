@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useContext} from 'react';
 import {
     Container,
     Typography,
@@ -24,11 +24,12 @@ import {DateTimePicker} from '@mui/x-date-pickers/DateTimePicker';
 import dayjs from 'dayjs';
 import {API_URL} from '../../utils/constants';
 import axios from 'axios';
-import SelectPharmacy from "./SelectPharmacy.jsx";
-import { toast } from 'sonner';
+import SelectPharmacy from "./Pharmacy/SelectPharmacy.jsx";
+import {toast} from 'sonner';
+import {UserContext} from '../../contexts/UserContext';
 
 const PatientDashboard = () => {
-
+    const {user} = useContext(UserContext);
     const [doctors, setDoctors] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -67,9 +68,9 @@ const PatientDashboard = () => {
             doctor: {
                 id: selectedDoctor.id
             },
-            // TODO: get patient id from user context
+
             patient: {
-                id: 1
+                id: user.id
             },
             appointmentTimestamp: selectedDateTime.toISOString()
         };
