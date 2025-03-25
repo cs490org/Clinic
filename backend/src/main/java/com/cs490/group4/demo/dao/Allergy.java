@@ -8,14 +8,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Allergies {
+public class Allergy {
 
     @Id
     @GeneratedValue
@@ -25,13 +24,9 @@ public class Allergies {
     @JoinColumn(name = "patient_id", referencedColumnName = "id")
     private Patient patient;
 
-    @ManyToMany
-    @JoinTable(
-            name = "allergies_table",
-            joinColumns = @JoinColumn(name = "allergies_id"),
-            inverseJoinColumns = @JoinColumn(name = "ingredient_id")
-    )
-    private List<Ingredient> ingredient;
+    @ManyToOne
+    @JoinColumn(name = "ingredient_id", referencedColumnName = "id")
+    private Ingredient ingredient;
 
     private LocalDateTime createTimestamp, updateTimestamp;
 
