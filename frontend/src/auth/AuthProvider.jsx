@@ -1,3 +1,4 @@
+/*
 import {useEffect, useState} from "react"
 import {UserContext} from '../contexts/UserContext';
 import {useNavigate} from 'react-router-dom';
@@ -46,7 +47,7 @@ export default function Auth({children, notRequired, allowedRoles}) {
                 url = API_URL + `/patients?userId=${user.id}`
             } else if (user.role === "DOCTOR") {
                 url = API_URL + `/doctors?userId=${user.id}`
-            } else if (user.role === "PHARACIST") {
+            } else if (user.role === "PHARMACIST") {
                 url = API_URL + `/pharmacists?userId=${user.id}`
             } else {
                 throw new Error("Role undefined")
@@ -134,4 +135,136 @@ export default function Auth({children, notRequired, allowedRoles}) {
             </ThemeProvider>
         </UserContext.Provider>
     )
+}*/
+
+import { useEffect, useState } from "react";
+import { UserContext } from '../contexts/UserContext';
+import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../utils/constants.js';
+import theme from '../theme.js';
+import { CssBaseline, ThemeProvider, Typography } from "@mui/material";
+import NavBar from '../NavBar.jsx';
+import Box from "@mui/material/Box";
+
+export default function Auth({ children, notRequired, allowedRoles }) {
+    const navigate = useNavigate();
+
+    const [user, setUser] = useState();
+    const [roleData, setRoleData] = useState();
+    const [loading, setLoading] = useState(true);
+
+    // First: Check if user is already logged in
+    useEffect(() => {
+        async function run() {
+            const res = await fetch(API_URL + '/user', {
+                credentials: 'include'
+            });
+
+            if (res.status === 200) {
+                const userData = await res.json();
+                setUser(userData);
+
+                // Role-based access control
+                if (allowedRoles && !allowedRoles.includes(userData.role)) {
+                    navigate('/', { replace: true });
+                }
+            } else {
+                !notRequired && navigate('/signin', { replace: true });
+                setLoading(false); // still turn off loading if no redirect
+            }
+        }
+
+        run();
+    }, [notRequired]);
+
+    // Second: Fetch role data
+    useEffect(() => {
+        if (notRequired || !user) return;
+
+        async function fetchRoleData() {
+            let url = "";
+            if (user.role === "PATIENT") {
+                url = API_URL + `/patients?userId=${user.id}`;
+            } else if (user.role === "DOCTOR") {
+                url = API_URL + `/doctors?userId=${user.id}`;
+            } else if (user.role === "PHARMACIST") {
+                url = API_URL + `/pharmacists?userId=${user.id}`;
+            } else {
+                console.error("Role undefined:", user.role);
+                setLoading(false);
+                return;
+            }
+
+            const res = await fetch(url, {
+                credentials: 'include'
+            });
+
+            if (res.status === 200) {
+                const roleData = await res.json();
+                setRoleData(roleData);
+            } else if (res.status === 404) {
+                navigate(`/${user.role.toLowerCase()}/complete-profile`);
+            } else {
+                console.error("Role data fetch failed");
+            }
+
+            setLoading(false);
+        }
+
+        fetchRoleData();
+    }, [user, notRequired]);
+
+    const LoadingScreen = () => (
+        <Box sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "80vh",
+            p: 4
+        }}>
+            <Box
+                sx={{
+                    animation: 'float 3s ease-in-out infinite',
+                    maxWidth: '200px'
+                }}
+            >
+                <img
+                    style={{ width: '100%', display: 'block' }}
+                    src="chips.png"
+                    alt="Weight loss journey"
+                />
+                <style>
+                    {`
+                        @keyframes float {
+                            0% { transform: translateY(0px); }
+                            50% { transform: translateY(-30px); }
+                            100% { transform: translateY(0px); }
+                        }
+                    `}
+                </style>
+            </Box>
+            <Typography textAlign="center" fontSize="1.5rem" fontWeight="bold" gutterBottom>
+                Our servers are loading...
+            </Typography>
+            <Typography fontSize=".7rem" sx={{ color: "text.secondary" }}>
+                Did you forget to run the backend?
+            </Typography>
+        </Box>
+    );
+
+    return (
+        <UserContext.Provider value={{ user, roleData, loading }}>
+            <ThemeProvider theme={theme} defaultMode="light">
+                <CssBaseline />
+                {loading ? <LoadingScreen /> : (
+                    <>
+                        <NavBar />
+                        {children}
+                    </>
+                )}
+            </ThemeProvider>
+        </UserContext.Provider>
+    );
 }
+
