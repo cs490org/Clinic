@@ -19,7 +19,7 @@ public class DoctorReviews {
     @JoinColumn(name = "patient_id", referencedColumnName = "id")
     private Patient patient;
 
-    private String title;
+    private String title, review;
     private Integer rating;
 
     private LocalDateTime createTimestamp, updateTimestamp;
