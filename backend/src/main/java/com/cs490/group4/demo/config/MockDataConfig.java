@@ -1,40 +1,50 @@
 package com.cs490.group4.demo.config;
 
+import com.cs490.group4.demo.security.User;
 import com.cs490.group4.demo.service.DoctorService;
 import com.cs490.group4.demo.service.PatientService;
 import com.cs490.group4.demo.service.PharmacyService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.cs490.group4.demo.service.RecipeService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
-public class MockDataConfig {
-    @Autowired
-    private MockDoctor mockDoctor;
-    @Autowired
-    private MockPatient mockPatient;
-    @Autowired
-    private MockPharmacy mockPharmacy;
+import java.util.ArrayList;
 
-    @Autowired
-    private DoctorService doctorService;
-    @Autowired
-    private PatientService patientService;
-    @Autowired
-    private PharmacyService pharmacyService;
+@Configuration
+@RequiredArgsConstructor
+public class MockDataConfig {
+    private final MockDoctor mockDoctor;
+    private final MockPatient mockPatient;
+    private final MockPharmacy mockPharmacy;
+    private final MockRecipe mockRecipe;
+
+    private final DoctorService doctorService;
+    private final PatientService patientService;
+    private final PharmacyService pharmacyService;
+    private final RecipeService recipeService;
+
+    private final ArrayList<User> users = new ArrayList<>();
 
     @Bean
     CommandLineRunner mockDataInitializer() {
         return args -> {
             if (doctorService.isEmpty()) {
-                mockDoctor.createMockDoctor(
+                users.add(mockDoctor.createMockDoctor(
+                        "dumpling@clinic.com",
+                        "Dump",
+                        "Ling",
+                        "1111111111",
+                        "Weight Gain",
+                        2L));
+                users.add(mockDoctor.createMockDoctor(
                         "doctor@clinic.com",
                         "Mario",
                         "Mario",
                         "1234567890",
                         "Weight Loss",
-                        1L);
+                        1L));
 
             }
             if (patientService.isEmpty()) {
@@ -62,6 +72,19 @@ public class MockDataConfig {
                 );
             }
 
+            if(recipeService.isEmpty() && !doctorService.isEmpty()) {
+                // for some reason there is key error when having multiple recipes with the same user id...
+                mockRecipe.createMockRecipe(
+                        "Honey Garlic Chicken",
+                        "Delicious honey garlic chicken with lower calories",
+                        users.get(0)
+                );
+                mockRecipe.createMockRecipe(
+                        "Apple",
+                        "An apple a day keeps the doctor away.",
+                        users.get(1)
+                );
+            }
         };
     }
 

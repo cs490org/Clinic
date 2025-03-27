@@ -2,17 +2,15 @@ import { useContext, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import {
   Button,
-  styled,
   Typography,
   useTheme,
   Container,
   IconButton,
   Drawer,
   List,
-  ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
@@ -28,6 +26,7 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
+import FlatwareIcon from '@mui/icons-material/Flatware';
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -130,6 +129,7 @@ export default function NavBar() {
               <ListItemText primary="Patient Dashboard" />
             </ListItemButton>
           )}
+
           {user?.role === "DOCTOR" && (
             <ListItemButton onClick={() => {
               navigate("/doctor/dashboard");
@@ -141,6 +141,19 @@ export default function NavBar() {
               <ListItemText primary="Doctor Dashboard" />
             </ListItemButton>
           )}
+
+          {(user?.role==="PATIENT" || user?.role==="DOCTOR") &&
+              <ListItemButton
+                  onClick={()=>{
+                    navigate("/recipes");
+                    setDrawerOpen(false);
+                  }}>
+                <ListItemIcon>
+                  <FlatwareIcon/>
+                </ListItemIcon>
+                <ListItemText primary={"Recipes"}/>
+              </ListItemButton>
+          }
         </List>
 
         <Divider />

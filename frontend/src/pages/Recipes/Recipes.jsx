@@ -43,7 +43,7 @@ export default function Recipes(){
         ],
     }));
 
-    const RecipeCard = ({title,subheader,image,description,instructions}) =>{
+    const RecipeCard = ({title,subheader,image,description}) =>{
         const [expanded,setExpanded] = useState();
 
         const handleExpandClick = () => {
@@ -87,29 +87,39 @@ export default function Recipes(){
                 </CardActions>
                 <Collapse in={expanded} timeout={"auto"} unmountOnExit>
                     <CardContent>
+                        <>
+                            <Typography sx={{color:"text.secondary"}}>Instructions: </Typography>
 
+                            <Typography>{instructions}</Typography>
+                        </>
                     </CardContent>
                 </Collapse>
             </Card>
         )
     }
 
+
+    const data = [{
+        title : "Doctor Dump Ling",
+        subheader : "March 30, 2025",
+        image :"/src/assets/garlic_chicken.jpg",
+        description: "Delicious honey garlic chicken with lower calories",
+    }
+    ]
     return (
         <Container sx={{display:"flex",justifyContent:"Center"}}>
 
             <Stack spacing={2}>
-                <RecipeCard
-                    title={"Honey Garlic Chicken"}
-                    subheader={"March 30, 2025"}
-                    image={"/src/assets/garlic_chicken.jpg"}
-                    description={"Delicious honey garlic chicken with lower calories"}
-                />
-                <RecipeCard
-                    title={"Honey Garlic Chicken"}
-                    subheader={"March 30, 2025"}
-                    image={"/src/assets/garlic_chicken.jpg"}
-                    description={"Delicious honey garlic chicken with lower calories"}
-                />
+                {data.map((recipe,i)=>{
+
+                    return <RecipeCard
+                    key={i}
+                        title={recipe.title}
+                        subheader={recipe.subheader}
+                        image={recipe.image}
+                        description={recipe.description}
+                    />
+                })}
             </Stack>
         </Container>
     )
