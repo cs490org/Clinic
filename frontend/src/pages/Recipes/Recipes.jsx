@@ -1,7 +1,6 @@
 import {
-    Button,
-    Container, Select,
-    Stack, TextField,
+    Container,
+    Stack,
     Typography
 } from "@mui/material";
 import { useEffect, useState } from "react";
@@ -10,9 +9,6 @@ import RecipeCard from "./RecipeCard.jsx";
 import RecipeNav from "./RecipeNav.jsx";
 
 export default function Recipes() {
-
-
-
 
     const [recipes, setRecipes] = useState([])
     useEffect(() => {
@@ -24,7 +20,10 @@ export default function Recipes() {
                 }
             )
             const data = await response.json()
-            setRecipes(data)
+            const sortedData = data.sort((a, b) =>
+                new Date(b.createTimestamp) - new Date(a.createTimestamp)
+            );
+            setRecipes(sortedData)
         }
         run()
     }, []);
@@ -52,6 +51,7 @@ export default function Recipes() {
                         recipes.map((recipe, i) => {
                             return <RecipeCard
                                 key={i}
+                                id={recipe.id}
                                 author={recipe.author}
                                 createTimestamp={recipe.createTimestamp}
                                 recipeName={recipe.name}

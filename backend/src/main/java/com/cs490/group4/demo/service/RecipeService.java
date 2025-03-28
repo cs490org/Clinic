@@ -29,7 +29,7 @@ public class RecipeService {
 
     // recipes associated with users.
     @Transactional
-    public RecipeResponseDTO createRecipe(Integer userId, String name, String description){
+    public Recipe createRecipe(Integer userId, String name, String description){
         User user = userRepository.findById(userId).orElseThrow(
                 ()-> new EntityNotFoundException("User not found with ID: " + userId)
         );
@@ -47,7 +47,7 @@ public class RecipeService {
         recipeRepository.save(recipe);
         recipeOwnerRepository.save(recipeOwner);
 
-        return convertToDTO(recipeOwner);
+        return recipe;
     }
 
     public boolean isEmpty(){

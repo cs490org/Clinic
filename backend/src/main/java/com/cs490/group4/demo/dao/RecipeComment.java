@@ -2,9 +2,11 @@ package com.cs490.group4.demo.dao;
 
 import com.cs490.group4.demo.security.User;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 public class RecipeComment {
 

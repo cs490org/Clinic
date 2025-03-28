@@ -10,11 +10,15 @@ import {
     Typography
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import {useState} from "react";
+import { useEffect, useState } from "react";
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import dayjs from "dayjs";
-export default function RecipeCard({author,recipeName,createTimestamp,image,description}) {
-    const [expanded,setExpanded] = useState();
+import { API_URL } from "../../utils/constants.js";
+import { toast } from "sonner";
+import Box from "@mui/material/Box";
+export default function RecipeCard({ id, author, recipeName, createTimestamp, image, description }) {
+    const [comments, setComments] = useState([])
+    const [expanded, setExpanded] = useState();
 
     const ExpandMore = styled((props) => {
         const { expand, ...other } = props;
@@ -42,44 +46,65 @@ export default function RecipeCard({author,recipeName,createTimestamp,image,desc
         ],
     }));
 
+    useEffect(() => {
+        const run = async () => {
+            try {
+                const response = await fetch(API_URL + "/recipes/comments?recipeId=" + id,
+
+                    {
+                        method: "GET",
+                        credentials: "include"
+                    }
+                )
+                const data = await response.json()
+                // console.log(data)
+                setComments(data)
+            } catch (e) {
+                toast.error("Something went wrong when trying to comment.")
+                console.log(e)
+            }
+        }
+        run()
+    }, []);
+
     const handleExpandClick = () => {
         setExpanded(!expanded)
     }
 
     return (
-        <Card sx={{minWidth:300,maxWidth:600}}>
+        <Card variant={"elevation"} elevation={1} sx={{ minWidth: 300, maxWidth: 600 }}>
             <CardHeader
                 avatar={
-                <Avatar>
-                    D
-                </Avatar>
+                    <Avatar>
+                        D
+                    </Avatar>
                 }
                 title={
-                <Typography>
-                    {author}
-                </Typography>
-                    }
+                    <Typography>
+                        {author}
+                    </Typography>
+                }
                 subheader={dayjs(createTimestamp).format('MMMM D, YYYY')}
             />
             <CardMedia
-            component="img"
-            image={image}
-            alt={image}
+                component="img"
+                image={image}
+                alt={image}
             />
             <CardContent>
-                <Typography sx={{fontWeight:"medium",fontSize:"1.15rem"}}>
+                <Typography sx={{ fontWeight: "medium", fontSize: "1.15rem" }}>
                     {recipeName}
                 </Typography>
                 <Divider />
-                <Typography sx={{color:"text.secondary",fontSize:".95rem"}}>
+                <Typography sx={{ color: "text.secondary", fontSize: ".95rem" }}>
                     {description}
                 </Typography>
             </CardContent>
             <CardActions disableSpacing>
 
                 <ExpandMore
-                expand={expanded}
-                onClick={handleExpandClick}
+                    expand={expanded}
+                    onClick={handleExpandClick}
                 >
                     <ExpandMoreIcon></ExpandMoreIcon>
                 </ExpandMore>
@@ -90,9 +115,25 @@ export default function RecipeCard({author,recipeName,createTimestamp,image,desc
                     <>
                         {/*<Typography sx={{color:"text.secondary"}}>Comments: </Typography>*/}
 
+                        {comments.length === 0 && <Typography>No comments found.</Typography>}
+                        {comments.length > 0 &&
+                            comments.map((commentDTO,i)=>{
+                                return (
+                                        <Stack mb="1rem" key={i} direction={"row"} spacing={1.5}>
+                                            <Avatar>D</Avatar>
+                                            <Stack>
+
+                                                    <Typography sx={{fontSize:"1.05rem",fontWeight:"bold"}}>{commentDTO.commenter}</Typography>
+                                                    <Typography >{commentDTO.comment}</Typography>
+                                            </Stack>
+                                        </Stack>
+                                )
+                            })
+                        }
+
                         <Stack direction={"row"} spacing={1} width={"100%"}>
-                            <TextField fullWidth placeholder={"Type a comment..."}/>
-                            <IconButton><ArrowUpwardIcon/></IconButton>
+                            <TextField fullWidth placeholder={"Type a comment..."} />
+                            <IconButton><ArrowUpwardIcon /></IconButton>
 
                         </Stack>
 

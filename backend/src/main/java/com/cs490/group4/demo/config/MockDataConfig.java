@@ -1,10 +1,8 @@
 package com.cs490.group4.demo.config;
 
+import com.cs490.group4.demo.dao.Recipe;
 import com.cs490.group4.demo.security.User;
-import com.cs490.group4.demo.service.DoctorService;
-import com.cs490.group4.demo.service.PatientService;
-import com.cs490.group4.demo.service.PharmacyService;
-import com.cs490.group4.demo.service.RecipeService;
+import com.cs490.group4.demo.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +17,7 @@ public class MockDataConfig {
     private final MockPatient mockPatient;
     private final MockPharmacy mockPharmacy;
     private final MockRecipe mockRecipe;
+    private final MockRecipeComment mockRecipeComment;
 
     private final DoctorService doctorService;
     private final PatientService patientService;
@@ -26,9 +25,10 @@ public class MockDataConfig {
     private final RecipeService recipeService;
 
     private final ArrayList<User> users = new ArrayList<>();
+    private final ArrayList<Recipe> recipes = new ArrayList<>();
 
     @Bean
-    CommandLineRunner mockDataInitializer() {
+    CommandLineRunner mockDataInitializer(RecipeCommentService recipeCommentService) {
         return args -> {
             if (doctorService.isEmpty()) {
                 users.add(mockDoctor.createMockDoctor(
@@ -74,15 +74,23 @@ public class MockDataConfig {
 
             if(recipeService.isEmpty() && !doctorService.isEmpty()) {
                 // for some reason there is key error when having multiple recipes with the same user id...
-                mockRecipe.createMockRecipe(
+                recipes.add(mockRecipe.createMockRecipe(
                         "Honey Garlic Chicken",
                         "Delicious honey garlic chicken with lower calories",
                         users.get(0)
-                );
-                mockRecipe.createMockRecipe(
-                        "Apple",
+                ));
+                recipes.add(mockRecipe.createMockRecipe(
+                        "A Singular Apple",
                         "An apple a day keeps the doctor away.",
                         users.get(1)
+                ));
+            }
+
+            if(!doctorService.isEmpty() && !recipeService.isEmpty()) {
+                mockRecipeComment.createMockRecipeComment(
+                        2,
+                        1,
+                        "I made this and it sucks"
                 );
             }
         };
