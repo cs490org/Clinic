@@ -25,7 +25,7 @@ export default function RecipeNav() {
             {!open
                 &&
             <IconButton
-                sx={{position:"fixed", left:23}}
+                sx={{position:"fixed", left:23,zIndex:10000}}
                 onClick={()=>setOpen(true)}>
                 <ArrowForwardIosIcon></ArrowForwardIosIcon>
             </IconButton>

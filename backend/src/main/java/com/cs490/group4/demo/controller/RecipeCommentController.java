@@ -1,16 +1,10 @@
 package com.cs490.group4.demo.controller;
 
 import com.cs490.group4.demo.service.RecipeCommentService;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/recipes/comments")
@@ -24,4 +18,20 @@ public class RecipeCommentController {
         return ResponseEntity.ok(recipeCommentService.findByRecipeId(recipeId));
     }
 
+    @PostMapping
+    private ResponseEntity<?> addComment(@RequestBody RecipeCommentDTO comment) {
+
+        return ResponseEntity.ok(recipeCommentService.createComment(
+               comment.getRecipeId(),
+               comment.getUserId(),
+               comment.getComment()
+        ));
+    }
+
+}
+@Data
+class RecipeCommentDTO {
+    private Integer recipeId;
+    private Integer userId;
+    private String comment;
 }

@@ -1,75 +1,91 @@
 import {
-    Avatar,
+    Avatar, Button,
     Card,
     CardActions,
     CardContent,
     CardHeader,
     CardMedia,
     Collapse,
-    Divider, IconButton, Stack, styled, TextField,
+    Divider, IconButton, Stack,  TextField,
     Typography
 } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useEffect, useState } from "react";
+import {useContext, useEffect, useState} from "react";
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import dayjs from "dayjs";
 import { API_URL } from "../../utils/constants.js";
 import { toast } from "sonner";
-import Box from "@mui/material/Box";
+import {UserContext} from "../../contexts/UserContext.jsx";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {queryKeys} from "../../utils/queryKeys.js";
+
 export default function RecipeCard({ id, author, recipeName, createTimestamp, image, description }) {
-    const [comments, setComments] = useState([])
+
+    const queryClient = useQueryClient()
+    const {user} = useContext(UserContext)
+
+    // const [comments, setComments] = useState([])
+    const [enteredComment, setEnteredComment] = useState("")
     const [expanded, setExpanded] = useState();
 
-    const ExpandMore = styled((props) => {
-        const { expand, ...other } = props;
-        return <IconButton {...other} />;
-    })(({ theme }) => ({
-        marginLeft: 'auto',
-        transition: theme.transitions.create('transform', {
-            duration: theme.transitions.duration.shortest,
-        }),
-        variants: [
-            {
-                // expand is false
-                props: ({ expand }) => !expand,
-                style: {
-                    transform: 'rotate(0deg)',
-                },
-            },
-            {
-                //expand is true
-                props: ({ expand }) => !!expand,
-                style: {
-                    transform: 'rotate(180deg)',
-                },
-            },
-        ],
-    }));
+    const getComments = async () => {
+        try {
+            const response = await fetch(API_URL + "/recipes/comments?recipeId=" + id,
 
-    useEffect(() => {
-        const run = async () => {
-            try {
-                const response = await fetch(API_URL + "/recipes/comments?recipeId=" + id,
-
-                    {
-                        method: "GET",
-                        credentials: "include"
-                    }
-                )
-                const data = await response.json()
-                // console.log(data)
-                setComments(data)
-            } catch (e) {
-                toast.error("Something went wrong when trying to comment.")
-                console.log(e)
-            }
+                {
+                    method: "GET",
+                    credentials: "include"
+                }
+            )
+            const data = await response.json()
+            return data
+            // console.log(data)
+            // setComments(data)
+        } catch (e) {
+            toast.error("Something went wrong when trying to comment.")
+            console.log(e)
         }
-        run()
-    }, []);
+    }
 
     const handleExpandClick = () => {
         setExpanded(!expanded)
     }
+
+    const submitComment = async () => {
+        return fetch(API_URL+"/recipes/comments",
+            {
+                method:"POST",
+                credentials:"include",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    userId:user.id,
+                    recipeId:id,
+                    comment:enteredComment
+                })
+            }
+        )
+    }
+
+    const commentMutation = useMutation({
+        mutationFn:submitComment,
+        onSuccess:()=>{
+            queryClient.invalidateQueries(queryKeys.recipes.comments(id))
+        },
+        onSettled:()=>{
+            setEnteredComment("")
+        }
+    })
+
+    const onCommentSubmit = (e) => {
+        e.preventDefault()
+        commentMutation.mutate()
+    }
+
+    const {data: comments, isLoading} = useQuery({
+        queryKey: queryKeys.recipes.comments(id),
+        queryFn: getComments
+    })
 
     return (
         <Card variant={"elevation"} elevation={1} sx={{ minWidth: 300, maxWidth: 600 }}>
@@ -95,51 +111,88 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
                 <Typography sx={{ fontWeight: "medium", fontSize: "1.15rem" }}>
                     {recipeName}
                 </Typography>
-                <Divider />
+                {/*<Divider />*/}
                 <Typography sx={{ color: "text.secondary", fontSize: ".95rem" }}>
                     {description}
                 </Typography>
             </CardContent>
-            <CardActions disableSpacing>
+            <CardActions sx={{mt:"-16px"}}disableSpacing>
+                {
+                    !isLoading && comments && comments.length > 0 &&
+                    <Button
+                        onClick={handleExpandClick}
+                        sx={{color:"text.secondary", fontSize:".9rem",textTransform:"none"}}
+                    >
+                        {
+                            comments.length === 1 ?
+                                `View ${ comments.length} comment...`
+                            :
+                            `View all ${ comments.length} comments...`
+                        }
 
-                <ExpandMore
-                    expand={expanded}
-                    onClick={handleExpandClick}
-                >
-                    <ExpandMoreIcon></ExpandMoreIcon>
-                </ExpandMore>
+                    </Button>
+                }
 
             </CardActions>
             <Collapse in={expanded} timeout={"auto"} unmountOnExit>
                 <CardContent>
-                    <>
-                        {/*<Typography sx={{color:"text.secondary"}}>Comments: </Typography>*/}
+                    {!isLoading && comments &&
+                        <Stack sx={{mt:"-8px"}} spacing={2}>
 
-                        {comments.length === 0 && <Typography>No comments found.</Typography>}
-                        {comments.length > 0 &&
-                            comments.map((commentDTO,i)=>{
-                                return (
-                                        <Stack mb="1rem" key={i} direction={"row"} spacing={1.5}>
-                                            <Avatar>D</Avatar>
-                                            <Stack>
+                            {comments.length === 0 && <Typography>No comments found.</Typography>}
+                            {comments.length > 0 &&
+                                comments.map((commentDTO,i)=>{
+                                    return (
+                                            <Stack key={i} direction={"row"} spacing={1.5}>
+                                                <Avatar>D</Avatar>
+                                                <Stack>
 
-                                                    <Typography sx={{fontSize:"1.05rem",fontWeight:"bold"}}>{commentDTO.commenter}</Typography>
-                                                    <Typography >{commentDTO.comment}</Typography>
+                                                        <Typography sx={{fontSize:"1.05rem",fontWeight:"bold"}}>{commentDTO.commenter}</Typography>
+                                                        <Typography >{commentDTO.comment}</Typography>
+                                                </Stack>
                                             </Stack>
-                                        </Stack>
-                                )
-                            })
-                        }
+                                    )
+                                })
+                            }
 
-                        <Stack direction={"row"} spacing={1} width={"100%"}>
-                            <TextField fullWidth placeholder={"Type a comment..."} />
-                            <IconButton><ArrowUpwardIcon /></IconButton>
 
                         </Stack>
-
-                    </>
+                    }
                 </CardContent>
             </Collapse>
+            <form onSubmit={onCommentSubmit}>
+                <CardActions sx={{pl:"16px",marginTop:-2}}>
+
+                    <Stack direction={"row"} spacing={1} width={"100%"}>
+                            <TextField
+                                variant="standard"
+                                sx={{
+                                    input: {
+                                        fontSize:".9rem"
+                                    }
+                                }}
+                                slotProps={{
+                                    input:{
+                                        disableUnderline:true
+                                    }
+                                }}
+                                fullWidth
+                                placeholder={"Type a comment..."}
+                                value={enteredComment}
+                                onChange={(e)=>setEnteredComment(e.target.value)}
+                            />
+
+                            {
+                                enteredComment &&
+
+                                <IconButton
+                                    type={"submit"}
+                                    sx={{p:0,pr:"8px"}}><ArrowUpwardIcon /></IconButton>
+                            }
+
+                    </Stack>
+                </CardActions>
+            </form>
         </Card>
     )
 }
