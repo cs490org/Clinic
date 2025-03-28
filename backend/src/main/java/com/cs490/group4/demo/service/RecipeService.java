@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +37,7 @@ public class RecipeService {
         Recipe recipe = new Recipe();
         recipe.setName(name);
         recipe.setDescription(description);
+        recipe.setCreateTimestamp(LocalDateTime.now());
 
         RecipeOwner recipeOwner = new RecipeOwner();
 
@@ -53,7 +55,7 @@ public class RecipeService {
     }
     private RecipeResponseDTO convertToDTO(RecipeOwner recipeOwner) {
         RecipeResponseDTO recipeResponseDTO = new RecipeResponseDTO();
-        recipeResponseDTO.setId(recipeOwner.getId());
+        recipeResponseDTO.setId(recipeOwner.getRecipe().getId());
 
         User author = recipeOwner.getUser();
         Recipe recipe = recipeOwner.getRecipe();
@@ -61,6 +63,7 @@ public class RecipeService {
         recipeResponseDTO.setAuthor(author.getFirstName() + " " + author.getLastName());
         recipeResponseDTO.setName(recipe.getName());
         recipeResponseDTO.setDescription(recipe.getDescription());
+        recipeResponseDTO.setCreateTimestamp(recipe.getCreateTimestamp());
 
         return recipeResponseDTO;
     }
@@ -70,6 +73,7 @@ public class RecipeService {
         private String author;
         private String name;
         private String description;
+        private LocalDateTime createTimestamp;
     }
 
 
