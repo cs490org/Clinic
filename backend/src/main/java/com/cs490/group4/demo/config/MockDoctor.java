@@ -6,6 +6,7 @@ import com.cs490.group4.demo.security.Role;
 import com.cs490.group4.demo.security.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class MockDoctor {
@@ -15,7 +16,7 @@ public class MockDoctor {
     @Autowired
     private DoctorRepository doctorRepository;
 
-    public void createMockDoctor(
+    public User createMockDoctor(
             String email,
             String firstName,
             String lastName,
@@ -33,5 +34,6 @@ public class MockDoctor {
         doctor.setUser(user);
         doctorRepository.save(doctor);
 
+        return user;
     }
 }

@@ -11,7 +11,7 @@ import com.cs490.group4.demo.security.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityNotFoundException;
-import java.time.LocalDateTime;
+
 import java.util.List;
 
 @Service
@@ -19,13 +19,10 @@ public class PatientService {
 
     @Autowired
     private PatientRepository patientRepository;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private PharmacyRepository pharmacyRepository;
-
     @Autowired
     private PatientPharmacyRepository patientPharmacyRepository;
 
@@ -47,10 +44,10 @@ public class PatientService {
 
     public Patient createPatient(Integer userId, String phone, String address, Integer pharmacyId) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
+                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
 
         Pharmacy pharmacy = pharmacyRepository.findById(pharmacyId)
-            .orElseThrow(() -> new EntityNotFoundException("Pharmacy not found with ID: " + pharmacyId));
+                .orElseThrow(() -> new EntityNotFoundException("Pharmacy not found with ID: " + pharmacyId));
 
         Patient patient = new Patient();
         patient.setUser(user);
