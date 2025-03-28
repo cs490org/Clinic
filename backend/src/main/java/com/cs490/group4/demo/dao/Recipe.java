@@ -5,9 +5,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Entity
 @Data
+@Entity
 public class Recipe {
 
     @Id
@@ -16,9 +17,16 @@ public class Recipe {
 
     private String name, description;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    private User author;
+//    private String img_uri;
+
+//    @ManyToMany
+//    @JoinTable(
+//            name = "recipe_owner",
+//            joinColumns = @JoinColumn(name="recipe_id"),
+//            inverseJoinColumns = @JoinColumn(name="user_id")
+//
+//    )
+//    private List<User> author;
 
     private LocalDateTime createTimestamp, updateTimestamp;
 

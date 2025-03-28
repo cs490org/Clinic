@@ -2,16 +2,16 @@ package com.cs490.group4.demo.controller;
 
 import com.cs490.group4.demo.service.DoctorService;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/doctors")
+@RequiredArgsConstructor
 public class DoctorController {
 
-    @Autowired
-    private DoctorService doctorService;
+    private final DoctorService doctorService;
 
     @GetMapping()
     private ResponseEntity<?> getDoctors(@RequestParam(required = false) Integer userId) {
