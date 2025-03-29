@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.cs490.group4</groupId>
-	<artifactId>demo</artifactId>
+	<artifactId>clinic</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>demo</name>
-	<description>Demo project for Spring Boot</description>
+	<name>Clinic</name>
+	<description>The Clinic Server</description>
 	<url/>
 	<licenses>
 		<license/>
