@@ -12,5 +12,6 @@ FROM eclipse-temurin:21-jdk-alpine
 WORKDIR /app
 # Copy the built JAR from the build stage
 COPY --from=build /app/target/clinic-0.0.1-SNAPSHOT.jar clinic-0.0.1-SNAPSHOT.jar
+EXPOSE 8080
 # Set the entrypoint to run the Spring Boot application
 ENTRYPOINT ["java", "-jar", "clinic-0.0.1-SNAPSHOT.jar"]
