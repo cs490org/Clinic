@@ -9,14 +9,15 @@ import {
     Typography, Container, IconButton,
 } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import MenuBookIcon from "@mui/icons-material/MenuBook";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import {APP_BAR_HEIGHT} from "../../utils/constants.js";
 export default function RecipeNav() {
-    const [open, setOpen] = useState(true)
+
+    // drawer gets in the way on smaller screens
+    const [open, setOpen] = useState(window.innerWidth>1200)
     const navigate = useNavigate();
     const drawerWidth = 300;
 

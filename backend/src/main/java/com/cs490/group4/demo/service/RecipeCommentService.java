@@ -23,7 +23,7 @@ public class RecipeCommentService {
     private final UserRepository userRepository;
 
     @Transactional
-    public List<RecipeCommentResponseDTO> findByRecipeId(Integer recipeId) {
+    public List<RecipeCommentResponseDTO> getCommentsByRecipeId(Integer recipeId) {
         List<RecipeComment> recipeComments = recipeCommentRepository.findAllByRecipeId(recipeId);
         System.out.println(recipeComments);
         List<RecipeCommentResponseDTO> responseDTOs = new ArrayList<>();
