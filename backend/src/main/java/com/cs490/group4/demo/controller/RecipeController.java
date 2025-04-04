@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -24,7 +26,9 @@ public class RecipeController{
         return ResponseEntity.ok(recipeService.createRecipe(
                 body.getUserId(),
                 body.getName(),
-                body.getDescription()
+                body.getDescription(),
+                body.getIngredientIds(),
+                body.getInstructions()
         ));
     }
 }
@@ -34,4 +38,6 @@ class RecipeCreateDTO{
     private Integer userId;
     private String name;
     private String description;
+    private List<Integer> ingredientIds;
+    private String instructions;
 }

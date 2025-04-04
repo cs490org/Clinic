@@ -18,7 +18,7 @@ import {UserContext} from "../../contexts/UserContext.jsx";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {queryKeys} from "../../utils/queryKeys.js";
 
-export default function RecipeCard({ id, author, recipeName, createTimestamp, image, description }) {
+export default function RecipeCard({ id, author, recipeName, createTimestamp, image, description,instructions }) {
 
     const queryClient = useQueryClient()
     const {user} = useContext(UserContext)
@@ -38,10 +38,24 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
             )
             const data = await response.json()
             return data
-            // console.log(data)
-            // setComments(data)
         } catch (e) {
-            toast.error("Something went wrong when trying to comment.")
+            toast.error("Something went wrong when trying to get comments.")
+            console.log(e)
+        }
+    }
+
+    const getIngredients = async () => {
+        try{
+            const response = await fetch (API_URL+"/recipes/ingredients?recipeId=" + id,
+                {
+                    method:"GET",
+                    credentials:"include"
+                }
+                )
+            const data = await response.json()
+            return data
+        } catch(e){
+            toast.error("Something went wrong when trying to get ingredients.")
             console.log(e)
         }
     }
@@ -82,10 +96,15 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
         commentMutation.mutate()
     }
 
-    const {data: comments, isLoading} = useQuery({
+    const {data: comments, isLoading: commentsIsLoading} = useQuery({
         queryKey: queryKeys.recipes.comments(id),
         queryFn: getComments
     })
+    const {data: ingredients, isLoading: ingredientsIsLoading} = useQuery({
+        queryKey: queryKeys.recipes.ingredients(id),
+        queryFn:getIngredients
+    })
+
 
     return (
         <Card variant={"elevation"} elevation={1} sx={{ minWidth: 300, maxWidth: 600 }}>
@@ -108,17 +127,48 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
                 alt={image}
             />
             <CardContent>
-                <Typography sx={{ fontWeight: "medium", fontSize: "1.15rem" }}>
+                <Typography sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>
                     {recipeName}
                 </Typography>
                 {/*<Divider />*/}
                 <Typography sx={{ color: "text.secondary", fontSize: ".95rem" }}>
                     {description}
                 </Typography>
+                <Divider></Divider>
+                {!ingredientsIsLoading && ingredients &&
+                <>
+                    <Typography mt="1rem"  fontWeight={"medium"} fontSize={"1.1rem"}>
+                        Ingredients:
+                    </Typography>
+                    {ingredients.map((ingredient,i)=>{
+                        return (
+                            <Typography> 1 x {ingredient.name}</Typography>
+                        )
+                    })}
+                    <Typography>
+
+                        {
+                        ingredients.reduce((acc,ingredient)=>{return acc+ingredient.calories},0)
+                            + " calories"
+                        }
+
+                    </Typography>
+                </>
+            }
+            {instructions &&
+                (
+                    <>
+                        <Typography mt={"1rem"}  fontWeight={"medium"} fontSize={"1.1rem"}>Instructions:</Typography>
+                        <Typography>{instructions}</Typography>
+                    </>
+                )
+            }
+
+
             </CardContent>
             <CardActions sx={{mt:"-16px"}}disableSpacing>
                 {
-                    !isLoading && comments && comments.length > 0 &&
+                    !commentsIsLoading&& comments && comments.length > 0 &&
                     <Button
                         onClick={handleExpandClick}
                         sx={{color:"text.secondary", fontSize:".9rem",textTransform:"none"}}
@@ -136,7 +186,7 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
             </CardActions>
             <Collapse in={expanded} timeout={"auto"} unmountOnExit>
                 <CardContent>
-                    {!isLoading && comments &&
+                    {!commentsIsLoading && comments &&
                         <Stack sx={{mt:"-8px"}} spacing={2}>
 
                             {comments.length === 0 && <Typography>No comments found.</Typography>}

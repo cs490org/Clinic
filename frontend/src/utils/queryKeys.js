@@ -16,9 +16,12 @@ export const queryKeys = {
     },
     recipes:{
         all: ["recipes"],
-        comments: (recipeId) => ["recipes","comments",recipeId]
+        comments: (recipeId) => ["recipes","comments",recipeId],
+        ingredients: (recipeId) => ["recipes","ingredients",recipeId]
 
-
+    },
+    ingredients:{
+        all:["ingredients"]
     }
 
 };

@@ -15,7 +15,7 @@ public class RecipeCommentController {
 
     @GetMapping
     private ResponseEntity<?> getComments(@RequestParam(required = true) Integer recipeId) {
-        return ResponseEntity.ok(recipeCommentService.findByRecipeId(recipeId));
+        return ResponseEntity.ok(recipeCommentService.getCommentsByRecipeId(recipeId));
     }
 
     @PostMapping

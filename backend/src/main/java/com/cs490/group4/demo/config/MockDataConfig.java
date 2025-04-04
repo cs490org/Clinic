@@ -1,15 +1,17 @@
 package com.cs490.group4.demo.config;
 
 import com.cs490.group4.demo.dao.Recipe;
-import com.cs490.group4.demo.security.User;
 import com.cs490.group4.demo.service.*;
+import com.cs490.group4.demo.service.authentication.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.ArrayList;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 @Configuration
 @RequiredArgsConstructor
 public class MockDataConfig {
@@ -18,33 +20,35 @@ public class MockDataConfig {
     private final MockPharmacy mockPharmacy;
     private final MockRecipe mockRecipe;
     private final MockRecipeComment mockRecipeComment;
+    private final MockIngredient mockIngredient;
 
+    private final UserService userService;
     private final DoctorService doctorService;
     private final PatientService patientService;
     private final PharmacyService pharmacyService;
     private final RecipeService recipeService;
+    private final IngredientService ingredientService;
 
-    private final ArrayList<User> users = new ArrayList<>();
     private final ArrayList<Recipe> recipes = new ArrayList<>();
 
     @Bean
-    CommandLineRunner mockDataInitializer(RecipeCommentService recipeCommentService) {
+    CommandLineRunner mockDataInitializer(RecipeCommentService recipeCommentService ) {
         return args -> {
             if (doctorService.isEmpty()) {
-                users.add(mockDoctor.createMockDoctor(
+                mockDoctor.createMockDoctor(
                         "dumpling@clinic.com",
                         "Dump",
                         "Ling",
                         "1111111111",
                         "Weight Gain",
-                        2L));
-                users.add(mockDoctor.createMockDoctor(
+                        2L);
+                mockDoctor.createMockDoctor(
                         "doctor@clinic.com",
                         "Mario",
                         "Mario",
                         "1234567890",
                         "Weight Loss",
-                        1L));
+                        1L);
 
             }
             if (patientService.isEmpty()) {
@@ -72,27 +76,75 @@ public class MockDataConfig {
                 );
             }
 
-            if(recipeService.isEmpty() && !doctorService.isEmpty()) {
-                // for some reason there is key error when having multiple recipes with the same user id...
+            if(ingredientService.isEmpty()){
+                mockIngredient.createMockIngredient(
+                        "Egg",
+                        "A singular egg.",
+                        60,
+                        6,
+                        0,
+                        6
+                );
+                mockIngredient.createMockIngredient(
+                        "Chicken Breast",
+                        "Lean protein source.",
+                        165,
+                        3,
+                        0,
+                        31
+                );
+
+                mockIngredient.createMockIngredient(
+                        "Rice",
+                        "Cup of white rice.",
+                        200,
+                        1,
+                        45,
+                        3
+                );
+
+                mockIngredient.createMockIngredient(
+                        "Broccoli",
+                        "Steamed broccoli florets.",
+                        55,
+                        0,
+                        11,
+                        4
+                );
+            }
+
+            if(recipeService.isEmpty() && !userService.getAllUsers().isEmpty()) {
+
                 recipes.add(mockRecipe.createMockRecipe(
-                        "Honey Garlic Chicken",
+                        "Rice and Chicken",
                         "Delicious honey garlic chicken with lower calories",
-                        users.get(0)
-                ));
-                recipes.add(mockRecipe.createMockRecipe(
-                        "A Singular Apple",
-                        "An apple a day keeps the doctor away.",
-                        users.get(1)
+                        "Get chicken, put honey on it.",
+                        List.of(2,3),
+                        1
                 ));
             }
 
-            if(!doctorService.isEmpty() && !recipeService.isEmpty()) {
-                mockRecipeComment.createMockRecipeComment(
-                        2,
-                        1,
-                        "I made this and it sucks"
-                );
+            if(!userService.getAllUsers().isEmpty() && !recipeService.isEmpty()) {
+                String[] comments = {
+                        "I made this and it sucks",
+                        "This is amazing!",
+                        "Good recipe",
+                        "This is my favorite recipe it has changed my life"
+                };
+                for (Recipe recipe : recipes) {
+                    Random random = new Random();
+                    int commentIndex =  random.nextInt(comments.length);
+
+                    mockRecipeComment.createMockRecipeComment(
+                            recipe.getId(),
+                            1,
+                            comments[commentIndex]
+                    );
+                }
             }
+
+
+
         };
     }
 

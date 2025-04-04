@@ -13,7 +13,8 @@ public class Recipe {
     @GeneratedValue
     private Integer id;
 
-    private String name, description;
+    private String name, description, instructions;
+
 
 //    private String img_uri;
 

@@ -57,7 +57,7 @@ export default function Recipes() {
                                 recipeName={recipe.name}
                                 description={recipe.description}
                                 image={"/src/assets/garlic_chicken.jpg"}
-
+                                instructions={recipe.instructions}
                             />
 
                         })
