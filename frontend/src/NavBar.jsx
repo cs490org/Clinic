@@ -96,149 +96,149 @@ export default function NavBar() {
   };
   const drawerWidth = 300
   return (
-    <>
-      <Drawer
-        open={drawerOpen}
-        onClose={toggleDrawer(false)}
-      >
-        <Box sx={{ width: drawerWidth, p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
-            <PersonIcon />
-          </Avatar>
-          <Box>
-            <Typography variant="subtitle1" fontWeight="bold">
-              {user?.firstName} {user?.lastName}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {user?.email}
-            </Typography>
-          </Box>
-        </Box>
-
-        <Divider />
-
-        <List>
-          {user?.role === "PATIENT" && (
-            <ListItemButton onClick={() => {
-              navigate("/patient/dashboard");
-              setDrawerOpen(false);
-            }}>
-              <ListItemIcon>
-                <DashboardIcon />
-              </ListItemIcon>
-              <ListItemText primary="Patient Dashboard" />
-            </ListItemButton>
-          )}
-
-          {user?.role === "DOCTOR" && (
-            <ListItemButton onClick={() => {
-              navigate("/doctor/dashboard");
-              setDrawerOpen(false);
-            }}>
-              <ListItemIcon>
-                <DashboardIcon />
-              </ListItemIcon>
-              <ListItemText primary="Doctor Dashboard" />
-            </ListItemButton>
-          )}
-
-          {(user?.role === "PATIENT" || user?.role === "DOCTOR") &&
-            <ListItemButton
-              onClick={() => {
-                navigate("/recipes");
-                setDrawerOpen(false);
-              }}>
-              <ListItemIcon>
-                <FlatwareIcon />
-              </ListItemIcon>
-              <ListItemText primary={"Recipes"} />
-            </ListItemButton>
-          }
-        </List>
-
-        <Divider />
-
-        <List>
-          <ListItemButton onClick={() => {
-            handleLogout();
-            setDrawerOpen(false);
-          }}>
-            <ListItemIcon>
-              <LogoutIcon />
-            </ListItemIcon>
-            <ListItemText primary="Logout" />
-          </ListItemButton>
-        </List>
-      </Drawer>
-
-
-      <AppBar position="fixed" elevation={0} sx={{ height:APP_BAR_HEIGHT,backgroundColor: "primary.main" }}>
-        <Toolbar>
-          <Box sx={{ display: "flex", gap: "1rem", flexGrow: 1 }}>
-            {user &&
-              <IconButton onClick={toggleDrawer(true)}>
-                <MenuIcon sx={{ color: "white" }} />
-              </IconButton>
-            }
-            <Button
-              sx={{
-                ...buttonStyles.base,
-                ...buttonStyles.logo,
-                display: { xs: "none", sm: "block" }
-              }}
-              onClick={() => navigate("/")}
-            >
-              You Win, You Lose Clinic
-            </Button>
+      <>
+        <Drawer
+            open={drawerOpen}
+            onClose={toggleDrawer(false)}
+        >
+          <Box sx={{ width: drawerWidth, p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
+              <PersonIcon />
+            </Avatar>
+            <Box>
+              <Typography variant="subtitle1" fontWeight="bold">
+                {user?.firstName} {user?.lastName}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {user?.email}
+              </Typography>
+            </Box>
           </Box>
 
-          <Box display="flex" gap={{ xs: 1, sm: 2 }}>
-            <IconButton
-              sx={{ color: "white" }}
-              onClick={() => {
-                setMode(mode === "light" ? "dark" : "light")
-              }}>
-              {mode === "light" ? <LightModeIcon /> : <DarkModeIcon />}
-            </IconButton>
-            {user ? (
-              <>
-                <Button
-                  sx={{
-                    ...buttonStyles.base,
-                    ...buttonStyles.transparent
-                  }}
-                  onClick={handleLogout}
-                >
-                  Logout
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button
-                  sx={{
-                    ...buttonStyles.base,
-                    ...buttonStyles.transparent
-                  }}
-                  onClick={() => navigate("/signin")}
-                >
-                  Sign In
-                </Button>
-                <Button
-                  sx={{
-                    ...buttonStyles.base,
-                    ...buttonStyles.white
-                  }}
-                  onClick={() => navigate("/signup")}
-                >
-                  Sign Up
-                </Button>
-              </>
+          <Divider />
+
+          <List>
+            {user?.role === "PATIENT" && (
+                <ListItemButton onClick={() => {
+                  navigate("/patient/dashboard");
+                  setDrawerOpen(false);
+                }}>
+                  <ListItemIcon>
+                    <DashboardIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Patient Dashboard" />
+                </ListItemButton>
             )}
-          </Box>
-        </Toolbar>
-      </AppBar>
-      {/* This toolbar acts as a spacer */}
-      <Toolbar sx={{ mb:  3  }} />
-    </>
+
+            {user?.role === "DOCTOR" && (
+                <ListItemButton onClick={() => {
+                  navigate("/doctor/dashboard");
+                  setDrawerOpen(false);
+                }}>
+                  <ListItemIcon>
+                    <DashboardIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Doctor Dashboard" />
+                </ListItemButton>
+            )}
+
+            {(user?.role === "PATIENT" || user?.role === "DOCTOR") &&
+                <ListItemButton
+                    onClick={() => {
+                      navigate("/recipes");
+                      setDrawerOpen(false);
+                    }}>
+                  <ListItemIcon>
+                    <FlatwareIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={"Recipes"} />
+                </ListItemButton>
+            }
+          </List>
+
+          <Divider />
+
+          <List>
+            <ListItemButton onClick={() => {
+              handleLogout();
+              setDrawerOpen(false);
+            }}>
+              <ListItemIcon>
+                <LogoutIcon />
+              </ListItemIcon>
+              <ListItemText primary="Logout" />
+            </ListItemButton>
+          </List>
+        </Drawer>
+
+
+        <AppBar position="fixed" elevation={0} sx={{ height:APP_BAR_HEIGHT,backgroundColor: "primary.main" }}>
+          <Toolbar>
+            <Box sx={{ display: "flex", gap: "1rem", flexGrow: 1 }}>
+              {user &&
+                  <IconButton onClick={toggleDrawer(true)}>
+                    <MenuIcon sx={{ color: "white" }} />
+                  </IconButton>
+              }
+              <Button
+                  sx={{
+                    ...buttonStyles.base,
+                    ...buttonStyles.logo,
+                    display: { xs: "none", sm: "block" }
+                  }}
+                  onClick={() => navigate("/")}
+              >
+                You Win, You Lose Clinic
+              </Button>
+            </Box>
+
+            <Box display="flex" gap={{ xs: 1, sm: 2 }}>
+              <IconButton
+                  sx={{ color: "white" }}
+                  onClick={() => {
+                    setMode(mode === "light" ? "dark" : "light")
+                  }}>
+                {mode === "light" ? <LightModeIcon /> : <DarkModeIcon />}
+              </IconButton>
+              {user ? (
+                  <>
+                    <Button
+                        sx={{
+                          ...buttonStyles.base,
+                          ...buttonStyles.transparent
+                        }}
+                        onClick={handleLogout}
+                    >
+                      Logout
+                    </Button>
+                  </>
+              ) : (
+                  <>
+                    <Button
+                        sx={{
+                          ...buttonStyles.base,
+                          ...buttonStyles.transparent
+                        }}
+                        onClick={() => navigate("/signin")}
+                    >
+                      Sign In
+                    </Button>
+                    <Button
+                        sx={{
+                          ...buttonStyles.base,
+                          ...buttonStyles.white
+                        }}
+                        onClick={() => navigate("/signup")}
+                    >
+                      Sign Up
+                    </Button>
+                  </>
+              )}
+            </Box>
+          </Toolbar>
+        </AppBar>
+        {/* This toolbar acts as a spacer */}
+        <Toolbar sx={{ mb:  3  }} />
+      </>
   );
 }
