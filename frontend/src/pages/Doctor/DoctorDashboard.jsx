@@ -1,8 +1,9 @@
 import { Container, Typography, Paper, Grid, Box } from '@mui/material';
-import { useAuth } from '../../auth/AuthProvider';
+import { UserContext } from '../../contexts/UserContext';
+import { useContext } from 'react';
 
 const DoctorDashboard = () => {
-  const { user } = useAuth();
+  const { user } = useContext(UserContext);
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
