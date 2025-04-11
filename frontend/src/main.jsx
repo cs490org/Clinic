@@ -17,6 +17,7 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {Toaster} from 'sonner';
 import Recipes from "./pages/Recipes/Recipes.jsx";
 import RecipeCreate from "./pages/Recipes/RecipeCreate.jsx";
+import DoctorHomepage from "./pages/Doctor/DoctorHomepage.jsx";
 
 const queryClient = new QueryClient()
 const router = createBrowserRouter([
@@ -56,6 +57,13 @@ const router = createBrowserRouter([
             </Auth>
     },
     {
+        path: '/doctor/homepage',
+        element:
+            <Auth allowedRoles={["DOCTOR"]}>
+                <DoctorHomepage/>
+            </Auth>
+    },
+    {
         path: '/patient/complete-profile',
         element:
             <Auth allowedRoles={["PATIENT"]}>
@@ -67,14 +75,14 @@ const router = createBrowserRouter([
         element:
             <Auth allowedRoles={["DOCTOR"]}>
                 <CompleteDoctorProfile/>
-            </Auth> 
+            </Auth>
     },
     {
         path: "/recipes",
         element:
-        <Auth allowedRoles={["PATIENT","DOCTOR"]}>
-           <Recipes/>
-        </Auth>
+            <Auth allowedRoles={["PATIENT","DOCTOR"]}>
+                <Recipes/>
+            </Auth>
     },
     {
         path: "/recipes/create",
