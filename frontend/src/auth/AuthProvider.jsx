@@ -46,7 +46,7 @@ export default function Auth({children, notRequired, allowedRoles}) {
                 url = API_URL + `/patients?userId=${user.id}`
             } else if (user.role === "DOCTOR") {
                 url = API_URL + `/doctors?userId=${user.id}`
-            } else if (user.role === "PHARACIST") {
+            } else if (user.role === "PHARMACIST") {
                 url = API_URL + `/pharmacists?userId=${user.id}`
             } else {
                 throw new Error("Role undefined")
