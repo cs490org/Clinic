@@ -2,17 +2,15 @@ import { useContext, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import {
   Button,
-  styled,
   Typography,
   useTheme,
   Container,
   IconButton,
   Drawer,
   List,
-  ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
@@ -21,13 +19,14 @@ import {
   Avatar,
 } from "@mui/material";
 import { UserContext } from './contexts/UserContext';
-import { API_URL } from './utils/constants';
+import {API_URL, APP_BAR_HEIGHT} from './utils/constants';
 import MenuIcon from '@mui/icons-material/Menu';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
+import FlatwareIcon from '@mui/icons-material/Flatware';
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -64,16 +63,16 @@ export default function NavBar() {
     base: {
       py: 0.8,
       px: 2,
-      fontSize: { xs: '0.9rem', sm: '1rem' },
+      fontSize: '1rem' ,
       fontWeight: 500,
       borderRadius: 1.5,
-      minWidth: { xs: '80px', sm: '100px' },
+      minWidth: '100px' ,
       textTransform: "none"
     },
     logo: {
       color: "white",
       fontWeight: "bold",
-      fontSize: { xs: "1.1rem", sm: "1.25rem" },
+      fontSize: "1.25rem" ,
       padding: "0.5rem",
       '&:hover': {
         backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -95,14 +94,14 @@ export default function NavBar() {
       }
     }
   };
-
+  const drawerWidth = 300
   return (
     <>
       <Drawer
         open={drawerOpen}
         onClose={toggleDrawer(false)}
       >
-        <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box sx={{ width: drawerWidth, p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
           <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
             <PersonIcon />
           </Avatar>
@@ -130,6 +129,7 @@ export default function NavBar() {
               <ListItemText primary="Patient Dashboard" />
             </ListItemButton>
           )}
+
           {user?.role === "DOCTOR" && (
             <ListItemButton onClick={() => {
               navigate("/doctor/dashboard");
@@ -141,6 +141,19 @@ export default function NavBar() {
               <ListItemText primary="Doctor Dashboard" />
             </ListItemButton>
           )}
+
+          {(user?.role === "PATIENT" || user?.role === "DOCTOR") &&
+            <ListItemButton
+              onClick={() => {
+                navigate("/recipes");
+                setDrawerOpen(false);
+              }}>
+              <ListItemIcon>
+                <FlatwareIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Recipes"} />
+            </ListItemButton>
+          }
         </List>
 
         <Divider />
@@ -159,80 +172,73 @@ export default function NavBar() {
       </Drawer>
 
 
-      <AppBar position="fixed" elevation={0} sx={{ backgroundColor: "primary.main" }}>
-        <Container maxWidth="xl">
-          <Toolbar
-            disableGutters
-            sx={{
-              py: { xs: 1, sm: 1.5 },
-            }}
-          >
-            <Box sx={{ display: "flex", gap: "1rem", flexGrow: 1 }}>
-              {user &&
-                <IconButton onClick={toggleDrawer(true)}>
-                  <MenuIcon sx={{ color: "white" }} />
-                </IconButton>
-              }
-              <Button
-                sx={{
-                  ...buttonStyles.base,
-                  ...buttonStyles.logo,
-                  display: { xs: "none", sm: "block" }
-                }}
-                onClick={() => navigate("/")}
-              >
-                You Win, You Lose Clinic
-              </Button>
-            </Box>
-
-            <Box display="flex" gap={{ xs: 1, sm: 2 }}>
-              <IconButton
-                sx={{ color: "white" }}
-                onClick={() => {
-                  setMode(mode === "light" ? "dark" : "light")
-                }}>
-                {mode === "light" ? <LightModeIcon /> : <DarkModeIcon />}
+      <AppBar position="fixed" elevation={0} sx={{ height:APP_BAR_HEIGHT,backgroundColor: "primary.main" }}>
+        <Toolbar>
+          <Box sx={{ display: "flex", gap: "1rem", flexGrow: 1 }}>
+            {user &&
+              <IconButton onClick={toggleDrawer(true)}>
+                <MenuIcon sx={{ color: "white" }} />
               </IconButton>
-              {user ? (
-                <>
-                  <Button
-                    sx={{
-                      ...buttonStyles.base,
-                      ...buttonStyles.transparent
-                    }}
-                    onClick={handleLogout}
-                  >
-                    Logout
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button
-                    sx={{
-                      ...buttonStyles.base,
-                      ...buttonStyles.transparent
-                    }}
-                    onClick={() => navigate("/signin")}
-                  >
-                    Sign In
-                  </Button>
-                  <Button
-                    sx={{
-                      ...buttonStyles.base,
-                      ...buttonStyles.white
-                    }}
-                    onClick={() => navigate("/signup")}
-                  >
-                    Sign Up
-                  </Button>
-                </>
-              )}
-            </Box>
-          </Toolbar>
-        </Container>
+            }
+            <Button
+              sx={{
+                ...buttonStyles.base,
+                ...buttonStyles.logo,
+                display: { xs: "none", sm: "block" }
+              }}
+              onClick={() => navigate("/")}
+            >
+              You Win, You Lose Clinic
+            </Button>
+          </Box>
+
+          <Box display="flex" gap={{ xs: 1, sm: 2 }}>
+            <IconButton
+              sx={{ color: "white" }}
+              onClick={() => {
+                setMode(mode === "light" ? "dark" : "light")
+              }}>
+              {mode === "light" ? <LightModeIcon /> : <DarkModeIcon />}
+            </IconButton>
+            {user ? (
+              <>
+                <Button
+                  sx={{
+                    ...buttonStyles.base,
+                    ...buttonStyles.transparent
+                  }}
+                  onClick={handleLogout}
+                >
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  sx={{
+                    ...buttonStyles.base,
+                    ...buttonStyles.transparent
+                  }}
+                  onClick={() => navigate("/signin")}
+                >
+                  Sign In
+                </Button>
+                <Button
+                  sx={{
+                    ...buttonStyles.base,
+                    ...buttonStyles.white
+                  }}
+                  onClick={() => navigate("/signup")}
+                >
+                  Sign Up
+                </Button>
+              </>
+            )}
+          </Box>
+        </Toolbar>
       </AppBar>
       {/* This toolbar acts as a spacer */}
-      <Toolbar sx={{ mb: { xs: 2, sm: 3 } }} />
+      <Toolbar sx={{ mb:  3  }} />
     </>
   );
 }

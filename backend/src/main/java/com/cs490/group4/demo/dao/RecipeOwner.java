@@ -6,26 +6,20 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Data
 @Entity
-public class RecipeComment {
+@Data
+public class RecipeOwner {
 
     @Id
     @GeneratedValue
     private Integer id;
 
-    private String comment;
-
-//    @ManyToOne
-//    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-//    private User author;
-
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    private User author;
+    private User user;
 
     @ManyToOne
-    @JoinColumn(name = "recipe_id", referencedColumnName = "id" )
+    @JoinColumn(name = "recipe_id", referencedColumnName = "id")
     private Recipe recipe;
 
     private LocalDateTime createTimestamp, updateTimestamp;

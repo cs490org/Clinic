@@ -1,7 +1,5 @@
 package com.cs490.group4.demo.config;
 
-import com.cs490.group4.demo.dao.Patient;
-import com.cs490.group4.demo.dao.PatientRepository;
 import com.cs490.group4.demo.dao.Pharmacy;
 import com.cs490.group4.demo.dao.PharmacyRepository;
 import com.cs490.group4.demo.security.Role;
