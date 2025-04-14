@@ -154,6 +154,29 @@ export default function NavBar() {
               <ListItemText primary={"Recipes"} />
             </ListItemButton>
           }
+
+          {(user?.role === "PHARMACIST") &&
+              <ListItemButton
+                  onClick={() => {
+                    navigate("/pharmacist/dashboard");
+                    setDrawerOpen(false);
+                  }}>
+                <ListItemIcon>
+                </ListItemIcon>
+                <ListItemText primary={"Dashboard"}/>
+              </ListItemButton>
+          }
+          {(user?.role === "PHARMACIST") &&
+              <ListItemButton
+                  onClick={() => {
+                    navigate("/pharmacist/prescriptions");
+                    setDrawerOpen(false);
+                  }}>
+                <ListItemIcon>
+                </ListItemIcon>
+                <ListItemText primary={"Prescriptions"}/>
+              </ListItemButton>
+          }
         </List>
 
         <Divider />

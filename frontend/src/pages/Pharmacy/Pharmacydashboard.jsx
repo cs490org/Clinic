@@ -6,7 +6,7 @@ import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts'; // <-- make sur
 import axios from 'axios';  
 
 const PharmacyDashboard = () => {
-    const { userName } = useContext(UserContext);
+    const { user } = useContext(UserContext);
     const [prescriptionsData, setPrescriptionsData] = useState([]);
     const [newCustomers, setNewCustomers] = useState(0);
     const [profitMargin, setProfitMargin] = useState(0);
@@ -37,7 +37,7 @@ const PharmacyDashboard = () => {
                 {/* Header */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                     <Typography fontWeight="bold" variant="h4" gutterBottom>
-                        Welcome Back, {userName}!
+                        Welcome Back, {user.firstName}!
                     </Typography>
                 </Box>
 
