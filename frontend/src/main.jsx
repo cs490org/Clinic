@@ -21,6 +21,7 @@ import Prescriptions from './pages/Pharmacy/prescriptions.jsx';
 
 import Recipes from "./pages/Recipes/Recipes.jsx";
 import RecipeCreate from "./pages/Recipes/RecipeCreate.jsx";
+import CompletePharmacyProfile from "./pages/Pharmacy/CompletePharmacyProfile.jsx";
 
 const queryClient = new QueryClient()
 const router = createBrowserRouter([
@@ -60,6 +61,20 @@ const router = createBrowserRouter([
             </Auth>
     },
     {
+        path: '/pharmacist/dashboard',
+        element:
+            <Auth allowedRoles={["PHARMACIST"]} >
+                <Pharmacydashboard/>
+            </Auth>
+    },
+    {
+        path: '/pharmacist/prescriptions',
+        element:
+            <Auth allowedRoles={["PHARMACIST"]}>
+                <Prescriptions/>
+            </Auth>
+    },
+    {
         path: '/patient/complete-profile',
         element:
             <Auth allowedRoles={["PATIENT"]}>
@@ -74,16 +89,10 @@ const router = createBrowserRouter([
             </Auth> 
     },
     {
-        path: '/pharmacydashboard',
+        path: '/pharmacy/complete-profile',
         element:
             <Auth allowedRoles={["PHARMACIST"]}>
-                <Pharmacydashboard/>
-            </Auth>
-    },  {
-        path: '/prescriptions',
-        element:
-            <Auth allowedRoles={["PHARMACIST"]}>
-                <Prescriptions/>
+                <CompletePharmacyProfile/>
             </Auth>
     },
     {

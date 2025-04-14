@@ -47,7 +47,7 @@ export default function Auth({children, notRequired, allowedRoles}) {
             } else if (user.role === "DOCTOR") {
                 url = API_URL + `/doctors?userId=${user.id}`
             } else if (user.role === "PHARMACIST") {
-                url = API_URL + `/pharmacists?userId=${user.id}`
+                url = API_URL + `/pharmacies?userId=${user.id}`
             } else {
                 throw new Error("Role undefined")
             }
@@ -65,7 +65,7 @@ export default function Auth({children, notRequired, allowedRoles}) {
                 } else if (user.role === "DOCTOR") {
                     navigate('/doctor/complete-profile')
                 } else if (user.role === "PHARMACIST") {
-                    navigate('/pharmacist/complete-profile')
+                    navigate('/pharmacy/complete-profile')
                 }
             } else {
                 throw new Error("Role data fetch failed")
