@@ -7,7 +7,8 @@ import {
     Select,
     Stack,
     TextField,
-    Typography
+    Typography,
+    Box
 } from "@mui/material";
 import { useContext, useState } from "react";
 import { API_URL } from "../../utils/constants.js";
@@ -17,10 +18,12 @@ import { toast } from "sonner";
 import {useQuery} from "@tanstack/react-query";
 import {queryKeys} from "../../utils/queryKeys.js";
 import DeleteIcon from '@mui/icons-material/Delete';
+import Dropzone from "react-dropzone";
 
 export default function RecipeCreate() {
     const { user } = useContext(UserContext)
     const [recipeName, setRecipeName] = useState("")
+    const [recipeImage,setRecipeImage] = useState("")
     const [recipeDescription, setRecipeDescription] = useState("")
     const [recipeInstructions,setRecipeInstructions] = useState("")
 
@@ -48,31 +51,34 @@ export default function RecipeCreate() {
             toast.error("Recipe name is required");
             return;
         }
-
+        if (!recipeImage){
+            toast.error("Recipe image is required")
+            return;
+        }
         if (!recipeInstructions.trim()) {
             toast.error("Instructions are required");
             return;
         }
-
         if (cleanedIngredientIds.length === 0) {
             toast.error("At least one ingredient must be selected");
             return;
         }
         try {
+            const formData = new FormData()
+            formData.append("userId",user.id);
+            formData.append("name",recipeName);
+            formData.append("description",recipeDescription);
+            cleanedIngredientIds.forEach((id, index) => {
+                formData.append(`ingredientIds[${index}]`, id);
+            });
+            formData.append("instructions",recipeInstructions);
+            formData.append("image",recipeImage);
+            console.log("recipe image: ",recipeImage)
             const response = await fetch(API_URL + "/recipes",
                 {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        userId: user.id,
-                        name: recipeName,
-                        description: recipeDescription,
-                        ingredientIds:cleanedIngredientIds,
-                        instructions:recipeInstructions
-                    }),
-                    credentials: "include" // send access and refresh token in set cookies header
+                    body:formData,
+                    credentials: "include"
                 })
             if (response.status === 200) {
 
@@ -87,12 +93,46 @@ export default function RecipeCreate() {
         <Container>
             <Paper sx={{ p: 2 }}>
                 <Stack spacing={2}>
-                    <Typography sx={{ fontSize: "1.2rem",fontWeight:"bold" }}>Create recipe</Typography>
+                    <Typography sx={{ fontSize: "2.2rem",fontWeight:"bold" }}>Create new recipe</Typography>
                     <TextField onChange={(e) => setRecipeName(e.target.value)} label={"Recipe name"} required/>
                     <TextField onChange={(e) => setRecipeDescription(e.target.value)} multiline rows={2} maxRows={4} label={"Description"} />
+
+
+                    <Divider></Divider>
+                    <Typography sx={{fontSize:"1.6rem", fontWeight:"bold"}}>Image</Typography>
+                    <Dropzone onDrop={(acceptedFiles)=>{
+                        const image = acceptedFiles[0]
+                        acceptedFiles[0].preview = URL.createObjectURL(acceptedFiles[0])
+                        setRecipeImage(image)
+
+                    }}>
+                        {({getRootProps, getInputProps}) =>(
+                            <Box {...getRootProps({border:"solid 2px",borderColor:"primary.main",p:".7rem" })}>
+                                <Box sx={{cursor:"pointer",p:"2rem",border:"dotted 2px"}}>
+                                    {
+                                        recipeImage &&
+                                    <Box
+                                        component={"img"}
+                                        width={"100%"}
+                                        alt={"Recipe image preview."}
+                                        src={recipeImage.preview}
+                                    />
+                                    }
+                                   <input {...getInputProps()}/>
+                                    {
+                                        !recipeImage ?
+                                    <Typography>Select recipe image</Typography>
+                                            :
+                                    <Typography>{recipeImage.path}</Typography>
+                                    }
+                                </Box>
+                            </Box>
+                        )}
+                    </Dropzone>
+
                     <Divider></Divider>
 
-                    <Typography sx={{fontSize:"1.2rem", fontWeight:"bold"}}>Ingredients</Typography>
+                    <Typography sx={{fontSize:"1.6rem", fontWeight:"bold"}}>Ingredients</Typography>
 
                     {ingredientIds.map((ingredientId, index) => (
                         <Stack direction={"row"} spacing={2}>
@@ -140,7 +180,7 @@ export default function RecipeCreate() {
 
 
                     <Divider></Divider>
-                    <Typography sx={{fontSize:"1.2rem", fontWeight:"bold"}}>Instructions</Typography>
+                    <Typography sx={{fontSize:"1.6rem", fontWeight:"bold"}}>Instructions</Typography>
                     <TextField onChange={(e) => setRecipeInstructions(e.target.value)} multiline rows={4} maxRows={16} label={"Enter instructions..."} />
                     <Button onClick={() => create()} variant={"contained"}>Create Recipe</Button>
                 </Stack>

@@ -15,17 +15,8 @@ public class Recipe {
 
     private String name, description, instructions;
 
+    private String img_uri;
 
-//    private String img_uri;
-
-//    @ManyToMany
-//    @JoinTable(
-//            name = "recipe_owner",
-//            joinColumns = @JoinColumn(name="recipe_id"),
-//            inverseJoinColumns = @JoinColumn(name="user_id")
-//
-//    )
-//    private List<User> author;
 
     private LocalDateTime createTimestamp, updateTimestamp;
 
