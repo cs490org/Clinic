@@ -93,7 +93,7 @@ export default function RecipeCreate() {
                 formData.append(`ingredientRequestDTOS[${index}].quantity`, ingredientDTO.quantity);
             });
             formData.append("instructions",recipeInstructions);
-            // formData.append("image",recipeImage);
+            formData.append("image",recipeImage);
             console.log("recipe image: ",recipeImage)
             const response = await fetch(API_URL + "/recipes",
                 {

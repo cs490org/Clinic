@@ -29,13 +29,14 @@ public class CloudStorageService {
                 .getService();
     }
 
-    public ResponseEntity<String> uploadImage(String accessToken, MultipartFile file) {
+    public ResponseEntity<String> uploadImage(String imageName, MultipartFile file) {
         if (file.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File is empty");
         }
 
         try {
-            BlobId blobId = BlobId.of(imageBucket, "PUT_IMAGE_NAME_HERE");
+//            BlobId blobId = BlobId.of(imageBucket, "PUT_IMAGE_NAME_HERE");
+            BlobId blobId = BlobId.of(imageBucket, imageName);
             BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
 
             Blob blob = storage.create(blobInfo, file.getBytes());

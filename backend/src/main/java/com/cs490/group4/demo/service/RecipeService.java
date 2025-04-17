@@ -7,7 +7,9 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,22 +25,37 @@ public class RecipeService {
     private final IngredientRepository ingredientRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
 
+    private final CloudStorageService cloudStorageService;
+
     public List<RecipeResponseDTO> getRecipes(){
         return recipeOwnerRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     // recipes associated with users.
     @Transactional
-    public Recipe createRecipe(Integer userId, String name, String description, List<IngredientRequestDTO> ingredientRequestDTOS, String instructions) {
+    public Recipe createRecipe(Integer userId, String name, String description, List<IngredientRequestDTO> ingredientRequestDTOS, String instructions, MultipartFile image) {
+
         User user = userRepository.findById(userId).orElseThrow(
                 ()-> new EntityNotFoundException("User not found with ID: " + userId)
         );
+
+        String imageUrl = null;
+        if (image != null && !image.isEmpty()) {
+            String imageName = "recipe_" + System.currentTimeMillis();
+            ResponseEntity<String> uploadResponse = cloudStorageService.uploadImage(imageName, image);
+            if (uploadResponse.getStatusCode().is2xxSuccessful()) {
+                imageUrl = uploadResponse.getBody();
+            } else {
+                throw new RuntimeException("Image upload failed: " + uploadResponse.getBody());
+            }
+        }
 
         Recipe recipe = new Recipe();
         recipe.setName(name);
         recipe.setDescription(description);
         recipe.setInstructions(instructions);
         recipe.setCreateTimestamp(LocalDateTime.now());
+        recipe.setImg_uri(imageUrl);
 
         RecipeOwner recipeOwner = new RecipeOwner();
 

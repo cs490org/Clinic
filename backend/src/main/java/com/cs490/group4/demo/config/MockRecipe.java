@@ -15,7 +15,7 @@ public class MockRecipe {
     private final RecipeService recipeService;
 
     public Recipe createMockRecipe(String name, String description, String instructions, List<IngredientRequestDTO> ingredientRequestDTOS, Integer authorId) {
-      return  recipeService.createRecipe(authorId,name, description, ingredientRequestDTOS,instructions);
+      return  recipeService.createRecipe(authorId,name, description, ingredientRequestDTOS,instructions,null);
    }
 
 }
