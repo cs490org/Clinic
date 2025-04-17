@@ -19,6 +19,8 @@ import {useQuery} from "@tanstack/react-query";
 import {queryKeys} from "../../utils/queryKeys.js";
 import DeleteIcon from '@mui/icons-material/Delete';
 import Dropzone from "react-dropzone";
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 
 export default function RecipeCreate() {
     const { user } = useContext(UserContext)
@@ -26,13 +28,15 @@ export default function RecipeCreate() {
     const [recipeImage,setRecipeImage] = useState("")
     const [recipeDescription, setRecipeDescription] = useState("")
     const [recipeInstructions,setRecipeInstructions] = useState("")
+    
 
     const navigate = useNavigate();
 
-    const [ingredientIds, setIngredientIds] = useState([])
+    // array of objects, fields are ingredientId, and quantity.
+    const [ingredientDTOs, setIngredientDTOs] = useState([])
 
     const {data:ingredients,isLoading} = useQuery({
-        queryKey:queryKeys.ingredients,
+        queryKey:queryKeys.ingredients.all,
         queryFn: async () => {
             const response = await fetch(API_URL+"/ingredients",
                 {
@@ -45,8 +49,24 @@ export default function RecipeCreate() {
         }
     })
 
+    const totals = ingredientDTOs.reduce((acc,dto)=>{
+            const ingredient = ingredients?.find(i=>i.id == dto.ingredientId)
+
+            // we might encounter ""
+            if(!ingredient) return acc;
+
+            const quantity = dto.quantity
+            acc.fats += ingredient.fats * quantity;
+            acc.carbs += ingredient.carbs * quantity;
+            acc.protein += ingredient.protein * quantity;
+            acc.calories += ingredient.calories * quantity;
+            return acc;
+        },
+        {fats:0,carbs:0,protein:0,calories:0}
+    )
+
     const create = async () => {
-        const cleanedIngredientIds = ingredientIds.filter(id => id !== "").map(Number);
+        const cleanedIngredientDTOs = ingredientDTOs.filter(ingredientDTO => ingredientDTO.ingredientId!== "")
         if (!recipeName.trim()) {
             toast.error("Recipe name is required");
             return;
@@ -59,7 +79,7 @@ export default function RecipeCreate() {
             toast.error("Instructions are required");
             return;
         }
-        if (cleanedIngredientIds.length === 0) {
+        if (cleanedIngredientDTOs.length === 0) {
             toast.error("At least one ingredient must be selected");
             return;
         }
@@ -68,11 +88,12 @@ export default function RecipeCreate() {
             formData.append("userId",user.id);
             formData.append("name",recipeName);
             formData.append("description",recipeDescription);
-            cleanedIngredientIds.forEach((id, index) => {
-                formData.append(`ingredientIds[${index}]`, id);
+            cleanedIngredientDTOs.forEach((ingredientDTO, index) => {
+                formData.append(`ingredientRequestDTOS[${index}].ingredientId`, ingredientDTO.ingredientId);
+                formData.append(`ingredientRequestDTOS[${index}].quantity`, ingredientDTO.quantity);
             });
             formData.append("instructions",recipeInstructions);
-            formData.append("image",recipeImage);
+            // formData.append("image",recipeImage);
             console.log("recipe image: ",recipeImage)
             const response = await fetch(API_URL + "/recipes",
                 {
@@ -145,56 +166,86 @@ export default function RecipeCreate() {
                             </AccordionSummary>
 
                             <AccordionDetails>
-                                {ingredientIds.map((ingredientId, index) => (
-                                    <Stack direction={"row"} spacing={2}>
-                                            <Select
-                                                sx={{flex:1}}
-                                                key={index}
-                                                value={ingredientId}
-                                                onChange={(e) => {
-                                                    const newIds = [...ingredientIds];
-                                                    newIds[index] = e.target.value;
+                                <Stack gap={"4rem"} direction={"row"} flexWrap={"wrap"}>
+                                    <Box sx={{minWidth:"300px"}} flex={"2"}>
+                                        {ingredientDTOs.map((ingredientDTO, index) => (
+                                            <Stack key={index} flexWrap={"wrap"} direction={"row"} spacing={2} justifyContent={"center"}>
+                                                <Select
+                                                    sx={{flex:"1"}}
+                                                    key={index}
+                                                    value={ingredientDTO.ingredientId}
+                                                    onChange={(e) => {
+                                                        const newIngredientDTOs = [...ingredientDTOs];
+                                                        newIngredientDTOs[index]= {ingredientId: e.target.value, quantity: 1};
 
-                                                    // Add a new empty select only if this is the last one and it's now filled
-                                                    if (index === ingredientIds.length - 1 && e.target.value !== "") {
-                                                        newIds.push("");
-                                                    }
+                                                        // Add a new empty select only if this is the last one and it's now filled
+                                                        if (index === ingredientDTOs.length - 1 && e.target.value !== "") {
+                                                            newIngredientDTOs.push({ingredientId:""});
+                                                        }
 
-                                                    setIngredientIds(newIds);
-                                                }}
-                                                displayEmpty
-                                            >
-                                                <MenuItem value={""} disabled>Select an ingredient...</MenuItem>
-                                                {ingredients?.map((ingredient) => (
-                                                    <MenuItem key={ingredient.id} value={ingredient.id}>
-                                                        {ingredient.name}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                            {ingredientIds.length > 1 && ingredientId!=="" && (
-                                                <IconButton
-                                                    onClick={() => {
-                                                    const newIds = [...ingredientIds];
-                                                    newIds.splice(index, 1);
-                                                    setIngredientIds(newIds);
-                                                }}>
-                                                    <DeleteIcon />
-                                                </IconButton>
-                                            )}
-                                    </Stack>
-                                ))}
+                                                        setIngredientDTOs(newIngredientDTOs);
+                                                    }}
+                                                    displayEmpty
+                                                >
+                                                    <MenuItem value={""} disabled>Select an ingredient...</MenuItem>
+                                                    {ingredients?.map((ingredient) => (
+                                                        <MenuItem key={ingredient.id} value={ingredient.id}>
+                                                            {ingredient.name}
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select>
 
-                                {/* Initialize with one empty select */}
-                                {ingredientIds.length === 0 && setIngredientIds([""])}
+                                                {
+                                                    ingredientDTO.quantity &&
+                                                    <Stack direction={"row"} alignItems={"center"}>
+                                                        <IconButton onClick={()=>{
+                                                            const newIngredientDTOs = [...ingredientDTOs]
+                                                            const newQty = Math.max(1,ingredientDTO.quantity-1)
+                                                            newIngredientDTOs[index] = {...ingredientDTO,quantity:newQty};
+                                                            setIngredientDTOs(newIngredientDTOs);
+                                                        }}>
+                                                            <RemoveIcon/>
+                                                        </IconButton>
+                                                        <Typography>
+                                                            {ingredientDTO.quantity}
+                                                        </Typography>
+                                                        <IconButton onClick={()=>{
+                                                            const newIngredientDTOs = [...ingredientDTOs]
+                                                            newIngredientDTOs[index] = {...ingredientDTO,quantity:ingredientDTO.quantity+1};
+                                                            setIngredientDTOs(newIngredientDTOs);
+                                                        }}>
+                                                            <AddIcon/>
+                                                        </IconButton>
+                                                    </Stack>
+                                                }
+                                                {ingredientDTOs.length > 1 && ingredientDTO.ingredientId!=="" && (
+                                                    <IconButton
+                                                        onClick={() => {
+                                                        const newIds = [...ingredientDTOs];
+                                                        newIds.splice(index, 1);
+                                                        setIngredientDTOs(newIds);
+                                                    }}>
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                )}
+                                                {/* Initialize with one empty select */}
+                                            </Stack>
+                                        ))}
+                                        {ingredientDTOs.length === 0 && setIngredientDTOs([{ingredientId:""}])}
+                                    </Box>
 
+                                    {/* Recipe summary here*/}
+                                    <Box minWidth={"200px"} flex={"1"}>
+                                        <Typography sx={{fontWeight:"bold"}}>Recipe Summary:</Typography>
+                                        <Divider/>
+                                        <Typography>Fats: {totals.fats}g</Typography>
+                                        <Typography>Carbs: {totals.carbs}g</Typography>
+                                        <Typography>Protein: {totals.protein}g</Typography>
+                                        <Divider/>
+                                        <Typography>Calories: {totals.calories}</Typography>
+                                    </Box>
+                                </Stack>
 
-                                {/* Recipe summary here*/}
-                                <Divider sx={{mt:"1rem"}}></Divider>
-                                <Typography>Recipe Summary:</Typography>
-                                {ingredientIds.map((element,index)=>{
-
-                                    return <Typography>{element}</Typography>
-                                })}
                             </AccordionDetails>
                         </Accordion>
 

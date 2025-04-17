@@ -143,7 +143,7 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
                     ["fats","carbs","protein"].map((category,i)=>
                         <Typography>
                             {
-                                ingredientDTOs.reduce((acc,ingredientDTO)=>{return acc+ingredientDTO.ingredient[category]},0)
+                                ingredientDTOs?.reduce((acc,ingredientDTO)=>{return acc+ingredientDTO.ingredient[category]*ingredientDTO.quantity},0)
                                 + `g ${category}`
                             }
                         </Typography>
@@ -152,7 +152,7 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
                 <Divider></Divider>
                 <Typography>
                     {
-                        ingredientDTOs.reduce((acc,ingredientDTO)=>{return acc+ingredientDTO.ingredient.calories},0)
+                        ingredientDTOs?.reduce((acc,ingredientDTO)=>{return acc+ingredientDTO.ingredient.calories*ingredientDTO.quantity},0)
                         + " calories"
                     }
                 </Typography>
