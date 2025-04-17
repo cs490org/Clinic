@@ -1,12 +1,11 @@
 package com.cs490.group4.demo.controller;
 
+import com.cs490.group4.demo.dto.RecipeCreateDTO;
 import com.cs490.group4.demo.service.RecipeService;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 
 @RestController
@@ -21,23 +20,18 @@ public class RecipeController{
         return ResponseEntity.ok(recipeService.getRecipes());
     }
 
-    @PostMapping()
-    private ResponseEntity<?> createRecipe(@RequestBody RecipeCreateDTO body){
+    @PostMapping(consumes = {"application/json", "multipart/form-data"})
+    private ResponseEntity<?> createRecipe(@ModelAttribute RecipeCreateDTO body){
+        // MultipartFile for image in DTO
+
         return ResponseEntity.ok(recipeService.createRecipe(
                 body.getUserId(),
                 body.getName(),
                 body.getDescription(),
                 body.getIngredientIds(),
                 body.getInstructions()
+
         ));
     }
 }
 
-@Data
-class RecipeCreateDTO{
-    private Integer userId;
-    private String name;
-    private String description;
-    private List<Integer> ingredientIds;
-    private String instructions;
-}
