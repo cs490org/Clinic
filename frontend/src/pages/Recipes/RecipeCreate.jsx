@@ -1,14 +1,14 @@
 import {
     Button,
     Container,
-    Divider,  IconButton,
+    Divider, IconButton,
     MenuItem,
     Paper,
     Select,
     Stack,
     TextField,
     Typography,
-    Box
+    Box, Accordion, AccordionSummary, AccordionDetails
 } from "@mui/material";
 import { useContext, useState } from "react";
 import { API_URL } from "../../utils/constants.js";
@@ -90,102 +90,130 @@ export default function RecipeCreate() {
         }
     }
     return (
-        <Container>
-            <Paper sx={{ p: 2 }}>
-                <Stack spacing={2}>
-                    <Typography sx={{ fontSize: "2.2rem",fontWeight:"bold" }}>Create new recipe</Typography>
-                    <TextField onChange={(e) => setRecipeName(e.target.value)} label={"Recipe name"} required/>
-                    <TextField onChange={(e) => setRecipeDescription(e.target.value)} multiline rows={2} maxRows={4} label={"Description"} />
+        <Box sx={{display:"flex", justifyContent:"center",alignItems:"center"}}>
+            <Container >
+                <Paper elevation={3} sx={{ p: 2 }}>
+                    <Stack spacing={2}>
+                        <Typography sx={{textAlign:"center", fontSize: "1.6rem",fontWeight:"bold" }}>Create new recipe</Typography>
+                        <Divider></Divider>
+                        <TextField onChange={(e) => setRecipeName(e.target.value)} label={"Recipe name"} required/>
+                        <TextField onChange={(e) => setRecipeDescription(e.target.value)} multiline rows={2} maxRows={4} label={"Description"} />
 
 
-                    <Divider></Divider>
-                    <Typography sx={{fontSize:"1.6rem", fontWeight:"bold"}}>Image</Typography>
-                    <Dropzone onDrop={(acceptedFiles)=>{
-                        const image = acceptedFiles[0]
-                        acceptedFiles[0].preview = URL.createObjectURL(acceptedFiles[0])
-                        setRecipeImage(image)
+                        <Divider></Divider>
+                        <Accordion>
+                            <AccordionSummary>
+                                <Typography sx={{fontSize:"1.6rem", fontWeight:"bold"}}>1. Add Image</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Dropzone onDrop={(acceptedFiles)=>{
+                                    const image = acceptedFiles[0]
+                                    acceptedFiles[0].preview = URL.createObjectURL(acceptedFiles[0])
+                                    setRecipeImage(image)
 
-                    }}>
-                        {({getRootProps, getInputProps}) =>(
-                            <Box {...getRootProps({border:"solid 2px",borderColor:"primary.main",p:".7rem" })}>
-                                <Box sx={{cursor:"pointer",p:"2rem",border:"dotted 2px"}}>
-                                    {
-                                        recipeImage &&
-                                    <Box
-                                        component={"img"}
-                                        width={"100%"}
-                                        alt={"Recipe image preview."}
-                                        src={recipeImage.preview}
-                                    />
-                                    }
-                                   <input {...getInputProps()}/>
-                                    {
-                                        !recipeImage ?
-                                    <Typography>Select recipe image</Typography>
-                                            :
-                                    <Typography>{recipeImage.path}</Typography>
-                                    }
-                                </Box>
-                            </Box>
-                        )}
-                    </Dropzone>
+                                }}>
+                                    {({getRootProps, getInputProps}) =>(
+                                        <Box {...getRootProps({border:"solid 2px",borderColor:"primary.main",p:".7rem" })}>
+                                            <Box sx={{cursor:"pointer",p:"2rem",border:"dotted 2px"}}>
+                                                {
+                                                    recipeImage &&
+                                                <Box
+                                                    component={"img"}
+                                                    width={"100%"}
+                                                    alt={"Recipe image preview."}
+                                                    src={recipeImage.preview}
+                                                />
+                                                }
+                                               <input {...getInputProps()}/>
+                                                {
+                                                    !recipeImage ?
+                                                <Typography>Select recipe image</Typography>
+                                                        :
+                                                <Typography>{recipeImage.path}</Typography>
+                                                }
+                                            </Box>
+                                        </Box>
+                                    )}
+                                </Dropzone>
+                            </AccordionDetails>
+                        </Accordion>
+                        <Divider></Divider>
 
-                    <Divider></Divider>
+                        <Accordion>
+                            <AccordionSummary>
+                                <Typography sx={{fontSize:"1.6rem", fontWeight:"bold"}}>2. Add Ingredients</Typography>
+                            </AccordionSummary>
 
-                    <Typography sx={{fontSize:"1.6rem", fontWeight:"bold"}}>Ingredients</Typography>
+                            <AccordionDetails>
+                                {ingredientIds.map((ingredientId, index) => (
+                                    <Stack direction={"row"} spacing={2}>
+                                            <Select
+                                                sx={{flex:1}}
+                                                key={index}
+                                                value={ingredientId}
+                                                onChange={(e) => {
+                                                    const newIds = [...ingredientIds];
+                                                    newIds[index] = e.target.value;
 
-                    {ingredientIds.map((ingredientId, index) => (
-                        <Stack direction={"row"} spacing={2}>
-                                <Select
-                                    sx={{flex:1}}
-                                    key={index}
-                                    value={ingredientId}
-                                    onChange={(e) => {
-                                        const newIds = [...ingredientIds];
-                                        newIds[index] = e.target.value;
+                                                    // Add a new empty select only if this is the last one and it's now filled
+                                                    if (index === ingredientIds.length - 1 && e.target.value !== "") {
+                                                        newIds.push("");
+                                                    }
 
-                                        // Add a new empty select only if this is the last one and it's now filled
-                                        if (index === ingredientIds.length - 1 && e.target.value !== "") {
-                                            newIds.push("");
-                                        }
+                                                    setIngredientIds(newIds);
+                                                }}
+                                                displayEmpty
+                                            >
+                                                <MenuItem value={""} disabled>Select an ingredient...</MenuItem>
+                                                {ingredients?.map((ingredient) => (
+                                                    <MenuItem key={ingredient.id} value={ingredient.id}>
+                                                        {ingredient.name}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                            {ingredientIds.length > 1 && ingredientId!=="" && (
+                                                <IconButton
+                                                    onClick={() => {
+                                                    const newIds = [...ingredientIds];
+                                                    newIds.splice(index, 1);
+                                                    setIngredientIds(newIds);
+                                                }}>
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            )}
+                                    </Stack>
+                                ))}
 
-                                        setIngredientIds(newIds);
-                                    }}
-                                    displayEmpty
-                                >
-                                    <MenuItem value={""} disabled>Select an ingredient...</MenuItem>
-                                    {ingredients?.map((ingredient) => (
-                                        <MenuItem key={ingredient.id} value={ingredient.id}>
-                                            {ingredient.name}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                                {ingredientIds.length > 1 && ingredientId!=="" && (
-                                    <IconButton
-                                        onClick={() => {
-                                        const newIds = [...ingredientIds];
-                                        newIds.splice(index, 1);
-                                        setIngredientIds(newIds);
-                                    }}>
-                                        <DeleteIcon />
-                                    </IconButton>
-                                )}
-                        </Stack>
-                    ))}
-
-                    {/* Initialize with one empty select */}
-                    {ingredientIds.length === 0 && setIngredientIds([""])}
-
+                                {/* Initialize with one empty select */}
+                                {ingredientIds.length === 0 && setIngredientIds([""])}
 
 
+                                {/* Recipe summary here*/}
+                                <Divider sx={{mt:"1rem"}}></Divider>
+                                <Typography>Recipe Summary:</Typography>
+                                {ingredientIds.map((element,index)=>{
 
-                    <Divider></Divider>
-                    <Typography sx={{fontSize:"1.6rem", fontWeight:"bold"}}>Instructions</Typography>
-                    <TextField onChange={(e) => setRecipeInstructions(e.target.value)} multiline rows={4} maxRows={16} label={"Enter instructions..."} />
-                    <Button onClick={() => create()} variant={"contained"}>Create Recipe</Button>
-                </Stack>
-            </Paper>
-        </Container>
+                                    return <Typography>{element}</Typography>
+                                })}
+                            </AccordionDetails>
+                        </Accordion>
+
+
+                        <Divider></Divider>
+
+                        <Accordion>
+                            <AccordionSummary>
+                                <Typography sx={{fontSize:"1.6rem", fontWeight:"bold"}}>3. Add Instructions</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <TextField fullWidth onChange={(e) => setRecipeInstructions(e.target.value)} multiline rows={4} maxRows={16} label={"Enter instructions..."} />
+                            </AccordionDetails>
+                        </Accordion>
+                        <Button onClick={() => create()} variant={"contained"}>Create Recipe</Button>
+                    </Stack>
+                </Paper>
+            </Container>
+        </Box>
     )
 
 }

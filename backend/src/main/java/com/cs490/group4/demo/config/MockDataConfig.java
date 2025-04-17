@@ -1,6 +1,7 @@
 package com.cs490.group4.demo.config;
 
 import com.cs490.group4.demo.dao.Recipe;
+import com.cs490.group4.demo.dto.IngredientRequestDTO;
 import com.cs490.group4.demo.service.*;
 import com.cs490.group4.demo.service.authentication.UserService;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,6 @@ import org.springframework.context.annotation.Configuration;
 
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 @Configuration
 @RequiredArgsConstructor
@@ -114,19 +114,29 @@ public class MockDataConfig {
             }
 
             if(recipeService.isEmpty() && !userService.getAllUsers().isEmpty()) {
+                ArrayList<IngredientRequestDTO> ingredientRequestDTOS = new ArrayList<>();
+                IngredientRequestDTO twoPieceChicken= new IngredientRequestDTO();
+                twoPieceChicken.setIngredientId(2);
+                twoPieceChicken.setQuantity(2);
+                ingredientRequestDTOS.add(twoPieceChicken);
+
+                IngredientRequestDTO cupOfRice= new IngredientRequestDTO();
+                cupOfRice.setIngredientId(3);
+                cupOfRice.setQuantity(1);
+                ingredientRequestDTOS.add(cupOfRice);
+
 
                 recipes.add(mockRecipe.createMockRecipe(
                         "Rice and Chicken",
-                        "Delicious honey garlic chicken with lower calories",
-                        "Get chicken, put honey on it.",
-                        List.of(2,3),
+                        "Rice and chicken",
+                        "Cook rice in a pot, add chicken.",
+                        ingredientRequestDTOS,
                         1
                 ));
             }
 
             if(!userService.getAllUsers().isEmpty() && !recipeService.isEmpty()) {
                 String[] comments = {
-                        "I made this and it sucks",
                         "This is amazing!",
                         "Good recipe",
                         "This is my favorite recipe it has changed my life"
