@@ -1,18 +1,16 @@
 package com.cs490.group4.demo.service;
 
-import com.cs490.group4.demo.dao.Patient;
-import com.cs490.group4.demo.dao.PatientRepository;
-import com.cs490.group4.demo.dao.PatientPharmacy;
-import com.cs490.group4.demo.dao.PatientPharmacyRepository;
-import com.cs490.group4.demo.dao.Pharmacy;
-import com.cs490.group4.demo.dao.PharmacyRepository;
+import com.cs490.group4.demo.dao.*;
+import com.cs490.group4.demo.dto.PatientChartRequest;
 import com.cs490.group4.demo.security.User;
 import com.cs490.group4.demo.security.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import jakarta.persistence.EntityNotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PatientService {
@@ -25,6 +23,9 @@ public class PatientService {
     private PharmacyRepository pharmacyRepository;
     @Autowired
     private PatientPharmacyRepository patientPharmacyRepository;
+
+    @Autowired
+    private PatientChartRepository patientChartRepository;
 
     public Patient getPatientByUserId(Integer userId) {
         Patient patient = patientRepository.findByUserId(userId);
@@ -65,5 +66,35 @@ public class PatientService {
         patientPharmacyRepository.save(patientPharmacy);
 
         return patient;
+    }
+
+    public PatientChart updatePatientChart(PatientChartRequest dto){
+        Optional<PatientChart> existingPatientChart =  patientChartRepository.findByPatientId(dto.getPatientId());
+
+        PatientChart patientChart;
+
+        if(existingPatientChart.isPresent()){
+            patientChart = PatientChart.builder()
+                    .id(existingPatientChart.get().getId())
+                    .patient(Patient.builder().id(dto.getPatientId()).build())
+                    .age(dto.getAge())
+                    .weight(dto.getWeight())
+                    .height(dto.getHeight())
+                    .sex(dto.getSex())
+                    .updateTimestamp(LocalDateTime.now())
+                    .build();
+
+        }else{
+            patientChart = PatientChart.builder()
+                    .patient(Patient.builder().id(dto.getPatientId()).build())
+                    .age(dto.getAge())
+                    .weight(dto.getWeight())
+                    .height(dto.getHeight())
+                    .sex(dto.getSex())
+                    .createTimestamp(LocalDateTime.now())
+                    .build();
+        }
+
+        return patientChartRepository.save(patientChart);
     }
 }

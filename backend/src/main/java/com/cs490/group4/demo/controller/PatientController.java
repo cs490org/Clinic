@@ -1,18 +1,13 @@
 package com.cs490.group4.demo.controller;
 
-import com.cs490.group4.demo.service.DoctorService;
+import com.cs490.group4.demo.dao.PatientChart;
+import com.cs490.group4.demo.dto.PatientChartRequest;
 import com.cs490.group4.demo.service.PatientPharmacyService;
 import com.cs490.group4.demo.service.PatientService;
-import com.cs490.group4.demo.service.PharmacyService;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import lombok.Data;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/patients")
@@ -47,6 +42,12 @@ public class PatientController {
             request.getPharmacyId()
         ));
     }
+
+    @PutMapping("/chart")
+    private ResponseEntity<PatientChart> updatePatientChart(@RequestBody PatientChartRequest patientChartRequest){
+        return ResponseEntity.ok(patientService.updatePatientChart(patientChartRequest));
+    }
+
 }
 
 // these fields will be passed from the patient complete profile page
