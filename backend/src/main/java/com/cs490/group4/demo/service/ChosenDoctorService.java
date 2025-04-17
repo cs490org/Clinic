@@ -44,6 +44,12 @@ public class ChosenDoctorService {
                     .createTimestamp(LocalDateTime.now())
                     .build();
         }
+        ChosenDoctor chosenDoctor = ChosenDoctor.builder()
+                .id(existingDoctor.map(ChosenDoctor::getId).orElse(null))
+                .patient(Patient.builder().id(patientId).build())
+                .doctor(Doctor.builder().id(doctorId).build())
+                .createTimestamp(LocalDateTime.now())
+                .build();
 
         return chosenDoctorRepository.save(chosenDoctor);
     }
