@@ -8,11 +8,15 @@ import lombok.Builder;
 import lombok.Data;
 import com.cs490.group4.demo.security.User;
 import jakarta.persistence.*;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import lombok.NoArgsConstructor;
+
 
 import java.time.LocalDateTime;
 
