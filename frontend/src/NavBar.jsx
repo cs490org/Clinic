@@ -27,6 +27,16 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
 import FlatwareIcon from '@mui/icons-material/Flatware';
+import Stack from '@mui/material/Stack';
+import SvgIcon from '@mui/material/SvgIcon';
+
+function HomeIcon(props) {
+  return (
+      <SvgIcon {...props}>
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+      </SvgIcon>
+  );
+}
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -139,6 +149,18 @@ export default function NavBar() {
                     <DashboardIcon />
                   </ListItemIcon>
                   <ListItemText primary="Doctor Dashboard" />
+                </ListItemButton>
+            )}
+
+            {user?.role === "DOCTOR" && (
+                <ListItemButton onClick={() => {
+                  navigate("/doctor/homepage");
+                  setDrawerOpen(false);
+                }}>
+                  <ListItemIcon>
+                    <HomeIcon/>
+                  </ListItemIcon>
+                  <ListItemText primary="Doctor Homepage" />
                 </ListItemButton>
             )}
 
