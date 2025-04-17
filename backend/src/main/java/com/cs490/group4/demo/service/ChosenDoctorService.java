@@ -24,15 +24,26 @@ public class ChosenDoctorService {
      * @param doctorId
      * @return the chosen doctor relationship
      */
-    public ChosenDoctor assignPatientToDoctor(Integer patientId, Integer doctorId){
+    public ChosenDoctor assignPatientToDoctor(Integer patientId, Integer doctorId) {
         Optional<ChosenDoctor> existingDoctor = chosenDoctorRepository.findByPatientId(patientId);
 
-        ChosenDoctor chosenDoctor = ChosenDoctor.builder()
-                .id(existingDoctor.map(ChosenDoctor::getId).orElse(null))
-                .patient(Patient.builder().id(patientId).build())
-                .doctor(Doctor.builder().id(doctorId).build())
-                .createTimestamp(LocalDateTime.now())
-                .build();
+        ChosenDoctor chosenDoctor;
+
+        if (existingDoctor.isPresent()) {
+            chosenDoctor = ChosenDoctor.builder()
+                    .id(existingDoctor.get().getId())
+                    .patient(Patient.builder().id(patientId).build())
+                    .doctor(Doctor.builder().id(doctorId).build())
+                    .updateTimestamp(LocalDateTime.now())
+                    .build();
+
+        } else {
+            chosenDoctor = ChosenDoctor.builder()
+                    .patient(Patient.builder().id(patientId).build())
+                    .doctor(Doctor.builder().id(doctorId).build())
+                    .createTimestamp(LocalDateTime.now())
+                    .build();
+        }
 
         return chosenDoctorRepository.save(chosenDoctor);
     }
