@@ -55,12 +55,11 @@ const CompleteDoctorProfile = () => {
                 window.location.reload()
 
             } else {
-                const data = await response.json()
-                // toast.error(data.message)
-                toast.error("There was an error when creating the doctor.")
+                const data = await response.text()
+                toast.error(data)
             }
         } catch (error) {
-            console.log(error)
+            toast.error("There was an error when creating the doctor.")
         }
     };
 
