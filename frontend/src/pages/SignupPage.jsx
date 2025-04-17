@@ -28,6 +28,25 @@ const SignupPage = () => {
 
     const [errors, setErrors] = useState({});
 
+    const validate = () => {
+        const newErrors = {};
+        // one or more characters, @ symbol, one or more characters, period, one or more characters.
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            newErrors.email = "Invalid email address.";
+        }
+
+        if (password.length < 8) {
+            newErrors.password = "Password must be at least 8 characters.";
+        } else if (!/[A-Za-z]/.test(password) || !/\d/.test(password)) {
+            newErrors.password = "Password must include letters and numbers.";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+
     const handleUserTypeChange = (event, newValue) => {
         setUserType(newValue);
         setErrors({});
@@ -35,6 +54,7 @@ const SignupPage = () => {
 
     const register = async (event) => {
         event.preventDefault();
+        if(!validate()) return;
         const res = await fetch(API_URL + '/auth/register', {
             method: 'POST',
             body: JSON.stringify({
@@ -126,9 +146,10 @@ const SignupPage = () => {
                                 name="email"
                                 required
                                 label="Email Address"
-                                autoComplete="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.currentTarget.value)}
+                                error={errors.email}
+                                helperText={errors.email}
                             />
 
                             <TextField
@@ -136,9 +157,10 @@ const SignupPage = () => {
                                 required
                                 label="Password"
                                 type="password"
-                                autoComplete="new-password"
                                 value={password}
                                 onChange={(e) => setPassword(e.currentTarget.value)}
+                                error={errors.password}
+                                helperText={errors.password}
                             />
 
 
