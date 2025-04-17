@@ -44,7 +44,7 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
         }
     }
 
-    const getIngredients = async () => {
+    const getIngredientDTOs = async () => {
         try{
             const response = await fetch (API_URL+"/recipes/ingredients?recipeId=" + id,
                 {
@@ -100,9 +100,9 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
         queryKey: queryKeys.recipes.comments(id),
         queryFn: getComments
     })
-    const {data: ingredients, isLoading: ingredientsIsLoading} = useQuery({
+    const {data: ingredientDTOs, isLoading: ingredientsIsLoading} = useQuery({
         queryKey: queryKeys.recipes.ingredients(id),
-        queryFn:getIngredients
+        queryFn:getIngredientDTOs
     })
 
 
@@ -135,24 +135,39 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
                     {description}
                 </Typography>
                 <Divider></Divider>
-                {!ingredientsIsLoading && ingredients &&
+
+                <Typography mt="1rem"  fontWeight={"medium"} fontSize={"1.1rem"}>
+                    Nutrition information:
+                </Typography>
+                {
+                    ["fats","carbs","protein"].map((category,i)=>
+                        <Typography>
+                            {
+                                ingredientDTOs.reduce((acc,ingredientDTO)=>{return acc+ingredientDTO.ingredient[category]},0)
+                                + `g ${category}`
+                            }
+                        </Typography>
+                    )
+                }
+                <Divider></Divider>
+                <Typography>
+                    {
+                        ingredientDTOs.reduce((acc,ingredientDTO)=>{return acc+ingredientDTO.ingredient.calories},0)
+                        + " calories"
+                    }
+                </Typography>
+
+                {!ingredientsIsLoading && ingredientDTOs &&
                 <>
                     <Typography mt="1rem"  fontWeight={"medium"} fontSize={"1.1rem"}>
                         Ingredients:
                     </Typography>
-                    {ingredients.map((ingredient,i)=>{
+                    {ingredientDTOs.map((ingredientDTO,i)=>{
                         return (
-                            <Typography> 1 x {ingredient.name}</Typography>
+                            <Typography key={i}> {ingredientDTO.quantity} x {ingredientDTO.ingredient.name}</Typography>
                         )
                     })}
-                    <Typography>
 
-                        {
-                        ingredients.reduce((acc,ingredient)=>{return acc+ingredient.calories},0)
-                            + " calories"
-                        }
-
-                    </Typography>
                 </>
             }
             {instructions &&
