@@ -2,6 +2,8 @@ package com.cs490.group4.demo.dao;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -18,6 +20,10 @@ public class Recipe {
     private String img_uri;
 
 
-    private LocalDateTime createTimestamp, updateTimestamp;
+    @CreationTimestamp
+    private LocalDateTime createTimestamp;
+
+    @UpdateTimestamp
+    private LocalDateTime updateTimestamp;
 
 }

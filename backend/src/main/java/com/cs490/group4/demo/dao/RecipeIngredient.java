@@ -2,6 +2,8 @@ package com.cs490.group4.demo.dao;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -13,8 +15,6 @@ public class RecipeIngredient {
     @GeneratedValue
     private Integer id;
 
-    // amount of that particular ingredient
-    private Integer amount;
 
     @ManyToOne
     @JoinColumn(name = "ingredient_id", referencedColumnName = "id")
@@ -24,6 +24,13 @@ public class RecipeIngredient {
     @JoinColumn(name = "recipe_id", referencedColumnName = "id")
     private Recipe recipe;
 
-    private LocalDateTime createTimestamp, updateTimestamp;
+    // number of ingredients for this recipe.
+    private Integer quantity;
+
+    @CreationTimestamp
+    private LocalDateTime createTimestamp;
+
+    @UpdateTimestamp
+    private LocalDateTime updateTimestamp;
 
 }

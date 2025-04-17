@@ -3,6 +3,8 @@ package com.cs490.group4.demo.dao;
 import com.cs490.group4.demo.security.User;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -22,6 +24,10 @@ public class RecipeOwner {
     @JoinColumn(name = "recipe_id", referencedColumnName = "id")
     private Recipe recipe;
 
-    private LocalDateTime createTimestamp, updateTimestamp;
+    @CreationTimestamp
+    private LocalDateTime createTimestamp;
+
+    @UpdateTimestamp
+    private LocalDateTime updateTimestamp;
 
 }

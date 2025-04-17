@@ -28,9 +28,8 @@ public class RecipeController{
                 body.getUserId(),
                 body.getName(),
                 body.getDescription(),
-                body.getIngredientIds(),
+                body.getIngredientRequestDTOS(),
                 body.getInstructions()
-
         ));
     }
 }

@@ -1,5 +1,6 @@
 package com.cs490.group4.demo.controller;
 
+import com.cs490.group4.demo.dto.IngredientRequestDTO;
 import com.cs490.group4.demo.service.RecipeIngredientService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -15,16 +16,16 @@ public class RecipeIngredientController {
     private final RecipeIngredientService recipeIngredientService;
 
     @GetMapping
-    private ResponseEntity<?> getRecipeIngredients(@RequestParam(required = true) Integer recipeId){
-        return ResponseEntity.ok(recipeIngredientService.getIngredientsFromRecipeId(recipeId));
+    private ResponseEntity<?> getIngredientDTOs(@RequestParam(required = true) Integer recipeId){
+        return ResponseEntity.ok(recipeIngredientService.getIngredientDTOsFromRecipeId(recipeId));
     }
 
     @PostMapping
-    private ResponseEntity<?> addIngredientsToRecipe(@RequestBody RecipeIngredientDTO ingredientDTO){
+    private ResponseEntity<?> addIngredientsToRecipe(@RequestBody RecipeIngredientDTO recipeIngredientDTO){
 
         return ResponseEntity.ok(recipeIngredientService.addIngredientsToRecipe(
-                ingredientDTO.getRecipeId(),
-                ingredientDTO.getIngredientIds()
+                recipeIngredientDTO.getRecipeId(),
+                recipeIngredientDTO.getIngredientRequestDTOS()
                 )
         );
     }
@@ -34,5 +35,5 @@ public class RecipeIngredientController {
 @Data
 class  RecipeIngredientDTO{
     private Integer recipeId;
-    private List<Integer> ingredientIds;
+    private List<IngredientRequestDTO> ingredientRequestDTOS;
 }

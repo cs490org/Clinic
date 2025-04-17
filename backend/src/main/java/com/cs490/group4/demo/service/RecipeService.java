@@ -1,5 +1,6 @@
 package com.cs490.group4.demo.service;
 import com.cs490.group4.demo.dao.*;
+import com.cs490.group4.demo.dto.IngredientRequestDTO;
 import com.cs490.group4.demo.security.User;
 import com.cs490.group4.demo.security.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -28,7 +29,7 @@ public class RecipeService {
 
     // recipes associated with users.
     @Transactional
-    public Recipe createRecipe(Integer userId, String name, String description, List<Integer> ingredientIds,String instructions) {
+    public Recipe createRecipe(Integer userId, String name, String description, List<IngredientRequestDTO> ingredientRequestDTOS, String instructions) {
         User user = userRepository.findById(userId).orElseThrow(
                 ()-> new EntityNotFoundException("User not found with ID: " + userId)
         );
@@ -45,12 +46,13 @@ public class RecipeService {
         recipeOwner.setRecipe(recipe);
 
         // add ingredients
-        for (Integer ingredientId : ingredientIds) {
-            Ingredient ingredient = ingredientRepository.findById(ingredientId).orElseThrow(()->new EntityNotFoundException("Ingredient not found"));
+        for (IngredientRequestDTO ingredientRequestDTO : ingredientRequestDTOS) {
+            Ingredient ingredient = ingredientRepository.findById(ingredientRequestDTO.getIngredientId()).orElseThrow(()->new EntityNotFoundException("Ingredient not found"));
 
             RecipeIngredient recipeIngredient = new RecipeIngredient();
-            recipeIngredient.setIngredient(ingredient);
             recipeIngredient.setRecipe(recipe);
+            recipeIngredient.setIngredient(ingredient);
+            recipeIngredient.setQuantity(ingredientRequestDTO.getQuantity());
             recipeIngredientRepository.save(recipeIngredient);
         }
 
