@@ -3,7 +3,9 @@ package com.cs490.group4.demo.controller;
 import com.cs490.group4.demo.service.DoctorService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,12 +26,22 @@ public class DoctorController {
 
     @PostMapping()
     private ResponseEntity<?> createDoctor(@RequestBody DoctorCreateRequest request) {
-        return ResponseEntity.ok(doctorService.createDoctor(
-                request.getUserId(),
-                request.getPhone(),
-                request.getSpecialty(),
-                request.getLicenseNumber()
-        ));
+        try {
+            return ResponseEntity.ok(doctorService.createDoctor(
+                    request.getUserId(),
+                    request.getPhone(),
+                    request.getSpecialty(),
+                    request.getLicenseNumber()
+            ));
+        } catch (DataIntegrityViolationException ex) {
+            String msg = ex.getMessage();
+            if(msg.contains("Duplicate entry")){
+                return ResponseEntity.badRequest().body("A doctor with this license already exists.");
+            }
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     @PatchMapping("/{id}/accepting-status")

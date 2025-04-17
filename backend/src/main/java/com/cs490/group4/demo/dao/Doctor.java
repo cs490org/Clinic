@@ -8,7 +8,16 @@ import lombok.Builder;
 import lombok.Data;
 import com.cs490.group4.demo.security.User;
 import jakarta.persistence.*;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import lombok.NoArgsConstructor;
+
+import lombok.NoArgsConstructor;
+
 
 import java.time.LocalDateTime;
 
@@ -28,9 +37,14 @@ public class Doctor {
     private User user;
 
     private String firstName, lastName, email, phone, specialty;
+    @Column(unique = true,nullable = false)
     private Long licenseNumber;
     private Boolean acceptingNewPatients = true;
 
-    private LocalDateTime createTimestamp, updateTimestamp;
+    @CreationTimestamp
+    private LocalDateTime createTimestamp;
+
+    @UpdateTimestamp
+    private LocalDateTime updateTimestamp;
 
 }

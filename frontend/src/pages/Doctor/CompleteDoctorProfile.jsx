@@ -55,12 +55,11 @@ const CompleteDoctorProfile = () => {
                 window.location.reload()
 
             } else {
-                //TODO: Check license i guess?
-                const data = await response.json()
-                toast.error(data.message)
+                const data = await response.text()
+                toast.error(data)
             }
         } catch (error) {
-            console.log(error)
+            toast.error("There was an error when creating the doctor.")
         }
     };
 
