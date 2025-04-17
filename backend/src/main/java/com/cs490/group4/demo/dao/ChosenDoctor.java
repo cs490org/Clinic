@@ -1,10 +1,14 @@
 package com.cs490.group4.demo.dao;
 
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Data
+@Builder
 public class ChosenDoctor {
 
     @Id
