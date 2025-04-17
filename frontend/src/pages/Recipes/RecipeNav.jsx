@@ -14,6 +14,7 @@ import { useState } from "react";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import {APP_BAR_HEIGHT} from "../../utils/constants.js";
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 export default function RecipeNav() {
 
     // drawer gets in the way on smaller screens
@@ -71,9 +72,18 @@ export default function RecipeNav() {
                     onClick={() => navigate('/recipes/create')}
                 >
                     <ListItemIcon>
-                        <AddCircleIcon />
+                        <MenuBookIcon/>
                     </ListItemIcon>
                     <ListItemText primary="Create Recipe" />
+                </ListItemButton>
+
+                <ListItemButton
+                    onClick={() => navigate('/ingredients/create')}
+                >
+                    <ListItemIcon>
+                        <AddCircleIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Create ingredient" />
                 </ListItemButton>
             </List>
 

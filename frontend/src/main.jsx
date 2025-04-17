@@ -22,6 +22,7 @@ import Prescriptions from './pages/Pharmacy/prescriptions.jsx';
 import Recipes from "./pages/Recipes/Recipes.jsx";
 import RecipeCreate from "./pages/Recipes/RecipeCreate.jsx";
 import CompletePharmacyProfile from "./pages/Pharmacy/CompletePharmacyProfile.jsx";
+import IngredientCreate from "./pages/Recipes/Ingredients/IngredientCreate.jsx";
 
 const queryClient = new QueryClient()
 const router = createBrowserRouter([
@@ -107,6 +108,13 @@ const router = createBrowserRouter([
         element:
             <Auth allowedRoles={["PATIENT","DOCTOR"]}>
                 <RecipeCreate/>
+            </Auth>
+    },
+    {
+        path: "/ingredients/create",
+        element:
+            <Auth allowedRoles={["PATIENT","DOCTOR"]}>
+                <IngredientCreate/>
             </Auth>
     }
 ])
