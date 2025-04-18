@@ -32,23 +32,36 @@ public class RecipeService {
     }
 
     // recipes associated with users.
+    // uses multipart
     @Transactional
     public Recipe createRecipe(Integer userId, String name, String description, List<IngredientRequestDTO> ingredientRequestDTOS, String instructions, MultipartFile image) {
-
-        User user = userRepository.findById(userId).orElseThrow(
-                ()-> new EntityNotFoundException("User not found with ID: " + userId)
-        );
-
         String imageUrl = null;
         if (image != null && !image.isEmpty()) {
-            String imageName = "recipe_" + System.currentTimeMillis();
+            Recipe temp = new Recipe();
+            temp = recipeRepository.save(temp);
+
+            String imageName = "recipe_" + temp.getId();
             ResponseEntity<String> uploadResponse = cloudStorageService.uploadImage(imageName, image);
+
             if (uploadResponse.getStatusCode().is2xxSuccessful()) {
                 imageUrl = uploadResponse.getBody();
             } else {
                 throw new RuntimeException("Image upload failed: " + uploadResponse.getBody());
             }
+            recipeRepository.delete(temp);
         }
+        return createRecipe(userId, name, description, ingredientRequestDTOS, instructions, imageUrl);
+    }
+
+    // uses img_uri
+    @Transactional
+    public Recipe createRecipe(Integer userId, String name, String description, List<IngredientRequestDTO> ingredientRequestDTOS, String instructions, String image_uri) {
+        return persistRecipe(userId, name, description, ingredientRequestDTOS, instructions, image_uri);
+    }
+
+    private Recipe persistRecipe(Integer userId, String name, String description, List<IngredientRequestDTO> ingredientRequestDTOS, String instructions, String imageUrl) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new EntityNotFoundException("User not found with ID: " + userId));
 
         Recipe recipe = new Recipe();
         recipe.setName(name);
@@ -57,25 +70,23 @@ public class RecipeService {
         recipe.setCreateTimestamp(LocalDateTime.now());
         recipe.setImg_uri(imageUrl);
 
-        RecipeOwner recipeOwner = new RecipeOwner();
+        recipeRepository.save(recipe);
 
+        RecipeOwner recipeOwner = new RecipeOwner();
         recipeOwner.setUser(user);
         recipeOwner.setRecipe(recipe);
+        recipeOwnerRepository.save(recipeOwner);
 
-        // add ingredients
-        for (IngredientRequestDTO ingredientRequestDTO : ingredientRequestDTOS) {
-            Ingredient ingredient = ingredientRepository.findById(ingredientRequestDTO.getIngredientId()).orElseThrow(()->new EntityNotFoundException("Ingredient not found"));
+        for (IngredientRequestDTO dto : ingredientRequestDTOS) {
+            Ingredient ingredient = ingredientRepository.findById(dto.getIngredientId())
+                    .orElseThrow(() -> new EntityNotFoundException("Ingredient not found"));
 
             RecipeIngredient recipeIngredient = new RecipeIngredient();
             recipeIngredient.setRecipe(recipe);
             recipeIngredient.setIngredient(ingredient);
-            recipeIngredient.setQuantity(ingredientRequestDTO.getQuantity());
+            recipeIngredient.setQuantity(dto.getQuantity());
             recipeIngredientRepository.save(recipeIngredient);
         }
-
-
-        recipeRepository.save(recipe);
-        recipeOwnerRepository.save(recipeOwner);
 
         return recipe;
     }
@@ -95,6 +106,7 @@ public class RecipeService {
         recipeResponseDTO.setDescription(recipe.getDescription());
         recipeResponseDTO.setInstructions(recipe.getInstructions());
         recipeResponseDTO.setCreateTimestamp(recipe.getCreateTimestamp());
+        recipeResponseDTO.setImg_uri(recipe.getImg_uri());
 
         return recipeResponseDTO;
     }
@@ -107,6 +119,7 @@ public class RecipeService {
         private String description;
         private String instructions;
         private LocalDateTime createTimestamp;
+        private String img_uri;
     }
 
 
