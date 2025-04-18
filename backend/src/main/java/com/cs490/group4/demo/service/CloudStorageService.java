@@ -48,4 +48,22 @@ public class CloudStorageService {
     }
 
 
+    // throws error if deletion is not successful.
+    public void deleteImage(String fullPublicImageUrl) {
+
+        // extract object name from full url
+        String objectName = fullPublicImageUrl.substring(fullPublicImageUrl.lastIndexOf('/') + 1);
+        objectName = objectName.substring(0,objectName.indexOf('?'));
+
+        BlobId blobId = BlobId.of(imageBucket, objectName);
+
+        boolean deleted = storage.delete(blobId);
+        if (!deleted) {
+            throw new RuntimeException("Error deleting image");
+        }
+
+    }
+
+
+
 }

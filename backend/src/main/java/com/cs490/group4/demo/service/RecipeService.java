@@ -7,6 +7,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,10 +38,9 @@ public class RecipeService {
     public Recipe createRecipe(Integer userId, String name, String description, List<IngredientRequestDTO> ingredientRequestDTOS, String instructions, MultipartFile image) {
         String imageUrl = null;
         if (image != null && !image.isEmpty()) {
-            Recipe temp = new Recipe();
-            temp = recipeRepository.save(temp);
 
-            String imageName = "recipe_" + temp.getId();
+//            String imageName = "recipe_" + temp.getId();
+            String imageName = "recipe_" + LocalDateTime.now().toString().replaceAll("[:.]", "-");
             ResponseEntity<String> uploadResponse = cloudStorageService.uploadImage(imageName, image);
 
             if (uploadResponse.getStatusCode().is2xxSuccessful()) {
@@ -48,7 +48,6 @@ public class RecipeService {
             } else {
                 throw new RuntimeException("Image upload failed: " + uploadResponse.getBody());
             }
-            recipeRepository.delete(temp);
         }
         return createRecipe(userId, name, description, ingredientRequestDTOS, instructions, imageUrl);
     }
@@ -90,6 +89,28 @@ public class RecipeService {
 
         return recipe;
     }
+
+
+
+
+    @Transactional
+    public ResponseEntity<String> deleteRecipe(Integer recipeId) {
+        Recipe recipe = recipeRepository.findById(recipeId).orElseThrow(
+                () -> new EntityNotFoundException("Recipe not found with ID: " + recipeId)
+        );
+
+        cloudStorageService.deleteImage(recipe.getImg_uri());
+
+        recipeIngredientRepository.deleteAllByRecipeId(recipeId);
+        recipeOwnerRepository.deleteAllByRecipeId(recipeId);
+        recipeRepository.delete(recipe);
+
+        return ResponseEntity.ok("Recipe deleted successfully");
+    }
+
+
+
+
 
     public boolean isEmpty(){
         return recipeRepository.count() == 0;

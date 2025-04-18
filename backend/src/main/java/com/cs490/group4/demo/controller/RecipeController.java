@@ -33,5 +33,10 @@ public class RecipeController{
                 body.getImage()
         ));
     }
+
+    @DeleteMapping("/{id}")
+    private ResponseEntity<?> deleteRecipe(@PathVariable Integer id) {
+        return ResponseEntity.ok(recipeService.deleteRecipe(id));
+    }
 }
 
