@@ -131,7 +131,8 @@ public class MockDataConfig {
                         "Rice and chicken",
                         "Cook rice in a pot, add chicken.",
                         ingredientRequestDTOS,
-                        1
+                        1,
+                        "https://storage.googleapis.com/cs490-media/rice_and_chicken.jpg"
                 ));
             }
 
