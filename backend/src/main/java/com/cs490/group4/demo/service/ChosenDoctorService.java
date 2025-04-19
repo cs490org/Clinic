@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -15,6 +17,19 @@ public class ChosenDoctorService {
 
     @Autowired
     private ChosenDoctorRepository chosenDoctorRepository;
+
+    public List<Patient> getPatientsByDoctor(Integer doctorId) {
+        List<Patient> res = new ArrayList<>();
+        List<ChosenDoctor> patientsDoctors = chosenDoctorRepository.findAll();
+
+        patientsDoctors.forEach(cd -> {
+            if(cd.getDoctor().getId().equals(doctorId)){
+                res.add(cd.getPatient());
+            }
+        });
+
+        return res;
+    }
 
     /**
      * creates a new entry if no previous patient has a doctor,
