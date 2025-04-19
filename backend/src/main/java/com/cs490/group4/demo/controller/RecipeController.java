@@ -29,8 +29,14 @@ public class RecipeController{
                 body.getName(),
                 body.getDescription(),
                 body.getIngredientRequestDTOS(),
-                body.getInstructions()
+                body.getInstructions(),
+                body.getImage()
         ));
+    }
+
+    @DeleteMapping("/{id}")
+    private ResponseEntity<?> deleteRecipe(@PathVariable Integer id) {
+        return ResponseEntity.ok(recipeService.deleteRecipe(id));
     }
 }
 

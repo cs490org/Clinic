@@ -56,7 +56,7 @@ export default function Recipes() {
                                 createTimestamp={recipe.createTimestamp}
                                 recipeName={recipe.name}
                                 description={recipe.description}
-                                image={"/src/assets/garlic_chicken.jpg"}
+                                image={recipe.img_uri}
                                 instructions={recipe.instructions}
                             />
 

@@ -29,19 +29,16 @@ public class CloudStorageService {
                 .getService();
     }
 
-    public ResponseEntity<String> uploadImage(String accessToken, MultipartFile file) {
+    public ResponseEntity<String> uploadImage(String imageName, MultipartFile file) {
         if (file.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File is empty");
         }
 
         try {
-            BlobId blobId = BlobId.of(imageBucket, "PUT_IMAGE_NAME_HERE");
+            BlobId blobId = BlobId.of(imageBucket, imageName);
             BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
 
             Blob blob = storage.create(blobInfo, file.getBytes());
-
-            // TODO: update the database
-//            someService.setImageInDatabase("PUT_IMAGE_NAME_HERE", blob.getMediaLink());
 
             return ResponseEntity.ok(blob.getMediaLink());
 
@@ -49,6 +46,24 @@ public class CloudStorageService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading image");
         }
     }
+
+
+    // throws error if deletion is not successful.
+    public void deleteImage(String fullPublicImageUrl) {
+
+        // extract object name from full url
+        String objectName = fullPublicImageUrl.substring(fullPublicImageUrl.lastIndexOf('/') + 1);
+        objectName = objectName.substring(0,objectName.indexOf('?'));
+
+        BlobId blobId = BlobId.of(imageBucket, objectName);
+
+        boolean deleted = storage.delete(blobId);
+        if (!deleted) {
+            throw new RuntimeException("Error deleting image");
+        }
+
+    }
+
 
 
 }
