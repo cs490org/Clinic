@@ -27,6 +27,8 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
 import FlatwareIcon from '@mui/icons-material/Flatware';
+import ReceiptIcon from '@mui/icons-material/Receipt';
+
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -155,6 +157,19 @@ export default function NavBar() {
             </ListItemButton>
           }
 
+            {user?.role === "PHARMACIST" && (
+              <ListItemButton
+                onClick={() => {
+                  navigate("/pharmacist/bills");
+                  setDrawerOpen(false);
+                }}>
+                <ListItemIcon>
+                  <ReceiptIcon />
+                </ListItemIcon>
+                <ListItemText primary={"Bills"} />
+              </ListItemButton>
+            )}
+
           {(user?.role === "PHARMACIST") &&
               <ListItemButton
                   onClick={() => {
@@ -166,6 +181,17 @@ export default function NavBar() {
                 <ListItemText primary={"Dashboard"}/>
               </ListItemButton>
           }
+          {user?.role === "PHARMACIST" && (
+              <ListItemButton
+                onClick={() => {
+                  navigate("/pharmacist/patients");
+                  setDrawerOpen(false);
+                }}>
+                <ListItemIcon><PersonIcon /></ListItemIcon>
+                <ListItemText primary={"Patients"} />
+              </ListItemButton>
+            )}
+
           {(user?.role === "PHARMACIST") &&
               <ListItemButton
                   onClick={() => {
