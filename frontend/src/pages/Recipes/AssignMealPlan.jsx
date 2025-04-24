@@ -13,6 +13,7 @@ import {API_URL} from "../../utils/constants.js";
 import {useContext, useState} from "react";
 import {UserContext} from "../../contexts/UserContext.jsx";
 import {toast} from "sonner";
+import {useNavigate} from "react-router-dom";
 
 export default function AssignMealPlan() {
     const {user,roleData} = useContext(UserContext)
@@ -20,7 +21,7 @@ export default function AssignMealPlan() {
     const [breakfastId, setBreakfastId] = useState("");
     const [lunchId, setLunchId] = useState("");
     const [dinnerId, setDinnerId] = useState("");
-
+    const navigate = useNavigate()
 
     const handleChange = (event) => {
         setSelectedPatientId(event.target.value);
@@ -78,12 +79,22 @@ export default function AssignMealPlan() {
             }
 
             toast.success("Meal plan assigned successfully!");
+            navigate(-1)
+
 
         } catch (err) {
             toast.error(err.message);
         }
     };
 
+    if (patients?.length == 0){
+
+        return (
+            <Typography>
+                You currently have no assigned patients.
+            </Typography>
+        )
+    }
     return (
         <Container>
         <Typography sx={{fontWeight:"bold"}}>
@@ -92,11 +103,7 @@ export default function AssignMealPlan() {
         <Typography>
             Choose patient
         </Typography>
-            {patients?.length==0 ?
-                <Typography>
-                    You currently have no assigned patients.
-                </Typography>
-                :
+            {
                 isLoading ? (
                     <CircularProgress />
                 ) : (

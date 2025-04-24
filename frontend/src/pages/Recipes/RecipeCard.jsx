@@ -107,7 +107,7 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
 
 
     return (
-        <Card variant={"elevation"} elevation={1} sx={{ minWidth: 300, maxWidth: 600 }}>
+        <Card variant={"elevation"} elevation={1} sx={{ minWidth: 350, maxWidth: 600 }}>
             {!reduced &&
             <CardHeader
                 avatar={
