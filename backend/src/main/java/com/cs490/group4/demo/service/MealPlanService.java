@@ -1,7 +1,7 @@
 package com.cs490.group4.demo.service;
 
 import com.cs490.group4.demo.dao.*;
-import com.cs490.group4.demo.dto.MealPlanCreateRequest;
+import com.cs490.group4.demo.dto.MealPlanCreateRequestDTO;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +19,11 @@ public class MealPlanService {
     public List<MealPlan> findAll() {
         return mealPlanRepository.findAll();
     }
-
+    public List<MealPlan> findByPatientId(Integer patientId) {
+        return mealPlanRepository.findByPatientId(patientId);
+    }
     @Transactional
-    public MealPlan createMealPlan(MealPlanCreateRequest mealPlanDTO) {
+    public MealPlan createMealPlan(MealPlanCreateRequestDTO mealPlanDTO) {
         Patient patient = patientRepository.findById(mealPlanDTO.getPatientId()).orElseThrow(
                 ()->new EntityNotFoundException("Patient not found"));
         Recipe breakfast = recipeRepository.findById(mealPlanDTO.getBreakfastId()).orElseThrow(
