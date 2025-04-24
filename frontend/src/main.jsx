@@ -14,9 +14,11 @@ import DoctorDashboard from "./pages/Doctor/DoctorDashboard.jsx";
 import CompletePatientProfile from './pages/Patient/CompletePatientProfile.jsx';
 import Pharmacydashboard from './pages/Pharmacy/Pharmacydashboard.jsx';
 import CompleteDoctorProfile from './pages/Doctor/CompleteDoctorProfile.jsx';
+import Bills from "./pages/Pharmacy/Bills.jsx";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {Toaster} from 'sonner';
 import Prescriptions from './pages/Pharmacy/prescriptions.jsx';
+import Patients from "./pages/Pharmacy/Patients.jsx";
 
 
 import Recipes from "./pages/Recipes/Recipes.jsx";
@@ -95,7 +97,21 @@ const router = createBrowserRouter([
             <Auth allowedRoles={["PHARMACIST"]}>
                 <CompletePharmacyProfile/>
             </Auth>
-    },
+    },{
+        path: '/pharmacist/bills',
+        element:
+            <Auth allowedRoles={["PHARMACIST"]}>
+                <Bills/>
+            </Auth>
+    },    
+    {
+        path: "/pharmacist/patients",
+        element: (
+          <Auth allowedRoles={["PHARMACIST"]}>
+            <Patients />
+          </Auth>
+        )
+      },
     {
         path: "/recipes",
         element:
