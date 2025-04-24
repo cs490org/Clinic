@@ -13,6 +13,7 @@ import { API_URL } from '../../utils/constants';
 import axios from 'axios';
 import { toast } from 'sonner';
 import SearchPatients from "./Patients/SearchPatients.jsx";
+import DoctorPatients from "./Patients/DoctorPatients.jsx";
 
 const DoctorHomepage = () => {
     const { roleData } = useContext(UserContext);
@@ -54,6 +55,7 @@ const DoctorHomepage = () => {
                             This area should only show patients that are currently with me
                         </Typography>
                     </Box>
+                    <DoctorPatients />
                 </Paper>
                 {/*
                 <SearchPatients />

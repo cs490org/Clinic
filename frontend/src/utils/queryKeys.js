@@ -22,6 +22,9 @@ export const queryKeys = {
     },
     ingredients:{
         all:["ingredients"]
+    },
+    patients: {
+        byDoctor: (doctorId) => ['patients', 'byDoctor', doctorId],
     }
 
 };
