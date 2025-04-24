@@ -28,6 +28,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
 import FlatwareIcon from '@mui/icons-material/Flatware';
 import ReceiptIcon from '@mui/icons-material/Receipt';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
 
 
 export default function NavBar() {
@@ -156,6 +157,28 @@ export default function NavBar() {
               <ListItemText primary={"Recipes"} />
             </ListItemButton>
           }
+          {user?.role === "PATIENT" && (
+              <ListItemButton onClick={() => {
+                navigate("/mealplans");
+                setDrawerOpen(false);
+              }}>
+                <ListItemIcon>
+                  <RestaurantIcon/>
+                </ListItemIcon>
+                <ListItemText primary="View my Meal Plans" />
+              </ListItemButton>
+          )}
+          {user?.role === "DOCTOR" && (
+              <ListItemButton onClick={() => {
+                navigate("/mealplans/create");
+                setDrawerOpen(false);
+              }}>
+                <ListItemIcon>
+                  <RestaurantIcon/>
+                </ListItemIcon>
+                <ListItemText primary="Assign a Meal Plan" />
+              </ListItemButton>
+          )}
 
             {user?.role === "PHARMACIST" && (
               <ListItemButton

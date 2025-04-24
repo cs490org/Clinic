@@ -25,6 +25,7 @@ export const queryKeys = {
     },
     mealplans:{
         all:["mealplans"]
-    }
+    },
+
 
 };

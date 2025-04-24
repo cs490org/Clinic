@@ -15,4 +15,5 @@ public interface ChosenDoctorRepository extends JpaRepository<ChosenDoctor, Inte
     @Query("delete from ChosenDoctor where patient.id = :patientId")
     void deleteByPatientId(Integer patientId);
 
+
 }
