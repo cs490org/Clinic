@@ -31,6 +31,11 @@ public class ChosenDoctorService {
         return res;
     }
 
+    public ChosenDoctor getChosenDoctorByPatientId(Integer patientId) {
+        return chosenDoctorRepository.findByPatientId(patientId).orElseThrow(()->new RuntimeException("Could not find patient with id " + patientId));
+    }
+
+
     /**
      * creates a new entry if no previous patient has a doctor,
      * replaces existing entry if patient already had a doctor

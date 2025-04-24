@@ -31,6 +31,7 @@ import { UserContext } from '../../contexts/UserContext';
 const PatientDashboard = () => {
     const { user, roleData } = useContext(UserContext);
     const [doctors, setDoctors] = useState([]);
+    const [chosenDoctor, setChosenDoctor] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -50,11 +51,21 @@ const PatientDashboard = () => {
             } catch (err) {
                 setError(err.message);
             } finally {
-                setLoading(false);
+                // setLoading(false);
             }
+        };
+        const fetchChosenDoctor = async () => {
+            const { data } = await axios.get(`${API_URL}/patient/doctor?patientId=${roleData.id}`, {
+                withCredentials: true
+            });
+            // console.log(data);
+            setChosenDoctor(data.doctor);
         };
 
         fetchDoctors();
+        fetchChosenDoctor();
+        setLoading(false);
+
     }, []);
 
     const handleBookAppointment = async () => {
@@ -73,8 +84,11 @@ const PatientDashboard = () => {
 
         try {
             const response = await axios.post(`${API_URL}/appointments`, request, { withCredentials: true });
+            await axios.put(`${API_URL}/patient/doctor?patientId=${roleData.id}&doctorId=${selectedDoctor.id}`
+                , { withCredentials: true });
             toast.success('Appointment created successfully!');
-            console.log('Appointment created:', response.data);
+            // console.log('Appointment created:', response.data);
+            window.location.reload() // refresh for now, could store in query keys to avoid this
         } catch (error) {
             console.error('Error creating appointment:', error);
             toast.error('Failed to create appointment');
@@ -101,10 +115,19 @@ const PatientDashboard = () => {
             <Typography variant="h4" gutterBottom>
                 Patient Dashboard
             </Typography>
-
+            {chosenDoctor && (
+                <Box>
+                    <Typography sx={{fontWeight:"bold",fontSize:"1.5rem"}}>
+                        Chosen doctor
+                    </Typography>
+                    <Typography>
+                        {chosenDoctor.firstName} {chosenDoctor.lastName}
+                    </Typography>
+                </Box>
+            )}
 
             <Typography variant="h5" gutterBottom mt={4}>
-                Doctors
+                Doctor registry
             </Typography>
 
             {loading ? (
@@ -156,6 +179,13 @@ const PatientDashboard = () => {
                     </Table>
                 </TableContainer>
             )}
+
+
+
+
+
+
+
 
             <Dialog open={openBooking} onClose={handleCloseBooking}>
                 <DialogTitle>Book Appointment</DialogTitle>

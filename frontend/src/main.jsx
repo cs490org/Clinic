@@ -145,7 +145,7 @@ const router = createBrowserRouter([
     {
         path: "/mealplans",
         element:
-            <Auth allowedRoles={["PATIENT","DOCTOR"]}>
+            <Auth allowedRoles={["PATIENT"]}>
                 <ViewMealPlans/>
             </Auth>
     }

@@ -1,6 +1,7 @@
 package com.cs490.group4.demo.controller;
 
 import com.cs490.group4.demo.dao.ChosenDoctor;
+import com.cs490.group4.demo.dao.Doctor;
 import com.cs490.group4.demo.dao.Patient;
 import com.cs490.group4.demo.service.ChosenDoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,12 @@ public class ChosenDoctorController {
 
     @Autowired
     private ChosenDoctorService chosenDoctorService;
+
+    @GetMapping("/patient/doctor")
+    private ResponseEntity<ChosenDoctor> getChosenDoctor(@RequestParam Integer patientId) {
+        return ResponseEntity.ok(chosenDoctorService.getChosenDoctorByPatientId(patientId));
+    }
+
 
     @GetMapping("/doctor/patients")
     private ResponseEntity<List<Patient>> getPatientsByDoctor(@RequestParam Integer doctorId) {

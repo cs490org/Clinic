@@ -1,23 +1,27 @@
 import {Container, Paper, Stack, Typography} from "@mui/material";
 import {useQuery} from "@tanstack/react-query";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {API_URL} from "../../utils/constants.js";
 import RecipeCard from "./RecipeCard.jsx";
 import Box from "@mui/material/Box";
+import {UserContext} from "../../contexts/UserContext.jsx";
 
 export default function ViewMealPlans(){
-
+    const {user, roleData} = useContext(UserContext)
     const [mealPlans, setMealPlans] = useState([])
+
     useEffect(() => {
         const run = async () => {
-            const response = await fetch(API_URL + "/mealplans",
+            const response = await fetch(API_URL + `/mealplans/patient/${roleData.id}`,
                 {
                     method: "GET",
                     credentials: "include"
                 }
             )
-            const data = await response.json()
-            setMealPlans(data)
+            if(response.ok){
+                const data = await response.json()
+                setMealPlans(data)
+            }
         }
         run()
     }, []);
@@ -84,6 +88,10 @@ export default function ViewMealPlans(){
                 Assigned Meal Plan
             </Typography>
             {
+                mealPlans.length==0 ?
+                <Typography> You currently have no assigned meal plans.</Typography>
+
+                :
                 mealPlans.map((mealPlan,i)=>{
 
                     return <MealPlanCard
