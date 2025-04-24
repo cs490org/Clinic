@@ -95,9 +95,30 @@ const PatientDashboard = () => {
         setSymptoms('');
     };
 
+	const [appointments, setAppointments] = useState([]);
+
+	useEffect(() => {
+		async function run(){
+		const res = await fetch(API_URL + '/appointments', {
+			credentials: 'include'
+		});
+
+		if(res.ok){
+			setAppointments([...await res.json()]);
+		}
+		}
+
+		run();
+	}, []);
+
 
     return (
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+
+	    {appointments.map((a) => {
+		return <p key={'appointment_' + a.id}>{new Date(a.appointmentTimestamp).toDateString()}</p>
+	    })}
+
             <Typography variant="h4" gutterBottom>
                 Patient Dashboard
             </Typography>
