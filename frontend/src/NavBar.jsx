@@ -27,8 +27,16 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
 import FlatwareIcon from '@mui/icons-material/Flatware';
-import ReceiptIcon from '@mui/icons-material/Receipt';
+import Stack from '@mui/material/Stack';
+import SvgIcon from '@mui/material/SvgIcon';
 
+function HomeIcon(props) {
+  return (
+      <SvgIcon {...props}>
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+      </SvgIcon>
+  );
+}
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -98,196 +106,161 @@ export default function NavBar() {
   };
   const drawerWidth = 300
   return (
-    <>
-      <Drawer
-        open={drawerOpen}
-        onClose={toggleDrawer(false)}
-      >
-        <Box sx={{ width: drawerWidth, p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
-            <PersonIcon />
-          </Avatar>
-          <Box>
-            <Typography variant="subtitle1" fontWeight="bold">
-              {user?.firstName} {user?.lastName}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {user?.email}
-            </Typography>
+      <>
+        <Drawer
+            open={drawerOpen}
+            onClose={toggleDrawer(false)}
+        >
+          <Box sx={{ width: drawerWidth, p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
+              <PersonIcon />
+            </Avatar>
+            <Box>
+              <Typography variant="subtitle1" fontWeight="bold">
+                {user?.firstName} {user?.lastName}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {user?.email}
+              </Typography>
+            </Box>
           </Box>
-        </Box>
 
-        <Divider />
+          <Divider />
 
-        <List>
-          {user?.role === "PATIENT" && (
-            <ListItemButton onClick={() => {
-              navigate("/patient/dashboard");
-              setDrawerOpen(false);
-            }}>
-              <ListItemIcon>
-                <DashboardIcon />
-              </ListItemIcon>
-              <ListItemText primary="Patient Dashboard" />
-            </ListItemButton>
-          )}
-
-          {user?.role === "DOCTOR" && (
-            <ListItemButton onClick={() => {
-              navigate("/doctor/dashboard");
-              setDrawerOpen(false);
-            }}>
-              <ListItemIcon>
-                <DashboardIcon />
-              </ListItemIcon>
-              <ListItemText primary="Doctor Dashboard" />
-            </ListItemButton>
-          )}
-
-          {(user?.role === "PATIENT" || user?.role === "DOCTOR") &&
-            <ListItemButton
-              onClick={() => {
-                navigate("/recipes");
-                setDrawerOpen(false);
-              }}>
-              <ListItemIcon>
-                <FlatwareIcon />
-              </ListItemIcon>
-              <ListItemText primary={"Recipes"} />
-            </ListItemButton>
-          }
-
-            {user?.role === "PHARMACIST" && (
-              <ListItemButton
-                onClick={() => {
-                  navigate("/pharmacist/bills");
+          <List>
+            {user?.role === "PATIENT" && (
+                <ListItemButton onClick={() => {
+                  navigate("/patient/dashboard");
                   setDrawerOpen(false);
                 }}>
-                <ListItemIcon>
-                  <ReceiptIcon />
-                </ListItemIcon>
-                <ListItemText primary={"Bills"} />
-              </ListItemButton>
+                  <ListItemIcon>
+                    <DashboardIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Patient Dashboard" />
+                </ListItemButton>
             )}
 
-          {(user?.role === "PHARMACIST") &&
-              <ListItemButton
-                  onClick={() => {
-                    navigate("/pharmacist/dashboard");
-                    setDrawerOpen(false);
-                  }}>
-                <ListItemIcon>
-                </ListItemIcon>
-                <ListItemText primary={"Dashboard"}/>
-              </ListItemButton>
-          }
-          {user?.role === "PHARMACIST" && (
-              <ListItemButton
-                onClick={() => {
-                  navigate("/pharmacist/patients");
+            {user?.role === "DOCTOR" && (
+                <ListItemButton onClick={() => {
+                  navigate("/doctor/dashboard");
                   setDrawerOpen(false);
                 }}>
-                <ListItemIcon><PersonIcon /></ListItemIcon>
-                <ListItemText primary={"Patients"} />
-              </ListItemButton>
+                  <ListItemIcon>
+                    <DashboardIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Doctor Dashboard" />
+                </ListItemButton>
             )}
 
-          {(user?.role === "PHARMACIST") &&
-              <ListItemButton
-                  onClick={() => {
-                    navigate("/pharmacist/prescriptions");
-                    setDrawerOpen(false);
-                  }}>
-                <ListItemIcon>
-                </ListItemIcon>
-                <ListItemText primary={"Prescriptions"}/>
-              </ListItemButton>
-          }
-        </List>
+            {user?.role === "DOCTOR" && (
+                <ListItemButton onClick={() => {
+                  navigate("/doctor/homepage");
+                  setDrawerOpen(false);
+                }}>
+                  <ListItemIcon>
+                    <HomeIcon/>
+                  </ListItemIcon>
+                  <ListItemText primary="Doctor Homepage" />
+                </ListItemButton>
+            )}
 
-        <Divider />
-
-        <List>
-          <ListItemButton onClick={() => {
-            handleLogout();
-            setDrawerOpen(false);
-          }}>
-            <ListItemIcon>
-              <LogoutIcon />
-            </ListItemIcon>
-            <ListItemText primary="Logout" />
-          </ListItemButton>
-        </List>
-      </Drawer>
-
-
-      <AppBar position="fixed" elevation={0} sx={{ height:APP_BAR_HEIGHT,backgroundColor: "primary.main" }}>
-        <Toolbar>
-          <Box sx={{ display: "flex", gap: "1rem", flexGrow: 1 }}>
-            {user &&
-              <IconButton onClick={toggleDrawer(true)}>
-                <MenuIcon sx={{ color: "white" }} />
-              </IconButton>
+            {(user?.role === "PATIENT" || user?.role === "DOCTOR") &&
+                <ListItemButton
+                    onClick={() => {
+                      navigate("/recipes");
+                      setDrawerOpen(false);
+                    }}>
+                  <ListItemIcon>
+                    <FlatwareIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={"Recipes"} />
+                </ListItemButton>
             }
-            <Button
-              sx={{
-                ...buttonStyles.base,
-                ...buttonStyles.logo,
-                display: { xs: "none", sm: "block" }
-              }}
-              onClick={() => navigate("/")}
-            >
-              You Win, You Lose Clinic
-            </Button>
-          </Box>
+          </List>
 
-          <Box display="flex" gap={{ xs: 1, sm: 2 }}>
-            <IconButton
-              sx={{ color: "white" }}
-              onClick={() => {
-                setMode(mode === "light" ? "dark" : "light")
-              }}>
-              {mode === "light" ? <LightModeIcon /> : <DarkModeIcon />}
-            </IconButton>
-            {user ? (
-              <>
-                <Button
+          <Divider />
+
+          <List>
+            <ListItemButton onClick={() => {
+              handleLogout();
+              setDrawerOpen(false);
+            }}>
+              <ListItemIcon>
+                <LogoutIcon />
+              </ListItemIcon>
+              <ListItemText primary="Logout" />
+            </ListItemButton>
+          </List>
+        </Drawer>
+
+
+        <AppBar position="fixed" elevation={0} sx={{ height:APP_BAR_HEIGHT,backgroundColor: "primary.main" }}>
+          <Toolbar>
+            <Box sx={{ display: "flex", gap: "1rem", flexGrow: 1 }}>
+              {user &&
+                  <IconButton onClick={toggleDrawer(true)}>
+                    <MenuIcon sx={{ color: "white" }} />
+                  </IconButton>
+              }
+              <Button
                   sx={{
                     ...buttonStyles.base,
-                    ...buttonStyles.transparent
+                    ...buttonStyles.logo,
+                    display: { xs: "none", sm: "block" }
                   }}
-                  onClick={handleLogout}
-                >
-                  Logout
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button
-                  sx={{
-                    ...buttonStyles.base,
-                    ...buttonStyles.transparent
-                  }}
-                  onClick={() => navigate("/signin")}
-                >
-                  Sign In
-                </Button>
-                <Button
-                  sx={{
-                    ...buttonStyles.base,
-                    ...buttonStyles.white
-                  }}
-                  onClick={() => navigate("/signup")}
-                >
-                  Sign Up
-                </Button>
-              </>
-            )}
-          </Box>
-        </Toolbar>
-      </AppBar>
-      {/* This toolbar acts as a spacer */}
-      <Toolbar sx={{ mb:  3  }} />
-    </>
+                  onClick={() => navigate("/")}
+              >
+                You Win, You Lose Clinic
+              </Button>
+            </Box>
+
+            <Box display="flex" gap={{ xs: 1, sm: 2 }}>
+              <IconButton
+                  sx={{ color: "white" }}
+                  onClick={() => {
+                    setMode(mode === "light" ? "dark" : "light")
+                  }}>
+                {mode === "light" ? <LightModeIcon /> : <DarkModeIcon />}
+              </IconButton>
+              {user ? (
+                  <>
+                    <Button
+                        sx={{
+                          ...buttonStyles.base,
+                          ...buttonStyles.transparent
+                        }}
+                        onClick={handleLogout}
+                    >
+                      Logout
+                    </Button>
+                  </>
+              ) : (
+                  <>
+                    <Button
+                        sx={{
+                          ...buttonStyles.base,
+                          ...buttonStyles.transparent
+                        }}
+                        onClick={() => navigate("/signin")}
+                    >
+                      Sign In
+                    </Button>
+                    <Button
+                        sx={{
+                          ...buttonStyles.base,
+                          ...buttonStyles.white
+                        }}
+                        onClick={() => navigate("/signup")}
+                    >
+                      Sign Up
+                    </Button>
+                  </>
+              )}
+            </Box>
+          </Toolbar>
+        </AppBar>
+        {/* This toolbar acts as a spacer */}
+        <Toolbar sx={{ mb:  3  }} />
+      </>
   );
 }

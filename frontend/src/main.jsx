@@ -12,19 +12,12 @@ import SignupPage from './pages/SignupPage.jsx';
 import PatientDashboard from './pages/Patient/PatientDashboard.jsx';
 import DoctorDashboard from "./pages/Doctor/DoctorDashboard.jsx";
 import CompletePatientProfile from './pages/Patient/CompletePatientProfile.jsx';
-import Pharmacydashboard from './pages/Pharmacy/Pharmacydashboard.jsx';
 import CompleteDoctorProfile from './pages/Doctor/CompleteDoctorProfile.jsx';
-import Bills from "./pages/Pharmacy/Bills.jsx";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {Toaster} from 'sonner';
-import Prescriptions from './pages/Pharmacy/prescriptions.jsx';
-import Patients from "./pages/Pharmacy/Patients.jsx";
-
-
 import Recipes from "./pages/Recipes/Recipes.jsx";
 import RecipeCreate from "./pages/Recipes/RecipeCreate.jsx";
-import CompletePharmacyProfile from "./pages/Pharmacy/CompletePharmacyProfile.jsx";
-import IngredientCreate from "./pages/Recipes/Ingredients/IngredientCreate.jsx";
+import DoctorHomepage from "./pages/Doctor/DoctorHomepage.jsx";
 
 const queryClient = new QueryClient()
 const router = createBrowserRouter([
@@ -64,17 +57,10 @@ const router = createBrowserRouter([
             </Auth>
     },
     {
-        path: '/pharmacist/dashboard',
+        path: '/doctor/homepage',
         element:
-            <Auth allowedRoles={["PHARMACIST"]} >
-                <Pharmacydashboard/>
-            </Auth>
-    },
-    {
-        path: '/pharmacist/prescriptions',
-        element:
-            <Auth allowedRoles={["PHARMACIST"]}>
-                <Prescriptions/>
+            <Auth allowedRoles={["DOCTOR"]}>
+                <DoctorHomepage/>
             </Auth>
     },
     {
@@ -89,48 +75,20 @@ const router = createBrowserRouter([
         element:
             <Auth allowedRoles={["DOCTOR"]}>
                 <CompleteDoctorProfile/>
-            </Auth> 
+            </Auth>
     },
-    {
-        path: '/pharmacy/complete-profile',
-        element:
-            <Auth allowedRoles={["PHARMACIST"]}>
-                <CompletePharmacyProfile/>
-            </Auth>
-    },{
-        path: '/pharmacist/bills',
-        element:
-            <Auth allowedRoles={["PHARMACIST"]}>
-                <Bills/>
-            </Auth>
-    },    
-    {
-        path: "/pharmacist/patients",
-        element: (
-          <Auth allowedRoles={["PHARMACIST"]}>
-            <Patients />
-          </Auth>
-        )
-      },
     {
         path: "/recipes",
         element:
-        <Auth allowedRoles={["PATIENT","DOCTOR"]}>
-           <Recipes/>
-        </Auth>
+            <Auth allowedRoles={["PATIENT","DOCTOR"]}>
+                <Recipes/>
+            </Auth>
     },
     {
         path: "/recipes/create",
         element:
             <Auth allowedRoles={["PATIENT","DOCTOR"]}>
                 <RecipeCreate/>
-            </Auth>
-    },
-    {
-        path: "/ingredients/create",
-        element:
-            <Auth allowedRoles={["PATIENT","DOCTOR"]}>
-                <IngredientCreate/>
             </Auth>
     }
 ])
