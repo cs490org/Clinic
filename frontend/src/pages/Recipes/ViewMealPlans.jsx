@@ -30,7 +30,7 @@ export default function ViewMealPlans(){
         return (
             <Box>
                 <Stack alignItems={"center"} spacing={4}>
-                    <Paper sx={{display:"flex",flexDirection:"column",alignItems:"center"}}>
+                    <Paper sx={{ display:"flex",flexDirection:"column",alignItems:"center"}}>
                         <Typography sx={{fontWeight:"bold", fontSize:"1.8rem"}}>
                             Breakfast
                         </Typography>

@@ -68,7 +68,7 @@ export default function SearchPatients() {
     return (
         <Paper sx={{ p: 3 }}>
             <Stack spacing={2}>
-                <Typography fontSize={"2rem"} fontWeight={"bold"}>Patients</Typography>
+                <Typography fontSize={"2rem"} fontWeight={"bold"}>Patient Registry</Typography>
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems="center">
                     <FormControl sx={{ flex: 1, width: "100%" }}>
                         <InputLabel>Search by</InputLabel>
