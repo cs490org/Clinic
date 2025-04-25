@@ -5,26 +5,30 @@ import {API_URL} from "../../utils/constants.js";
 import RecipeCard from "./RecipeCard.jsx";
 import Box from "@mui/material/Box";
 import {UserContext} from "../../contexts/UserContext.jsx";
+import {queryKeys} from "../../utils/queryKeys.js";
+import {toast} from "sonner";
 
 export default function ViewMealPlans(){
     const {user, roleData} = useContext(UserContext)
-    const [mealPlans, setMealPlans] = useState([])
 
-    useEffect(() => {
-        const run = async () => {
-            const response = await fetch(API_URL + `/mealplans/patient/${roleData.id}`,
-                {
-                    method: "GET",
-                    credentials: "include"
-                }
-            )
-            if(response.ok){
+    const {data:mealPlans,isLoading} = useQuery({
+        queryKey:queryKeys.mealplans.all,
+        queryFn:async () => {
+            try{
+                const response = await fetch(API_URL + `/mealplans/patient/${roleData.id}`,
+                    {
+                        method: "GET",
+                        credentials: "include"
+                    }
+                )
                 const data = await response.json()
-                setMealPlans(data)
+                return data
+            }catch(e){
+                toast.error("Something went wrong when trying to get mealplans.")
+                console.log(e)
             }
         }
-        run()
-    }, []);
+    })
 
     const MealPlanCard = ({breakfast,lunch,dinner}) => {
         return (
@@ -88,11 +92,11 @@ export default function ViewMealPlans(){
                 Assigned Meal Plan
             </Typography>
             {
-                mealPlans.length==0 ?
+                !isLoading && mealPlans.length === 0 ?
                 <Typography> You currently have no assigned meal plans.</Typography>
 
                 :
-                mealPlans.map((mealPlan,i)=>{
+                mealPlans?.map((mealPlan,i)=>{
 
                     return <MealPlanCard
                         key={i}

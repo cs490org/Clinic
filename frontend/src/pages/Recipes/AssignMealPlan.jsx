@@ -6,17 +6,18 @@ import {
     InputLabel,
     MenuItem,
     Select,
+    Stack,
     Typography
 } from "@mui/material";
-import {useQuery} from "@tanstack/react-query";
-import {API_URL} from "../../utils/constants.js";
-import {useContext, useState} from "react";
-import {UserContext} from "../../contexts/UserContext.jsx";
-import {toast} from "sonner";
-import {useNavigate} from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { API_URL } from "../../utils/constants.js";
+import { useContext, useState } from "react";
+import { UserContext } from "../../contexts/UserContext.jsx";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 export default function AssignMealPlan() {
-    const {user,roleData} = useContext(UserContext)
+    const { user, roleData } = useContext(UserContext)
     const [selectedPatientId, setSelectedPatientId] = useState("");
     const [breakfastId, setBreakfastId] = useState("");
     const [lunchId, setLunchId] = useState("");
@@ -28,7 +29,7 @@ export default function AssignMealPlan() {
     };
 
 
-    const {data:patients, isLoading :recipesIsLoading} = useQuery({
+    const { data: patients, isLoading: recipesIsLoading } = useQuery({
         queryKey: ["doctors_patients"],
         queryFn: async () => {
             const res = await fetch(API_URL + `/doctor/patients?doctorId=${roleData.id}`, {
@@ -39,7 +40,7 @@ export default function AssignMealPlan() {
         }
     });
 
-    const {data:recipes, isLoading } = useQuery({
+    const { data: recipes, isLoading } = useQuery({
         queryKey: ["recipes"],
         queryFn: async () => {
             const res = await fetch(API_URL + `/recipes`, {
@@ -87,7 +88,7 @@ export default function AssignMealPlan() {
         }
     };
 
-    if (patients?.length == 0){
+    if (patients?.length == 0) {
 
         return (
             <Typography>
@@ -97,17 +98,17 @@ export default function AssignMealPlan() {
     }
     return (
         <Container>
-        <Typography sx={{fontWeight:"bold"}}>
-            Assign meal plan
-        </Typography>
-        <Typography>
-            Choose patient
-        </Typography>
+            <Typography sx={{ fontSize: "2rem", fontWeight: "bold", mb: "2rem" }}>
+                Assign meal plan
+            </Typography>
+            <Typography>
+                Choose patient
+            </Typography>
             {
                 isLoading ? (
                     <CircularProgress />
                 ) : (
-                    <FormControl fullWidth sx={{mt: 2}}>
+                    <FormControl fullWidth sx={{ mt: 2 }}>
                         <InputLabel id="patient-select-label">Patient</InputLabel>
                         <Select
                             labelId="patient-select-label"
@@ -125,13 +126,13 @@ export default function AssignMealPlan() {
             }
 
 
-            <Typography sx={{mt: 4}}>Choose recipes</Typography>
+            <Typography sx={{ mt: 4 }}>Choose recipes</Typography>
 
-            {recipesIsLoading? (
+            {recipesIsLoading ? (
                 <CircularProgress />
             ) : (
-                <>
-                    <FormControl fullWidth sx={{mt: 2}}>
+                <Stack spacing={2}>
+                    <FormControl fullWidth >
                         <InputLabel id="breakfast-select-label">Breakfast</InputLabel>
                         <Select
                             labelId="breakfast-select-label"
@@ -146,7 +147,7 @@ export default function AssignMealPlan() {
                         </Select>
                     </FormControl>
 
-                    <FormControl fullWidth sx={{mt: 2}}>
+                    <FormControl fullWidth >
                         <InputLabel id="lunch-select-label">Lunch</InputLabel>
                         <Select
                             labelId="lunch-select-label"
@@ -161,7 +162,7 @@ export default function AssignMealPlan() {
                         </Select>
                     </FormControl>
 
-                    <FormControl fullWidth sx={{mt: 2}}>
+                    <FormControl fullWidth >
                         <InputLabel id="dinner-select-label">Dinner</InputLabel>
                         <Select
                             labelId="dinner-select-label"
@@ -176,10 +177,10 @@ export default function AssignMealPlan() {
                         </Select>
                     </FormControl>
 
-                    <Button onClick={()=>submit()}>Assign</Button>
-                </>
+                    <Button variant="contained" onClick={() => submit()}>Assign</Button>
+                </Stack>
             )}
-            </Container>
+        </Container>
 
 
 
