@@ -1,4 +1,4 @@
-import {Container, Paper, Stack, Typography} from "@mui/material";
+import {Container, Divider, Paper, Stack, Typography} from "@mui/material";
 import {useQuery} from "@tanstack/react-query";
 import {useContext, useEffect, useState} from "react";
 import {API_URL} from "../../utils/constants.js";
@@ -98,12 +98,14 @@ export default function ViewMealPlans(){
                 :
                 mealPlans?.map((mealPlan,i)=>{
 
-                    return <MealPlanCard
-                        key={i}
-                    breakfast={mealPlan.breakfast}
-                    lunch={mealPlan.lunch}
-                    dinner={mealPlan.dinner}
-                    />
+                    return(
+                            <MealPlanCard
+                                key={i}
+                            breakfast={mealPlan.breakfast}
+                            lunch={mealPlan.lunch}
+                            dinner={mealPlan.dinner}
+                            />
+                    )
                 })
             }
         </Container>
