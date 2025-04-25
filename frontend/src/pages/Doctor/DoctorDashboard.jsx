@@ -15,6 +15,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import SearchPatients from "./Patients/SearchPatients.jsx";
 import DoctorPatients from './DoctorPatients';
+import DoctorQuickActions from './DoctorQuickActions.jsx';
 
 const DoctorDashboard = () => {
     const { roleData } = useContext(UserContext);
@@ -56,6 +57,10 @@ const DoctorDashboard = () => {
                     </Box>
                 </Box>
                 <Grid2 container spacing={2}>
+
+                    <Grid2 size={4}>
+                        <DoctorQuickActions />
+                    </Grid2>
                     <Grid2 size={12}>
                         <DoctorPatients />
                     </Grid2>
