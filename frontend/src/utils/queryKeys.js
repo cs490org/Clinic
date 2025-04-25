@@ -22,6 +22,10 @@ export const queryKeys = {
     },
     ingredients:{
         all:["ingredients"]
-    }
+    },
+    mealplans:{
+        all:["mealplans"]
+    },
+
 
 };

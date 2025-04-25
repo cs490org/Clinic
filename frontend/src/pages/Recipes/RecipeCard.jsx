@@ -18,7 +18,7 @@ import {UserContext} from "../../contexts/UserContext.jsx";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {queryKeys} from "../../utils/queryKeys.js";
 
-export default function RecipeCard({ id, author, recipeName, createTimestamp, image, description,instructions }) {
+export default function RecipeCard({ id, author, recipeName, createTimestamp, image, description,instructions,reduced=false}) {
 
     const queryClient = useQueryClient()
     const {user} = useContext(UserContext)
@@ -107,7 +107,8 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
 
 
     return (
-        <Card variant={"elevation"} elevation={1} sx={{ minWidth: 300, maxWidth: 600 }}>
+        <Card variant={"elevation"} elevation={1} sx={{ minWidth: 350, maxWidth: 600 }}>
+            {!reduced &&
             <CardHeader
                 avatar={
                     <Avatar>
@@ -121,11 +122,21 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
                 }
                 subheader={dayjs(createTimestamp).format('MMMM D, YYYY')}
             />
+            }
+            {!reduced ?
             <CardMedia
                 component="img"
                 image={image}
                 alt={image}
             />
+                :
+            <CardMedia
+                sx={{height:140}}
+                component="img"
+                image={image}
+                alt={image}
+            />
+            }
             <CardContent>
                 <Typography sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>
                     {recipeName}
@@ -136,26 +147,30 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
                 </Typography>
                 <Divider></Divider>
 
-                <Typography mt="1rem"  fontWeight={"medium"} fontSize={"1.1rem"}>
-                    Nutrition information:
-                </Typography>
-                {
-                    ["fats","carbs","protein"].map((category,i)=>
+                {!reduced &&
+                    <>
+                        <Typography mt="1rem"  fontWeight={"medium"} fontSize={"1.1rem"}>
+                            Nutrition information:
+                        </Typography>
+                        {
+                            ["fats","carbs","protein"].map((category,i)=>
+                                <Typography>
+                                    {
+                                        ingredientDTOs?.reduce((acc,ingredientDTO)=>{return acc+ingredientDTO.ingredient[category]*ingredientDTO.quantity},0)
+                                        + `g ${category}`
+                                    }
+                                </Typography>
+                            )
+                        }
+                        <Divider></Divider>
                         <Typography>
                             {
-                                ingredientDTOs?.reduce((acc,ingredientDTO)=>{return acc+ingredientDTO.ingredient[category]*ingredientDTO.quantity},0)
-                                + `g ${category}`
+                                ingredientDTOs?.reduce((acc,ingredientDTO)=>{return acc+ingredientDTO.ingredient.calories*ingredientDTO.quantity},0)
+                                + " calories"
                             }
                         </Typography>
-                    )
+                    </>
                 }
-                <Divider></Divider>
-                <Typography>
-                    {
-                        ingredientDTOs?.reduce((acc,ingredientDTO)=>{return acc+ingredientDTO.ingredient.calories*ingredientDTO.quantity},0)
-                        + " calories"
-                    }
-                </Typography>
 
                 {!ingredientsIsLoading && ingredientDTOs &&
                 <>
@@ -181,83 +196,88 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
 
 
             </CardContent>
-            <CardActions sx={{mt:"-16px"}}disableSpacing>
-                {
-                    !commentsIsLoading&& comments && comments.length > 0 &&
-                    <Button
-                        onClick={handleExpandClick}
-                        sx={{color:"text.secondary", fontSize:".9rem",textTransform:"none"}}
-                    >
-                        {
-                            comments.length === 1 ?
-                                `View ${ comments.length} comment...`
-                            :
-                            `View all ${ comments.length} comments...`
-                        }
-
-                    </Button>
-                }
-
-            </CardActions>
-            <Collapse in={expanded} timeout={"auto"} unmountOnExit>
-                <CardContent>
-                    {!commentsIsLoading && comments &&
-                        <Stack sx={{mt:"-8px"}} spacing={2}>
-
-                            {comments.length === 0 && <Typography>No comments found.</Typography>}
-                            {comments.length > 0 &&
-                                comments.map((commentDTO,i)=>{
-                                    return (
-                                            <Stack key={i} direction={"row"} spacing={1.5}>
-                                                <Avatar>D</Avatar>
-                                                <Stack>
-
-                                                        <Typography sx={{fontSize:"1.05rem",fontWeight:"bold"}}>{commentDTO.commenter}</Typography>
-                                                        <Typography >{commentDTO.comment}</Typography>
-                                                </Stack>
-                                            </Stack>
-                                    )
-                                })
+            {
+                !reduced&&
+            <>
+                <CardActions sx={{mt:"-16px"}}disableSpacing>
+                    {
+                        !commentsIsLoading&& comments && comments.length > 0 &&
+                        <Button
+                            onClick={handleExpandClick}
+                            sx={{color:"text.secondary", fontSize:".9rem",textTransform:"none"}}
+                        >
+                            {
+                                comments.length === 1 ?
+                                    `View ${ comments.length} comment...`
+                                :
+                                `View all ${ comments.length} comments...`
                             }
 
+                        </Button>
+                    }
+
+                </CardActions>
+                <Collapse in={expanded} timeout={"auto"} unmountOnExit>
+                    <CardContent>
+                        {!commentsIsLoading && comments &&
+                            <Stack sx={{mt:"-8px"}} spacing={2}>
+
+                                {comments.length === 0 && <Typography>No comments found.</Typography>}
+                                {comments.length > 0 &&
+                                    comments.map((commentDTO,i)=>{
+                                        return (
+                                                <Stack key={i} direction={"row"} spacing={1.5}>
+                                                    <Avatar>D</Avatar>
+                                                    <Stack>
+
+                                                            <Typography sx={{fontSize:"1.05rem",fontWeight:"bold"}}>{commentDTO.commenter}</Typography>
+                                                            <Typography >{commentDTO.comment}</Typography>
+                                                    </Stack>
+                                                </Stack>
+                                        )
+                                    })
+                                }
+
+
+                            </Stack>
+                        }
+                    </CardContent>
+                </Collapse>
+                <form onSubmit={onCommentSubmit}>
+                    <CardActions sx={{pl:"16px",marginTop:-2}}>
+
+                        <Stack direction={"row"} spacing={1} width={"100%"}>
+                                <TextField
+                                    variant="standard"
+                                    sx={{
+                                        input: {
+                                            fontSize:".9rem"
+                                        }
+                                    }}
+                                    slotProps={{
+                                        input:{
+                                            disableUnderline:true
+                                        }
+                                    }}
+                                    fullWidth
+                                    placeholder={"Type a comment..."}
+                                    value={enteredComment}
+                                    onChange={(e)=>setEnteredComment(e.target.value)}
+                                />
+
+                                {
+                                    enteredComment &&
+
+                                    <IconButton
+                                        type={"submit"}
+                                        sx={{p:0,pr:"8px"}}><ArrowUpwardIcon /></IconButton>
+                                }
 
                         </Stack>
-                    }
-                </CardContent>
-            </Collapse>
-            <form onSubmit={onCommentSubmit}>
-                <CardActions sx={{pl:"16px",marginTop:-2}}>
-
-                    <Stack direction={"row"} spacing={1} width={"100%"}>
-                            <TextField
-                                variant="standard"
-                                sx={{
-                                    input: {
-                                        fontSize:".9rem"
-                                    }
-                                }}
-                                slotProps={{
-                                    input:{
-                                        disableUnderline:true
-                                    }
-                                }}
-                                fullWidth
-                                placeholder={"Type a comment..."}
-                                value={enteredComment}
-                                onChange={(e)=>setEnteredComment(e.target.value)}
-                            />
-
-                            {
-                                enteredComment &&
-
-                                <IconButton
-                                    type={"submit"}
-                                    sx={{p:0,pr:"8px"}}><ArrowUpwardIcon /></IconButton>
-                            }
-
-                    </Stack>
-                </CardActions>
-            </form>
+                    </CardActions>
+                </form>
+            </>
+            }
         </Card>
     )
 }

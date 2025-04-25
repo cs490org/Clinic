@@ -1,14 +1,8 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useContext } from 'react';
 import {
     Container,
     Typography,
     Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
     CircularProgress,
     Box,
     Dialog,
@@ -16,7 +10,7 @@ import {
     DialogContent,
     DialogActions,
     Button,
-    TextField,
+    TextField, Grid2,
 } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -24,38 +18,29 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs from 'dayjs';
 import { API_URL } from '../../utils/constants';
 import axios from 'axios';
-import SelectPharmacy from "./Pharmacy/SelectPharmacy.jsx";
 import { toast } from 'sonner';
 import { UserContext } from '../../contexts/UserContext';
+import { useQuery } from "@tanstack/react-query";
+import MealPlansWidget from "./MealPlansWidget.jsx";
+import AllDoctors from './AllDoctors';
 
 const PatientDashboard = () => {
     const { user, roleData } = useContext(UserContext);
-    const [doctors, setDoctors] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
     const [openBooking, setOpenBooking] = useState(false);
     const [selectedDoctor, setSelectedDoctor] = useState(null);
     const [selectedDateTime, setSelectedDateTime] = useState(dayjs());
     const [symptoms, setSymptoms] = useState('');
 
-    useEffect(() => {
-        const fetchDoctors = async () => {
-            try {
-                const { data } = await axios.get(`${API_URL}/doctors`, {
-                    withCredentials: true
-                });
-                // console.log(data);
-                setDoctors(data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchDoctors();
-    }, []);
+    const { data: chosenDoctor, isLoading: chosenDoctorIsLoading } = useQuery({
+        queryKey: "chosen_doctor",
+        queryFn: async () => {
+            const res = await fetch(API_URL + `/patient/doctor?patientId=${roleData.id}`, {
+                credentials: 'include'
+            });
+            if (!res.ok) throw new Error('Failed to fetch pharmacies');
+            return res.json();
+        }
+    });
 
     const handleBookAppointment = async () => {
         const request = {
@@ -73,8 +58,10 @@ const PatientDashboard = () => {
 
         try {
             const response = await axios.post(`${API_URL}/appointments`, request, { withCredentials: true });
+            await axios.put(`${API_URL}/patient/doctor?patientId=${roleData.id}&doctorId=${selectedDoctor.id}`
+                , { withCredentials: true });
             toast.success('Appointment created successfully!');
-            console.log('Appointment created:', response.data);
+            window.location.reload()
         } catch (error) {
             console.error('Error creating appointment:', error);
             toast.error('Failed to create appointment');
@@ -95,67 +82,40 @@ const PatientDashboard = () => {
         setSymptoms('');
     };
 
-
     return (
-        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+        <Container maxWidth="xl" sx={{ mt: 4, mb: 4, px: 4 }}>
             <Typography variant="h4" gutterBottom>
                 Patient Dashboard
             </Typography>
+            <Grid2 container spacing={3}>
+                <Grid2 size={4}>
+                    <Paper sx={{ height: "100%", p: "1rem" }}>
+                        <Typography sx={{ fontWeight: "bold", fontSize: "1.5rem" }}>
+                            Chosen doctor
+                        </Typography>
 
+                        {chosenDoctor ? (
+                            <Typography>
+                                {chosenDoctor.doctor.firstName} {chosenDoctor.doctor.lastName}
+                            </Typography>
+                        )
+                            :
+                            (
+                                <Typography>
+                                    You currently do not have a chosen doctor. To choose one, make an appointment.
+                                </Typography>
+                            )
+                        }
+                    </Paper>
+                </Grid2>
 
-            <Typography variant="h5" gutterBottom mt={4}>
-                Doctors
-            </Typography>
-
-            {loading ? (
-                <Box display="flex" justifyContent="center" p={4}>
-                    <CircularProgress />
-                </Box>
-            ) : error ? (
-                <Paper sx={{ p: 3, textAlign: 'center' }}>
-                    <Typography color="error">{error}</Typography>
-                </Paper>
-            ) : (
-                <TableContainer component={Paper}>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell><strong>Name</strong></TableCell>
-                                <TableCell><strong>Specialty</strong></TableCell>
-                                <TableCell><strong>Email</strong></TableCell>
-                                <TableCell><strong>Phone</strong></TableCell>
-                                <TableCell><strong>Book Appointment</strong></TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {doctors.map((doctor, index) => (
-                                <TableRow key={index}>
-                                    <TableCell>Dr. {doctor.firstName} {doctor.lastName}</TableCell>
-                                    <TableCell>{doctor.specialty}</TableCell>
-                                    <TableCell>{doctor.email}</TableCell>
-                                    <TableCell>{doctor.phone}</TableCell>
-                                    <TableCell>
-                                        <Button
-                                            variant="contained"
-                                            color="primary"
-                                            onClick={() => handleBookClick(doctor)}
-                                            disabled={!doctor.acceptingNewPatients}
-                                            sx={{
-                                                opacity: doctor.acceptingNewPatients ? 1 : 0.5,
-                                                '&:hover': {
-                                                    opacity: doctor.acceptingNewPatients ? 0.9 : 0.5
-                                                }
-                                            }}
-                                        >
-                                            {doctor.acceptingNewPatients ? 'Book Appointment' : 'Not Accepting Patients'}
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            )}
+                <Grid2 size={8}>
+                    <AllDoctors onBookClick={handleBookClick} />
+                </Grid2>
+                <Grid2 size={4}>
+                    <MealPlansWidget />
+                </Grid2>
+            </Grid2>
 
             <Dialog open={openBooking} onClose={handleCloseBooking}>
                 <DialogTitle>Book Appointment</DialogTitle>
@@ -190,8 +150,6 @@ const PatientDashboard = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-
-
         </Container>
     );
 };
