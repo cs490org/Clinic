@@ -19,7 +19,7 @@ import {
   Avatar,
 } from "@mui/material";
 import { UserContext } from './contexts/UserContext';
-import {API_URL, APP_BAR_HEIGHT} from './utils/constants';
+import { API_URL, APP_BAR_HEIGHT } from './utils/constants';
 import MenuIcon from '@mui/icons-material/Menu';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
@@ -66,16 +66,16 @@ export default function NavBar() {
     base: {
       py: 0.8,
       px: 2,
-      fontSize: '1rem' ,
+      fontSize: '1rem',
       fontWeight: 500,
       borderRadius: 1.5,
-      minWidth: '100px' ,
+      minWidth: '100px',
       textTransform: "none"
     },
     logo: {
       color: "white",
       fontWeight: "bold",
-      fontSize: "1.25rem" ,
+      fontSize: "1.25rem",
       padding: "0.5rem",
       '&:hover': {
         backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -158,73 +158,84 @@ export default function NavBar() {
             </ListItemButton>
           }
           {user?.role === "PATIENT" && (
-              <ListItemButton onClick={() => {
-                navigate("/mealplans");
-                setDrawerOpen(false);
-              }}>
-                <ListItemIcon>
-                  <RestaurantIcon/>
-                </ListItemIcon>
-                <ListItemText primary="View my Meal Plans" />
-              </ListItemButton>
+            <ListItemButton onClick={() => {
+              navigate("/mealplans");
+              setDrawerOpen(false);
+            }}>
+              <ListItemIcon>
+                <RestaurantIcon />
+              </ListItemIcon>
+              <ListItemText primary="View my Meal Plans" />
+            </ListItemButton>
           )}
           {user?.role === "DOCTOR" && (
-              <ListItemButton onClick={() => {
-                navigate("/mealplans/create");
-                setDrawerOpen(false);
-              }}>
-                <ListItemIcon>
-                  <RestaurantIcon/>
-                </ListItemIcon>
-                <ListItemText primary="Assign a Meal Plan" />
-              </ListItemButton>
+            <ListItemButton onClick={() => {
+              navigate("/mealplans/create");
+              setDrawerOpen(false);
+            }}>
+              <ListItemIcon>
+                <RestaurantIcon />
+              </ListItemIcon>
+              <ListItemText primary="Assign a Meal Plan" />
+            </ListItemButton>
+          )}
+          {user?.role === "DOCTOR" && (
+            <ListItemButton onClick={() => {
+              navigate("/patients");
+              setDrawerOpen(false);
+            }}>
+              <ListItemIcon>
+                <DashboardIcon />
+              </ListItemIcon>
+              <ListItemText primary="Patient Registry" />
+            </ListItemButton>
           )}
 
-            {user?.role === "PHARMACIST" && (
-              <ListItemButton
-                onClick={() => {
-                  navigate("/pharmacist/bills");
-                  setDrawerOpen(false);
-                }}>
-                <ListItemIcon>
-                  <ReceiptIcon />
-                </ListItemIcon>
-                <ListItemText primary={"Bills"} />
-              </ListItemButton>
-            )}
+          {user?.role === "PHARMACIST" && (
+            <ListItemButton
+              onClick={() => {
+                navigate("/pharmacist/bills");
+                setDrawerOpen(false);
+              }}>
+              <ListItemIcon>
+                <ReceiptIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Bills"} />
+            </ListItemButton>
+          )}
 
           {(user?.role === "PHARMACIST") &&
-              <ListItemButton
-                  onClick={() => {
-                    navigate("/pharmacist/dashboard");
-                    setDrawerOpen(false);
-                  }}>
-                <ListItemIcon>
-                </ListItemIcon>
-                <ListItemText primary={"Dashboard"}/>
-              </ListItemButton>
+            <ListItemButton
+              onClick={() => {
+                navigate("/pharmacist/dashboard");
+                setDrawerOpen(false);
+              }}>
+              <ListItemIcon>
+              </ListItemIcon>
+              <ListItemText primary={"Dashboard"} />
+            </ListItemButton>
           }
           {user?.role === "PHARMACIST" && (
-              <ListItemButton
-                onClick={() => {
-                  navigate("/pharmacist/patients");
-                  setDrawerOpen(false);
-                }}>
-                <ListItemIcon><PersonIcon /></ListItemIcon>
-                <ListItemText primary={"Patients"} />
-              </ListItemButton>
-            )}
+            <ListItemButton
+              onClick={() => {
+                navigate("/pharmacist/patients");
+                setDrawerOpen(false);
+              }}>
+              <ListItemIcon><PersonIcon /></ListItemIcon>
+              <ListItemText primary={"Patients"} />
+            </ListItemButton>
+          )}
 
           {(user?.role === "PHARMACIST") &&
-              <ListItemButton
-                  onClick={() => {
-                    navigate("/pharmacist/prescriptions");
-                    setDrawerOpen(false);
-                  }}>
-                <ListItemIcon>
-                </ListItemIcon>
-                <ListItemText primary={"Prescriptions"}/>
-              </ListItemButton>
+            <ListItemButton
+              onClick={() => {
+                navigate("/pharmacist/prescriptions");
+                setDrawerOpen(false);
+              }}>
+              <ListItemIcon>
+              </ListItemIcon>
+              <ListItemText primary={"Prescriptions"} />
+            </ListItemButton>
           }
         </List>
 
@@ -244,7 +255,7 @@ export default function NavBar() {
       </Drawer>
 
 
-      <AppBar position="fixed" elevation={0} sx={{ height:APP_BAR_HEIGHT,backgroundColor: "primary.main" }}>
+      <AppBar position="fixed" elevation={0} sx={{ height: APP_BAR_HEIGHT, backgroundColor: "primary.main" }}>
         <Toolbar>
           <Box sx={{ display: "flex", gap: "1rem", flexGrow: 1 }}>
             {user &&
@@ -310,7 +321,7 @@ export default function NavBar() {
         </Toolbar>
       </AppBar>
       {/* This toolbar acts as a spacer */}
-      <Toolbar sx={{ mb:  3  }} />
+      <Toolbar sx={{ mb: 3 }} />
     </>
   );
 }

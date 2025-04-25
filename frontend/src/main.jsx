@@ -27,6 +27,7 @@ import CompletePharmacyProfile from "./pages/Pharmacy/CompletePharmacyProfile.js
 import IngredientCreate from "./pages/Recipes/Ingredients/IngredientCreate.jsx";
 import AssignMealPlan from "./pages/Recipes/AssignMealPlan.jsx";
 import ViewMealPlans from "./pages/Recipes/ViewMealPlans.jsx";
+import SearchPatients from "./pages/Doctor/Patients/SearchPatients.jsx";
 
 const queryClient = new QueryClient()
 const router = createBrowserRouter([
@@ -92,6 +93,13 @@ const router = createBrowserRouter([
             <Auth allowedRoles={["DOCTOR"]}>
                 <CompleteDoctorProfile/>
             </Auth> 
+    },
+    {
+        path: '/patients',
+        element:
+            <Auth allowedRoles={["PATIENT","DOCTOR","PHARMACIST"]}>
+                <SearchPatients/>
+            </Auth>
     },
     {
         path: '/pharmacy/complete-profile',

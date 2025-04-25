@@ -3,7 +3,8 @@ import {
     Typography,
     Stack,
     Switch,
-    Box
+    Box,
+    Grid2,
 } from '@mui/material';
 import { useContext } from 'react';
 import { UserContext } from '../../contexts/UserContext';
@@ -13,6 +14,7 @@ import { API_URL } from '../../utils/constants';
 import axios from 'axios';
 import { toast } from 'sonner';
 import SearchPatients from "./Patients/SearchPatients.jsx";
+import DoctorPatients from './DoctorPatients';
 
 const DoctorDashboard = () => {
     const { roleData } = useContext(UserContext);
@@ -33,8 +35,8 @@ const DoctorDashboard = () => {
     };
 
     return (
-        <Container sx={{ mt: 4 }}>
-            <Stack spacing={2}>
+        <Container maxWidth="xl" sx={{ mt: 4, mb: 4, px: 4 }}>
+            <Stack spacing={3}>
                 <Box sx={{
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -53,13 +55,19 @@ const DoctorDashboard = () => {
                         />
                     </Box>
                 </Box>
-                <SearchPatients />
-                <Stack direction={"row"} spacing={2} flexWrap={"wrap"}>
-                    <ConfirmedAppointments />
-                    <PendingAppointments />
-                </Stack>
+                <Grid2 container spacing={2}>
+                    <Grid2 size={12}>
+                        <DoctorPatients />
+                    </Grid2>
+                    <Grid2 size={4}>
+                        <ConfirmedAppointments />
+                    </Grid2>
+                    <Grid2 size={4}>
+                        <PendingAppointments />
+                    </Grid2>
+                </Grid2>
             </Stack>
-        </Container>
+        </Container >
     );
 };
 
