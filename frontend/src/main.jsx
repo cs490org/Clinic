@@ -14,6 +14,7 @@ import DoctorDashboard from "./pages/Doctor/DoctorDashboard.jsx";
 import CompletePatientProfile from './pages/Patient/CompletePatientProfile.jsx';
 import Pharmacydashboard from './pages/Pharmacy/Pharmacydashboard.jsx';
 import CompleteDoctorProfile from './pages/Doctor/CompleteDoctorProfile.jsx';
+import ViewPatientHealth from './pages/Doctor/Patients/ViewPatientHealth.jsx';
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {Toaster} from 'sonner';
 import Prescriptions from './pages/Pharmacy/prescriptions.jsx';
@@ -116,6 +117,22 @@ const router = createBrowserRouter([
             <Auth allowedRoles={["PATIENT","DOCTOR"]}>
                 <IngredientCreate/>
             </Auth>
+    },
+    {
+        path: "/doctor/view-patient-health/:id",
+        element:(
+            <Auth allowedRoles={["DOCTOR"]}>
+                <ViewPatientHealth />
+            </Auth>
+        )
+    },
+    {
+        path:"/view-patient-health/:id",
+        element: (
+            <Auth allowedRoles={["DOCTOR"]}>
+                <ViewPatientHealth />
+            </Auth>
+        )
     }
 ])
 
