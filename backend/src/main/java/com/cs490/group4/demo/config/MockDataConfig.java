@@ -31,8 +31,18 @@ public class MockDataConfig {
 
     private final ArrayList<Recipe> recipes = new ArrayList<>();
 
+    // loads mock data if the corresponding tables are initially empty.
+    /*
+        mock accounts
+        all accounts have password123 as password
+
+        doctor@clinic.com
+        patient@clinic.com
+        pharmacy@clinic.com
+     */
+
     @Bean
-    CommandLineRunner mockDataInitializer(RecipeCommentService recipeCommentService ) {
+    CommandLineRunner mockDataInitializer(RecipeCommentService recipeCommentService, DailySurveyService dailySurveyService, MockDailySurvey mockDailySurvey) {
         return args -> {
             if (doctorService.isEmpty()) {
                 mockDoctor.createMockDoctor(
@@ -54,8 +64,8 @@ public class MockDataConfig {
             if (patientService.isEmpty()) {
                 mockPatient.createMockPatient(
                         "patient@clinic.com",
-                        "Luigi",
-                        "Mario",
+                        "Test",
+                        "Patient",
                         "1234567890",
                         "somewhere");
             }
@@ -275,6 +285,10 @@ public class MockDataConfig {
                             comments[commentIndex]
                     );
                 }
+            }
+
+            if(!patientService.isEmpty() && dailySurveyService.isEmpty()) {
+                mockDailySurvey.createMockDailySurvey(1,2100,8);
             }
 
 
