@@ -23,6 +23,7 @@ import { UserContext } from '../../contexts/UserContext';
 import { useQuery } from "@tanstack/react-query";
 import MealPlansWidget from "./MealPlansWidget.jsx";
 import AllDoctors from './AllDoctors';
+import PatientSurvey from "./PatientSurvey.jsx";
 
 const PatientDashboard = () => {
     const { user, roleData } = useContext(UserContext);
@@ -112,9 +113,13 @@ const PatientDashboard = () => {
                 <Grid2 size={8}>
                     <AllDoctors onBookClick={handleBookClick} />
                 </Grid2>
+                <Grid2 size={8}>
+                    <PatientSurvey/>
+                </Grid2>
                 <Grid2 size={4}>
                     <MealPlansWidget />
                 </Grid2>
+
             </Grid2>
 
             <Dialog open={openBooking} onClose={handleCloseBooking}>
