@@ -23,7 +23,7 @@ public class MockPatient {
             String phone,
             String address) {
         Patient patient = new Patient();
-        User user = mockUser.createMockUser(Role.PATIENT, email, "p", firstName, lastName);
+        User user = mockUser.createMockUser(Role.PATIENT, email, "password123", firstName, lastName);
         patient.setEmail(email);
         patient.setFirstName(firstName);
         patient.setLastName(lastName);
