@@ -35,7 +35,6 @@ public class DailySurveyService {
         dailySurvey.setSurveyDate(dto.getSurveyDate());
         return dailySurveyRepository.save(dailySurvey);
     }
-
     public Boolean checkIfPatientDidSurveyForToday(Integer patientId) {
         List<DailySurvey> surveys = dailySurveyRepository.findByPatientId(patientId);
         for(DailySurvey survey : surveys) {

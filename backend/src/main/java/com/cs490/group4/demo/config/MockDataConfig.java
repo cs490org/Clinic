@@ -43,7 +43,7 @@ public class MockDataConfig {
      */
 
     @Bean
-    CommandLineRunner mockDataInitializer(RecipeCommentService recipeCommentService, DailySurveyService dailySurveyService, MockDailySurvey mockDailySurvey) {
+    CommandLineRunner mockDataInitializer(RecipeCommentService recipeCommentService, DailySurveyService dailySurveyService, MockDailySurvey mockDailySurvey, WeeklySurveyService weeklySurveyService, MockWeeklySurvey mockWeeklySurvey) {
         return args -> {
             if (doctorService.isEmpty()) {
                 mockDoctor.createMockDoctor(
@@ -289,9 +289,29 @@ public class MockDataConfig {
             }
 
             if(!patientService.isEmpty() && dailySurveyService.isEmpty()) {
-                mockDailySurvey.createMockDailySurvey(1,2100,8, LocalDate.now().minusDays(1));
-                mockDailySurvey.createMockDailySurvey(1,2150,7, LocalDate.now().minusDays(2));
-                mockDailySurvey.createMockDailySurvey(1,2050,9, LocalDate.now().minusDays(3));
+                Random random = new Random();
+
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(1));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(2));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(3));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(4));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(6));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(7));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(8));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(11));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(13));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(16));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(19));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(20));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(21));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(22));
+            }
+            if(!patientService.isEmpty() && weeklySurveyService.isEmpty()) {
+                Random random = new Random();
+
+                mockWeeklySurvey.createMockWeeklySurvey(1,random.nextFloat(140,150),LocalDate.now().minusDays(7));
+                mockWeeklySurvey.createMockWeeklySurvey(1,random.nextFloat(140,150),LocalDate.now().minusDays(14));
+                mockWeeklySurvey.createMockWeeklySurvey(1,random.nextFloat(140,150),LocalDate.now().minusDays(21));
             }
 
 
