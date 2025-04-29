@@ -25,6 +25,11 @@ public class DailySurveyController {
     public ResponseEntity<List<DailySurvey>> getDailySurveyFromPatientId(@RequestParam Integer patientId) {
         return ResponseEntity.ok(dailySurveyService.getDailySurveysForPatientId(patientId));
     }
+    @GetMapping("/did_it")
+    public ResponseEntity<Boolean> isDailySurveyExists(@RequestParam Integer patientId) {
+        return ResponseEntity.ok(dailySurveyService.checkIfPatientDidSurveyForToday(patientId));
+    }
+
 
     @PostMapping
     public ResponseEntity<DailySurvey> postDailySurvey(@RequestBody DailySurveyCreateRequestDTO dto) {
