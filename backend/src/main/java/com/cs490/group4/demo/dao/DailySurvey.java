@@ -2,6 +2,7 @@ package com.cs490.group4.demo.dao;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NonNull;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
