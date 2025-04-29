@@ -1,13 +1,13 @@
 package com.cs490.group4.demo.controller;
 
 import com.cs490.group4.demo.dao.DailySurvey;
+import com.cs490.group4.demo.dto.DailySurveyCreateRequestDTO;
 import com.cs490.group4.demo.service.DailySurveyService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -25,4 +25,11 @@ public class DailySurveyController {
     public ResponseEntity<List<DailySurvey>> getDailySurveyFromPatientId(@RequestParam Integer patientId) {
         return ResponseEntity.ok(dailySurveyService.getDailySurveysForPatientId(patientId));
     }
+
+    @PostMapping
+    public ResponseEntity<DailySurvey> postDailySurvey(@RequestBody DailySurveyCreateRequestDTO dto) {
+        dto.setSurveyDate(LocalDate.now());
+        return ResponseEntity.ok(dailySurveyService.postDailySurvey(dto));
+    }
+
 }
