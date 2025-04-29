@@ -9,7 +9,7 @@ import {
     Typography
 } from "@mui/material";
 import { LineChart } from "@mui/x-charts/LineChart";
-import { useQuery } from "@tanstack/react-query";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import { queryKeys } from "../../utils/queryKeys.js";
 import { API_URL } from "../../utils/constants.js";
 import {useContext, useState} from "react";
@@ -24,6 +24,16 @@ export default function PatientSurvey() {
         queryKey: queryKeys.daily_surveys.all,
         queryFn: async () => {
             return fetch(API_URL + `/daily_surveys?patientId=${roleData.id}`).then((res) =>
+                res.json()
+            )
+        }
+    })
+    const queryClient = useQueryClient()
+    const {data:didDailySurvey} = useQuery({
+
+        queryKey:queryKeys.daily_surveys.did,
+        queryFn:async () => {
+            return fetch(API_URL + `/daily_surveys/did_it?patientId=${roleData.id}`).then((res) =>
                 res.json()
             )
         }
@@ -72,6 +82,8 @@ export default function PatientSurvey() {
         )
 
         if(response.ok){
+            // window.location.reload()
+            queryClient.invalidateQueries({queryKey:queryKeys.daily_surveys.all})
             toast.success("Did daily survey!")
         } else {
             toast.error("There was an error when doing the daily survey.")
@@ -88,8 +100,13 @@ export default function PatientSurvey() {
             <Stack spacing={2}>
                 <Typography sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Daily Survey</Typography>
                 <Box width={"40%"}>
+                    {
+                        !didDailySurvey ?
                     <Button variant={"contained"} onClick={()=>toggleShowDailySurvey()}>Take Daily survey</Button>
-                    {showDailySurveyForm &&
+                            :
+                    <Button disabled={true}variant={"contained"}  >Completed daily survey!</Button>
+                    }
+                    {showDailySurveyForm && !didDailySurvey &&
                     <Stack sx={{mt:"1rem"}}spacing={1} direction={"column"}>
                         <TextField onChange={(e)=>setSurveyCalories(e.target.value)} label="Calories" ></TextField>
                         <TextField onChange={(e)=>setSurveyMood(e.target.value)} type="number" label="Mood (1-10)" ></TextField>
@@ -99,6 +116,8 @@ export default function PatientSurvey() {
                 </Box>
                 {/* CALORIES*/}
                 <Stack direction={"row"}>
+                    {console.log(dates)}
+                    {console.log(calories)}
                     <LineChart
                         xAxis={[{
                             data: dates,

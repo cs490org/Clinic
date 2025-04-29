@@ -27,7 +27,8 @@ export const queryKeys = {
         all:["mealplans"]
     },
     daily_surveys:{
-        all:["daily_surveys"]
+        all:["daily_surveys"],
+        did:["daily_surveys","did"],
     }
 
 
