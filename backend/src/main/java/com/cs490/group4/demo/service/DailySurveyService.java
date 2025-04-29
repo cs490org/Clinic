@@ -25,7 +25,7 @@ public class DailySurveyService {
     // post daily survey, ensuring that we havent already done so for today.
     public DailySurvey postDailySurvey(DailySurveyCreateRequestDTO dto) {
         Patient patient = patientRepository.findById(dto.getPatientId()).orElseThrow(()->new IllegalArgumentException("Patient not found"));
-        if(!dailySurveyRepository.findBySurveyDate(dto.getSurveyDate()).isEmpty()) {
+        if(!dailySurveyRepository.findBySurveyDateAndPatientId(dto.getSurveyDate(),dto.getPatientId()).isEmpty()) {
             throw new IllegalArgumentException("Survey date already exists");
         }
         DailySurvey dailySurvey = new DailySurvey();

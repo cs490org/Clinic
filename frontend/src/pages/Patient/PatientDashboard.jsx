@@ -10,7 +10,7 @@ import {
     DialogContent,
     DialogActions,
     Button,
-    TextField, Grid2,
+    TextField, Grid2, useMediaQuery, useTheme, Stack,
 } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -83,23 +83,23 @@ const PatientDashboard = () => {
         setSymptoms('');
     };
 
-    return (
-        <Container maxWidth="xl" sx={{ mt: 4, mb: 4, px: 4 }}>
-            <Typography variant="h4" sx={{fontWeight:"bold"}} gutterBottom>
-                Patient Dashboard
-            </Typography>
-            <Grid2 container spacing={3}>
-                <Grid2 size={4}>
+    const theme = useTheme();
+    const isMdUp = useMediaQuery(theme.breakpoints.up("md"))
+    const Widgets = () => {
+        return (
+
+            <>
+                <Grid2 size={"grow"}>
                     <Paper sx={{ height: "100%", p: "1rem" }}>
                         <Typography sx={{ fontWeight: "bold", fontSize: "1.5rem" }}>
                             Chosen doctor
                         </Typography>
 
                         {chosenDoctor ? (
-                            <Typography>
-                                {chosenDoctor.doctor.firstName} {chosenDoctor.doctor.lastName}
-                            </Typography>
-                        )
+                                <Typography>
+                                    {chosenDoctor.doctor.firstName} {chosenDoctor.doctor.lastName}
+                                </Typography>
+                            )
                             :
                             (
                                 <Typography>
@@ -116,11 +116,29 @@ const PatientDashboard = () => {
                 <Grid2 size={8}>
                     <PatientSurvey/>
                 </Grid2>
-                <Grid2 size={4}>
+                <Grid2 size={"grow"}>
                     <MealPlansWidget />
                 </Grid2>
 
-            </Grid2>
+            </>
+        )
+    }
+    return (
+        <Container maxWidth="xl" sx={{ mt: 4, mb: 4, px: 4 }}>
+            <Typography variant="h4" sx={{fontWeight:"bold"}} gutterBottom>
+                Patient Dashboard
+            </Typography>
+            {
+                isMdUp ?
+                <Grid2 wrap={"wrap"} container spacing={3}>
+                    <Widgets/>
+                </Grid2>
+                    :
+                <Stack wrap={"wrap"} container spacing={3}>
+                    <Widgets/>
+                </Stack>
+            }
+
 
             <Dialog open={openBooking} onClose={handleCloseBooking}>
                 <DialogTitle>Book Appointment</DialogTitle>

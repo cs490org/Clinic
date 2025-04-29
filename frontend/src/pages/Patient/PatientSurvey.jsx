@@ -109,6 +109,7 @@ export default function PatientSurvey() {
             // window.location.reload()
             queryClient.invalidateQueries({ queryKey: queryKeys.daily_surveys.all })
             toast.success("Did daily survey!")
+            setShowDailySurveyForm(false)
         } else {
             toast.error("There was an error when doing the daily survey.")
         }
@@ -136,6 +137,7 @@ export default function PatientSurvey() {
         if (response.ok) {
             queryClient.invalidateQueries({ queryKey: queryKeys.weekly_surveys.all })
             toast.success("Did weekly survey!")
+            showWeeklySurveyForm(false)
         } else {
             toast.error("There was an error when doing the weekly survey.")
         }
@@ -152,7 +154,7 @@ export default function PatientSurvey() {
         <Paper sx={{ p: "1rem" }}>
             <Stack spacing={2}>
                 <Typography sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Daily and Weekly Survey</Typography>
-                <Box width={"40%"}>
+                <Box width={"100%"}>
                     <Box sx={{display:"flex", gap:".5rem"}}>
                         {
                             !didDailySurvey ?
@@ -206,10 +208,10 @@ export default function PatientSurvey() {
                         height={200}
                     />
                     {
-                        daily_calories &&
+                        daily_calories.length >0 &&
                     <Box>
                         <Typography>Average Calories</Typography>
-                        <Typography>{daily_calories.reduce((acc, curr) => curr + acc, 0) / daily_calories.length}</Typography>
+                        <Typography>{Math.trunc(daily_calories.reduce((acc, curr) => curr + acc, 0) / daily_calories.length)} kcals</Typography>
                     </Box>
                     }
                 </Stack>
@@ -240,10 +242,10 @@ export default function PatientSurvey() {
                         height={200}
                     />
                     {
-                        daily_mood &&
+                        daily_mood.length>0 &&
                     <Box>
                         <Typography>Average Mood</Typography>
-                        <Typography>{daily_mood.reduce((acc, curr) => curr + acc, 0) / daily_mood.length} / 10</Typography>
+                        <Typography>{Math.trunc(daily_mood.reduce((acc, curr) => curr + acc, 0) / daily_mood.length)} / 10 mood units</Typography>
                         <Box width={"100px"} component="img" src={ThumbsUp} />
                     </Box>
                     }
@@ -267,7 +269,6 @@ export default function PatientSurvey() {
                             label: "Week"
                         }]}
                         yAxis={[{
-                            tickMaxStep: 1,
                             label: "Weight"
                         }]}
                         series={[
@@ -280,11 +281,13 @@ export default function PatientSurvey() {
                         ]}
                         height={200}
                     />
-                    {/*<Box>*/}
-                    {/*    <Typography>Average weight</Typography>*/}
-                    {/*    <Typography>{daily_mood.reduce((acc, curr) => curr + acc, 0) / daily_mood.length} / 10</Typography>*/}
-                    {/*    <Box width={"100px"} component="img" src={ThumbsUp} />*/}
-                    {/*</Box>*/}
+                    {
+                        weekly_weight.length>0 &&
+                        <Box>
+                            <Typography>Average weight</Typography>
+                            <Typography>{Math.trunc(weekly_weight.reduce((acc, curr) => curr + acc, 0) / weekly_weight.length)} lbs</Typography>
+                        </Box>
+                    }
                 </Stack>
             </Stack>
         </Paper>

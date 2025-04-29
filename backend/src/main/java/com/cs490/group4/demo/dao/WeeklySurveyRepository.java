@@ -8,6 +8,6 @@ import java.util.List;
 public interface WeeklySurveyRepository extends JpaRepository<WeeklySurvey,Integer> {
     public List<WeeklySurvey> findByPatientId(Integer patientId);
     List<WeeklySurvey> findByPatientIdOrderByStartDateAsc(Integer patientId);
-    List<WeeklySurvey> findByStartDate(LocalDate startDate);
+    List<WeeklySurvey> findByStartDateAndPatientId(LocalDate startDate, Integer patientId);
 }
 

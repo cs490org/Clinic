@@ -291,20 +291,20 @@ public class MockDataConfig {
             if(!patientService.isEmpty() && dailySurveyService.isEmpty()) {
                 Random random = new Random();
 
-                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(1));
-                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(2));
-                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(3));
-                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(4));
-                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(6));
-                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(7));
-                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(8));
-                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(11));
-                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(13));
-                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(16));
-                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(19));
-                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(20));
-                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(21));
-                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(1,11), LocalDate.now().minusDays(22));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(6,11), LocalDate.now().minusDays(1));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(6,11), LocalDate.now().minusDays(2));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(6,11), LocalDate.now().minusDays(3));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(6,11), LocalDate.now().minusDays(4));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(6,11), LocalDate.now().minusDays(6));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(6,11), LocalDate.now().minusDays(7));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(6,11), LocalDate.now().minusDays(8));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(6,11), LocalDate.now().minusDays(11));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(6,11), LocalDate.now().minusDays(13));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(6,11), LocalDate.now().minusDays(16));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(6,11), LocalDate.now().minusDays(19));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(6,11), LocalDate.now().minusDays(20));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(6,11), LocalDate.now().minusDays(21));
+                mockDailySurvey.createMockDailySurvey(1,random.nextInt(1800,2500),random.nextInt(6,11), LocalDate.now().minusDays(22));
             }
             if(!patientService.isEmpty() && weeklySurveyService.isEmpty()) {
                 Random random = new Random();

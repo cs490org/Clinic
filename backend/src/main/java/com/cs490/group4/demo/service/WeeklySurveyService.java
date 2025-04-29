@@ -29,7 +29,7 @@ public class WeeklySurveyService {
         LocalDate endOfWeek = surveyDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 
         // already did weekly survey for that date.
-        if(!weeklySurveyRepository.findByStartDate(startOfWeek).isEmpty()) {
+        if(!weeklySurveyRepository.findByStartDateAndPatientId(startOfWeek,dto.getPatientId()).isEmpty()) {
             throw new IllegalArgumentException("Survey date already exists");
         }
         WeeklySurvey weeklySurvey= new WeeklySurvey();
