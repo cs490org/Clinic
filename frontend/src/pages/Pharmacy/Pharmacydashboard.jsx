@@ -24,11 +24,11 @@ const PharmacyDashboard = () => {
 
 
     const data = [
-        { name: 'Pill #1', value: 400 },
-        { name: 'Pill #2', value: 300 },
-        { name: 'Pill #3', value: 200 },
-        { name: 'Pill #4', value: 100 },
-        { name: 'Pill #5', value: 500 },
+        { name: 'Amoxicillin', value: 400 },
+        { name: 'Ibuprofen', value: 300 },
+        { name: 'Zyrtec', value: 200 },
+        { name: 'Lisinopril', value: 100 },
+        { name: 'Metformin', value: 500 },
     ];
 
     return (
