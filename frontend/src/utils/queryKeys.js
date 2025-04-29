@@ -26,6 +26,9 @@ export const queryKeys = {
     mealplans:{
         all:["mealplans"]
     },
+    daily_surveys:{
+        all:["daily_surveys"]
+    }
 
 
 };

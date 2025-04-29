@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Random;
 @Configuration
@@ -288,7 +289,9 @@ public class MockDataConfig {
             }
 
             if(!patientService.isEmpty() && dailySurveyService.isEmpty()) {
-                mockDailySurvey.createMockDailySurvey(1,2100,8);
+                mockDailySurvey.createMockDailySurvey(1,2100,8, LocalDate.now().minusDays(1));
+                mockDailySurvey.createMockDailySurvey(1,2150,7, LocalDate.now().minusDays(2));
+                mockDailySurvey.createMockDailySurvey(1,2050,9, LocalDate.now().minusDays(3));
             }
 
 

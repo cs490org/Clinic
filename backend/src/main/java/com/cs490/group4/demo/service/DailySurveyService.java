@@ -26,6 +26,7 @@ public class DailySurveyService {
         dailySurvey.setPatient(patient);
         dailySurvey.setCaloriesEaten(dto.getCaloriesEaten());
         dailySurvey.setMood(dto.getMood());
+        dailySurvey.setSurveyDate(dto.getSurveyDate());
         return dailySurveyRepository.save(dailySurvey);
     }
 
