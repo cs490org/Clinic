@@ -8,6 +8,7 @@ import java.util.List;
 public interface DailySurveyRepository extends JpaRepository<DailySurvey,Integer> {
     public List<DailySurvey> findByPatientId(Integer patientId);
     List<DailySurvey> findBySurveyDate(LocalDate surveyDate);
+    List<DailySurvey> findBySurveyDateBetween(LocalDate startDate, LocalDate endDate);
     List<DailySurvey> findByPatientIdOrderBySurveyDateDesc(Integer patientId);
     List<DailySurvey> findByPatientIdOrderBySurveyDateAsc(Integer patientId);
 }

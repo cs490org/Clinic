@@ -25,6 +25,7 @@ public class DailySurvey {
     // 1 to 10
     private Integer mood;
 
+    // Separate from createTimestamp so we can insert mock data.
     private LocalDate surveyDate;
 
     @CreationTimestamp

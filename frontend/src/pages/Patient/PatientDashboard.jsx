@@ -85,7 +85,7 @@ const PatientDashboard = () => {
 
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4, px: 4 }}>
-            <Typography variant="h4" gutterBottom>
+            <Typography variant="h4" sx={{fontWeight:"bold"}} gutterBottom>
                 Patient Dashboard
             </Typography>
             <Grid2 container spacing={3}>
