@@ -5,6 +5,7 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,6 +24,8 @@ public class DailySurvey {
 
     // 1 to 10
     private Integer mood;
+
+    private LocalDate surveyDate;
 
     @CreationTimestamp
     private LocalDateTime createTimestamp;

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @Controller
-@RequestMapping("/dailysurvey")
+@RequestMapping("/daily_surveys")
 public class DailySurveyController {
 
 
