@@ -1,12 +1,17 @@
 package com.cs490.group4.demo.service;
 
-import com.cs490.group4.demo.dao.Pharmacy;
-import com.cs490.group4.demo.dao.PharmacyRepository;
+import com.cs490.group4.demo.dao.*;
+import com.cs490.group4.demo.dto.InventoryDTO;
+import com.cs490.group4.demo.dto.PrescriptionBillDTO;
 import com.cs490.group4.demo.security.User;
 import com.cs490.group4.demo.security.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import com.cs490.group4.demo.dto.PharmacyCreateDTO;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PharmacyService {
     private final PharmacyRepository pharmacyRepository;
+    private final PharmacyDrugInventoryRepository pharmacyDrugInventoryRepository;
+    private final PrescriptionBillRepository prescriptionBillRepository;
     private final UserRepository userRepository;
 
     public List<Pharmacy> getPharmacies() {
@@ -48,5 +55,35 @@ public class PharmacyService {
         return pharmacyRepository.count() == 0;
     }
 
+    public List<PharmacyDrugInventory> getDrugsByPharmacy(Integer pharmacyId){
+        return pharmacyDrugInventoryRepository.findAllByPharmacyId(pharmacyId);
+    }
+
+    public void updateDrugInventory(InventoryDTO dto) {
+        PharmacyDrugInventory toSave = PharmacyDrugInventory.builder()
+                .drug(Drug.builder().id(dto.getDrugId()).build())
+                .pharmacy(Pharmacy.builder().id(dto.getPharmacyId()).build())
+                .inventory(dto.getQuantity())
+                .createTimestamp(LocalDateTime.now())
+                .updateTimestamp(LocalDateTime.now())
+                .build();
+
+        PharmacyDrugInventory pharmacyDrugInventory = pharmacyDrugInventoryRepository.findByDrugIdAndPharmacyId(dto.getPharmacyId(), dto.getDrugId());
+        if(pharmacyDrugInventory != null){
+            toSave.setId(pharmacyDrugInventory.getId());
+        }
+
+        pharmacyDrugInventoryRepository.save(toSave);
+    }
+
+    public PrescriptionBill createPrescriptionBill(PrescriptionBillDTO dto){
+        return prescriptionBillRepository.save(PrescriptionBill.builder()
+                        .prescription(Prescription.builder().id(dto.getPrescriptionId()).build())
+                        .amount(dto.getAmount())
+                        .paid(dto.getPaid())
+                        .createTimestamp(LocalDateTime.now())
+                        .updateTimestamp(LocalDateTime.now())
+                .build());
+    }
 
 }
