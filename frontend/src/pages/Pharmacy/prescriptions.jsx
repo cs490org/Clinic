@@ -39,7 +39,7 @@ const Prescriptions = () => {
             quantity: 30, 
             expires: "2025-05-01", 
             dispensed: false, 
-            image: "https://storage.googleapis.com/cs490-media/Resized_Pill_5.png"
+            image: "https://storage.googleapis.com/cs490-media/Resized_Yellow_In_Amber_Bottle.png"
         },
         { 
             id: 2, 
