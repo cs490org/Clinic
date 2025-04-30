@@ -7,10 +7,10 @@ import java.util.List;
 
 public interface PharmacyDrugInventoryRepository extends JpaRepository<PharmacyDrugInventory, Integer> {
 
-    @Query("from PharmacyDrugInventory a where a.pharmacy.id = :pharmacyId")
+    @Query(value = "select * from pharmacy_drug_inventory a where a.pharmacy_id = :pharmacyId", nativeQuery = true)
     List<PharmacyDrugInventory> findAllByPharmacyId(Integer pharmacyId);
 
-    @Query("from PharmacyDrugInventory a where a.pharmacy.id = :pharmacyId and a.drug.id = :drugId")
+    @Query(value = "select * from pharmacy_drug_inventory a where a.pharmacy_id = :pharmacyId and a.drug_id = :drugId", nativeQuery = true)
     PharmacyDrugInventory findByDrugIdAndPharmacyId(Integer pharmacyId, Integer drugId);
 
 }
