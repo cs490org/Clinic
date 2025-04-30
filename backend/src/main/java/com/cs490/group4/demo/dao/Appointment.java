@@ -2,11 +2,19 @@ package com.cs490.group4.demo.dao;
 
 import jakarta.persistence.*;
 import java.sql.Timestamp;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
 @Entity
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Appointment {
 
     @Id

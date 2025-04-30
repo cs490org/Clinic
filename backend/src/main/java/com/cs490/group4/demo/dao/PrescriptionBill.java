@@ -1,30 +1,29 @@
 package com.cs490.group4.demo.dao;
 
-import com.cs490.group4.demo.security.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Pharmacy {
+public class PrescriptionBill {
 
     @Id
     @GeneratedValue
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    private User user;
+    @JoinColumn(name = "prescription_id", referencedColumnName = "id")
+    private Prescription prescription;
 
-    private String name, zipCode, phone, address;
+    private BigDecimal amount;
+    private Boolean paid;
 
     private LocalDateTime createTimestamp, updateTimestamp;
 

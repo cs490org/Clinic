@@ -49,6 +49,10 @@ public class UserService {
         return userResponseDTO;
     }
 
+    public User getUserById(Integer userId) {
+        return userRepository.findById(userId).orElseThrow();
+    }
+
     public Integer getUserId(String accessToken) {
         Token token = tokenRepository.findByToken(accessToken).orElseThrow(EntityNotFoundException::new);
 
