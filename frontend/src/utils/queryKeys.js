@@ -27,5 +27,9 @@ export const queryKeys = {
         all:["mealplans"]
     },
 
+    drugs:{
+        all: ["drugs"]
+    }
+
 
 };
