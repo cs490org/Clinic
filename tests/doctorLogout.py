@@ -3,32 +3,53 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
-from patientLogIn import patient_login
 
-# Setup WebDriver
 driver = webdriver.Chrome()
 
 try:
+    driver.get("http://localhost:5173/")
+    driver.maximize_window()
+
     wait = WebDriverWait(driver, 10)
 
-    patient_login(driver, email="doctor1745713285@Naik.com", password="Password1")
-    print("Logged in")
+    signin_button = wait.until(EC.element_to_be_clickable((
+        By.XPATH, '//button[contains(@class, "MuiButton-root") and normalize-space(text())="Sign In"]'
+    )))
+    signin_button.click()
 
-    logout_button = wait.until(EC.element_to_be_clickable((By.XPATH, '//button[contains(text(), "Logout")]')))
-    logout_button.click()
-    print("Clicked Logout button.")
+    email_input = wait.until(EC.presence_of_element_located((By.NAME, "email")))
+    password_input = driver.find_element(By.NAME, "password")
 
-    wait.until(EC.url_contains("/signin"))
-    print("Redirected to Sign In")
+    email_input.send_keys("hi@gmail.com")
+    password_input.send_keys("Password1")
 
-    body_text = driver.find_element(By.TAG_NAME, "body").text
-    if "Sign In" in body_text or "Login" in body_text:
-        print("Logout Good")
-    else:
-        print("Logout not good")
+    sign_in_button = wait.until(EC.element_to_be_clickable((By.XPATH, '//button[@type="submit"]')))
+    sign_in_button.click()
+
+    wait.until(EC.url_contains("dashboard"))
+    assert "dashboard" in driver.current_url.lower()
+
+    print("Login Successful")
+    
+    time.sleep(2)
+
+    try:
+        logout_button = wait.until(EC.element_to_be_clickable((
+            By.XPATH, '//button[contains(text(), "Logout") or contains(text(), "Log out") or contains(text(), "Sign out")]'
+        )))
+        logout_button.click()
+        #print("1")
+    except Exception as e:
+        print("Couldn't happen")
+    
+    try:
+        wait.until(EC.presence_of_element_located((By.XPATH, '//button[contains(text(), "Sign In")]')))
+        print("Logout Successful")
+    except Exception as e:
+        print(f"Could not verify logout: {e}")
 
 except Exception as e:
-    print(f"Logout Test Failed: {e}")
+    print(f"Test Failed: {e}")
 
 finally:
     driver.quit()

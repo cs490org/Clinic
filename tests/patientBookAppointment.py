@@ -20,36 +20,43 @@ try:
     email_input = wait.until(EC.presence_of_element_located((By.NAME, "email")))
     password_input = driver.find_element(By.NAME, "password")
 
-    email_input.send_keys("pharmacist1745713874@Dale.com")
+    email_input.send_keys("patient1745712973@Itani.com")
     password_input.send_keys("Password1")
 
     sign_in_button = wait.until(EC.element_to_be_clickable((By.XPATH, '//button[@type="submit"]')))
     sign_in_button.click()
 
     wait.until(EC.url_contains("dashboard"))
-    assert "dashboard" in driver.current_url.lower()
-
     print("Login Successful")
-    
+
     time.sleep(2)
 
-    try:
-        logout_button = wait.until(EC.element_to_be_clickable((
-            By.XPATH, '//button[contains(text(), "Logout") or contains(text(), "Log out") or contains(text(), "Sign out")]'
-        )))
-        logout_button.click()
-        #print("1")
-    except Exception as e:
-        print("Couldn't happen")
-    
-    try:
-        wait.until(EC.presence_of_element_located((By.XPATH, '//button[contains(text(), "Sign In")]')))
-        print("Logout Successful")
-    except Exception as e:
-        print(f"Could not verify logout: {e}")
+    book_button = wait.until(EC.element_to_be_clickable((
+        By.XPATH, '//button[normalize-space(text())="Book Appointment"]'
+    )))
+    driver.execute_script("arguments[0].scrollIntoView(true);", book_button)
+    time.sleep(0.5)
+    driver.execute_script("arguments[0].click();", book_button)
+    print("Clicked Book Appointment button")
+
+    symptom_field = wait.until(EC.presence_of_element_located((
+        By.XPATH, '//textarea[@placeholder="Please describe your symptoms"]'
+    )))
+    symptom_field.send_keys("Ouch ouch ouch, my hand ouch ouch help my hand help ouch")
+    print("Entered symptoms")
+
+    time.sleep(1)
+
+    confirm_button = wait.until(EC.element_to_be_clickable((
+        By.XPATH, '//button[normalize-space(text())="Book"]'
+    )))
+    confirm_button.click()
+    print("Clicked Book button")
+
+    time.sleep(3)
 
 except Exception as e:
-    print(f"Test Failed: {e}")
+    print(f"Appointment booking failed: {e}")
 
 finally:
     driver.quit()

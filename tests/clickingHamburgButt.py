@@ -20,36 +20,39 @@ try:
     email_input = wait.until(EC.presence_of_element_located((By.NAME, "email")))
     password_input = driver.find_element(By.NAME, "password")
 
-    email_input.send_keys("pharmacist1745713874@Dale.com")
+    email_input.send_keys("patient1745712973@Itani.com") #Most of this code can be copied just adjust for doctor and pharmacist
     password_input.send_keys("Password1")
 
     sign_in_button = wait.until(EC.element_to_be_clickable((By.XPATH, '//button[@type="submit"]')))
     sign_in_button.click()
 
     wait.until(EC.url_contains("dashboard"))
-    assert "dashboard" in driver.current_url.lower()
-
     print("Login Successful")
-    
+
     time.sleep(2)
 
-    try:
-        logout_button = wait.until(EC.element_to_be_clickable((
-            By.XPATH, '//button[contains(text(), "Logout") or contains(text(), "Log out") or contains(text(), "Sign out")]'
-        )))
-        logout_button.click()
-        #print("1")
-    except Exception as e:
-        print("Couldn't happen")
-    
-    try:
-        wait.until(EC.presence_of_element_located((By.XPATH, '//button[contains(text(), "Sign In")]')))
-        print("Logout Successful")
-    except Exception as e:
-        print(f"Could not verify logout: {e}")
+    hamburger_button = wait.until(EC.element_to_be_clickable((
+        By.XPATH, '//button[contains(@class, "MuiIconButton-root")]'
+    )))
+    driver.execute_script("arguments[0].scrollIntoView(true);", hamburger_button)
+    time.sleep(0.5)
+    driver.execute_script("arguments[0].click();", hamburger_button)
+    print("Clicked hamburger menu (Drawer opened)")
+
+    recipes_button = wait.until(EC.element_to_be_clickable((
+        By.XPATH, '//span[normalize-space()="Recipes"]/ancestor::li' 
+    )))
+    recipes_button.click()
+    print("Clicked Recipes in Drawer")
+
+    wait.until(EC.url_contains("/recipes"))
+    print("Navigated to Recipes page")
+
+
+    time.sleep(3)
 
 except Exception as e:
-    print(f"Test Failed: {e}")
+    print(f"Clicking Menu failed: {e}")
 
 finally:
     driver.quit()
