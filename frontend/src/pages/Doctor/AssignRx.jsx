@@ -50,7 +50,7 @@ export default function AssignPrescription() {
                 });
                 if (!res.ok) throw new Error("Failed to fetch pharmacy");
                 const data = await res.json();
-                setPharmacyId(data.id); // assuming response shape
+                setPharmacyId(data.id);
             } catch (err) {
                 toast.error("Error loading preferred pharmacy");
                 setPharmacyId(null);
