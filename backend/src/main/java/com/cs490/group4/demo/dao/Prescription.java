@@ -3,7 +3,11 @@ package com.cs490.group4.demo.dao;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.context.annotation.DependsOn;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +15,8 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@DependsOn("dataInitializer")
+@Data
 public class Prescription {
 
     @Id
@@ -29,12 +35,16 @@ public class Prescription {
     @JoinColumn(name = "drug_id", referencedColumnName = "id")
     private Drug drug;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "rx_status_code", referencedColumnName = "id")
     private RxStatusCode rxStatusCode;
 
     private LocalDateTime rxExpiryTimestamp;
 
-    private LocalDateTime createTimestamp, updateTimestamp;
+    @CreationTimestamp
+    private LocalDateTime createTimestamp;
+
+    @UpdateTimestamp
+    private LocalDateTime updateTimestamp;
 
 }
