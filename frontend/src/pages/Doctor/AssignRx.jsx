@@ -104,6 +104,7 @@ export default function AssignPrescription() {
                         labelId="patient-select-label"
                         value={selectedPatientId}
                         onChange={(e) => setSelectedPatientId(e.target.value)}
+                        variant="outlined"
                     >
                         {patients?.map((patient) => (
                             <MenuItem key={patient.id} value={patient.id}>
@@ -124,6 +125,7 @@ export default function AssignPrescription() {
                         labelId="drug-select-label"
                         value={selectedDrugId}
                         onChange={(e) => setSelectedDrugId(e.target.value)}
+                        variant="outlined"
                     >
                         {drugs?.map((drug) => (
                             <MenuItem key={drug.id} value={drug.id}>
