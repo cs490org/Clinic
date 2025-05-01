@@ -57,8 +57,8 @@ export default function AssignPrescription() {
         const payload = {
             patientId: selectedPatientId,
             drugId: selectedDrugId,
-            dosage,
-            doctorId: roleData.id
+            doctorId: roleData.id,
+            rxExpiryTimestamp: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString() // e.g. 30 days from now
         };
 
         try {
@@ -125,11 +125,11 @@ export default function AssignPrescription() {
                         labelId="drug-select-label"
                         value={selectedDrugId}
                         onChange={(e) => setSelectedDrugId(e.target.value)}
-                        variant="outlined"
+                        variant="standard"
                     >
                         {drugs?.map((drug) => (
-                            <MenuItem key={drug.id} value={drug.id}>
-                                {drug.name}
+                            <MenuItem key={drug.id} value={drug.drug.id}>
+                                {drug.drug.name}
                             </MenuItem>
                         ))}
                     </Select>
