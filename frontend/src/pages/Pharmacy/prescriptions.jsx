@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
     Container,
     Grid,
@@ -11,34 +11,38 @@ import {
     CardMedia
 } from '@mui/material';
 import { API_URL } from '../../utils/constants';
+import { UserContext } from '../../contexts/UserContext';
 
 const Prescriptions = () => {
+    const { user } = useContext(UserContext);
+    console.log(user);
     const [loading, setLoading] = useState(true);
     const [prescriptions, setPrescriptions] = useState([]);
 
-
     useEffect(() => {
         async function run() {
-            const response = fetch(API_URL + "/prescriptions", {
-                // method
-                method: "GET",
-                credentials: "include"
-            })
-            if (response.status == 200) {
-                const data = await response.json()
+            const pharmacyRes = await fetch(API_URL + `/pharmacies?userId=${user?.id}`, { credentials: 'include' });
+            if (pharmacyRes.ok) {
+                const data = await pharmacyRes.json();
+                const drugInventoryCountRes = await fetch(API_URL + `/pharmacies/drugs?pharmacyId=${data?.id}`, { credentials: 'include' });
+                if (drugInventoryCountRes.ok) {
+                    const drugData = await drugInventoryCountRes.json();
+                    console.log(drugData);
+                    setPrescriptions([...drugData]);
+                }
             }
+            // const response = await fetch(API_URL + "/prescriptions", {
+            //     method: "GET",
+            //     credentials: "include"
+            // });
+            // if (response.status === 200) {
+            //     const data = await response.json();
+            //     setPrescriptions(data);
+            // }
+            // setLoading(false);
         }
-        run()
+        run();
     }, []);
-
-    // Temporary hardcoded data
-    const pills = [
-        { id: 1, name: "Amoxicillin", quantity: 30, expires: "2025-05-01", dispensed: false },
-        { id: 2, name: "Ibuprofen", quantity: 60, expires: "2025-06-15", dispensed: false },
-        { id: 3, name: "Zyrtec", quantity: 10, expires: "2025-07-01", dispensed: false },
-        { id: 4, name: "Lisinopril", quantity: 90, expires: "2025-08-10", dispensed: false },
-        { id: 5, name: "Metformin", quantity: 45, expires: "2025-09-05", dispensed: false },
-    ];
 
     const handleDispense = (id) => {
         console.log(`Mark pill ${id} as dispensed`);
@@ -55,13 +59,13 @@ const Prescriptions = () => {
             </Typography>
 
             <Grid container spacing={4}>
-                {pills.slice(0, 5).map((pill, i) => (
+                {prescriptions.map((pill) => (
                     <Grid item xs={12} sm={6} md={4} lg={3} key={pill.id}>
                         <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 2, boxShadow: 3, borderRadius: 2 }}>
                             <CardMedia
                                 component="img"
-                                height="140"
-                                image="https://via.placeholder.com/300x140.png?text=Pill+Image"
+                                height="300"
+                                image={pill.imageUrl}
                                 alt={`${pill.name} image`}
                                 sx={{ borderRadius: 1 }}
                             />
@@ -82,7 +86,7 @@ const Prescriptions = () => {
                                 />
 
                                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                                    Expiration: {new Date(pill.expires).toLocaleDateString()}
+                                    Expiration: {new Date(pill.expirationDate).toLocaleDateString()}
                                 </Typography>
 
                                 <Typography
