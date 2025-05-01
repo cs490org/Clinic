@@ -10,7 +10,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Random;
 @Configuration
@@ -43,7 +45,7 @@ public class MockDataConfig {
      */
 
     @Bean
-    CommandLineRunner mockDataInitializer(RecipeCommentService recipeCommentService, DailySurveyService dailySurveyService, MockDailySurvey mockDailySurvey, WeeklySurveyService weeklySurveyService, MockWeeklySurvey mockWeeklySurvey) {
+    CommandLineRunner mockDataInitializer(RecipeCommentService recipeCommentService, DailySurveyService dailySurveyService, MockDailySurvey mockDailySurvey, WeeklySurveyService weeklySurveyService, MockWeeklySurvey mockWeeklySurvey, PrescriptionService prescriptionService, MockPrescription mockPrescription, DrugService drugService, MockDrug mockDrug) {
         return args -> {
             if (doctorService.isEmpty()) {
                 mockDoctor.createMockDoctor(
@@ -315,6 +317,14 @@ public class MockDataConfig {
             }
 
 
+            if(drugService.isEmpty()){
+                mockDrug.createMockDrug("Ibuprofen", "Pain reliever", "200mg", new BigDecimal("5.99"));
+                mockDrug.createMockDrug("Lisinopril", "Blood pressure", "10mg", new BigDecimal("4.25"));
+            }
+            if(prescriptionService.isEmpty()) {
+                mockPrescription.createMockPrescription(1,1,1, LocalDateTime.now().plusDays(7));
+                mockPrescription.createMockPrescription(1,1,2, LocalDateTime.now().plusDays(7));
+            }
 
         };
     }
