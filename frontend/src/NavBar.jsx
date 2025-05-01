@@ -29,6 +29,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import FlatwareIcon from '@mui/icons-material/Flatware';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
+import {Medication} from "@mui/icons-material";
 
 
 export default function NavBar() {
@@ -143,6 +144,18 @@ export default function NavBar() {
               </ListItemIcon>
               <ListItemText primary="Doctor Dashboard" />
             </ListItemButton>
+          )}
+
+          {user?.role === "DOCTOR" && (
+              <ListItemButton onClick={() => {
+                navigate("/doctor/assignrx");
+                setDrawerOpen(false);
+              }}>
+                <ListItemIcon>
+                  <Medication/>
+                </ListItemIcon>
+                <ListItemText primary="Assign Medication" />
+              </ListItemButton>
           )}
 
           {(user?.role === "PATIENT" || user?.role === "DOCTOR") &&

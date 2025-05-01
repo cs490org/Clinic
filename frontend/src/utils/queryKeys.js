@@ -33,6 +33,10 @@ export const queryKeys = {
     weekly_surveys:{
         all:["weekly_surveys"],
         did:["weekly_surveys","did"],
+    },
+
+    drugs:{
+        all: ["drugs"]
     }
 
 
