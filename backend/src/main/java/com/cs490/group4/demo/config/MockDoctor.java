@@ -24,7 +24,7 @@ public class MockDoctor {
             String specialty,
             Long licenseNumber) {
         Doctor doctor = new Doctor();
-        User user = mockUser.createMockUser(Role.DOCTOR, email, "p", firstName, lastName);
+        User user = mockUser.createMockUser(Role.DOCTOR, email, "password123", firstName, lastName);
         doctor.setFirstName(firstName);
         doctor.setLastName(lastName);
         doctor.setEmail(email);

@@ -26,6 +26,14 @@ export const queryKeys = {
     mealplans:{
         all:["mealplans"]
     },
+    daily_surveys:{
+        all:["daily_surveys"],
+        did:["daily_surveys","did"],
+    },
+    weekly_surveys:{
+        all:["weekly_surveys"],
+        did:["weekly_surveys","did"],
+    }
 
     drugs:{
         all: ["drugs"]

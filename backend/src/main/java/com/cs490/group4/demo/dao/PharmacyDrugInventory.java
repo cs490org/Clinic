@@ -1,6 +1,5 @@
 package com.cs490.group4.demo.dao;
 
-import com.cs490.group4.demo.security.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,20 +11,24 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class Pharmacy {
+@NoArgsConstructor
+public class PharmacyDrugInventory {
 
     @Id
     @GeneratedValue
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    private User user;
+    @JoinColumn(name = "drug_id", referencedColumnName = "id")
+    private Drug drug;
 
-    private String name, zipCode, phone, address;
+    @ManyToOne
+    @JoinColumn(name = "pharmacy_id", referencedColumnName = "id")
+    private Pharmacy pharmacy;
 
     private LocalDateTime createTimestamp, updateTimestamp;
+
+    private Integer inventory;
 
 }
