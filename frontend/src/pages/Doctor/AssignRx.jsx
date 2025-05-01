@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { API_URL } from "../../utils/constants.js";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../contexts/UserContext.jsx";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -20,15 +20,14 @@ import { useNavigate } from "react-router-dom";
 export default function AssignPrescription() {
     const { roleData } = useContext(UserContext);
     const [selectedPatientId, setSelectedPatientId] = useState("");
+    const [pharmacyId, setPharmacyId] = useState(null);
     const [selectedDrugId, setSelectedDrugId] = useState("");
 
-    // Default expiration = 30 days from now
     const defaultExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
         .toISOString().slice(0, 16);
     const [rxExpiryTimestamp, setRxExpiryTimestamp] = useState(defaultExpiry);
 
     const navigate = useNavigate();
-    const pharmacyId = 1; // Replace with dynamic value if needed
 
     const { data: patients, isLoading: loadingPatients } = useQuery({
         queryKey: ["doctor_patients"],
@@ -41,15 +40,37 @@ export default function AssignPrescription() {
         }
     });
 
+    // Fetch patient's preferred pharmacy when patient is selected
+    useEffect(() => {
+        if (!selectedPatientId) return;
+        const fetchPharmacy = async () => {
+            try {
+                const res = await fetch(`${API_URL}/patients/preferred_pharmacy?patientId=${selectedPatientId}`, {
+                    credentials: 'include'
+                });
+                if (!res.ok) throw new Error("Failed to fetch pharmacy");
+                const data = await res.json();
+                setPharmacyId(data.pharmacyId); // assuming response shape
+            } catch (err) {
+                toast.error("Error loading preferred pharmacy");
+                setPharmacyId(null);
+            }
+        };
+        fetchPharmacy();
+        setSelectedDrugId(""); // reset drug selection when patient changes
+    }, [selectedPatientId]);
+
     const { data: drugs, isLoading: loadingDrugs } = useQuery({
         queryKey: ["drugs", pharmacyId],
         queryFn: async () => {
+            if (!pharmacyId) return [];
             const res = await fetch(`${API_URL}/pharmacies/drugs?pharmacyId=${pharmacyId}`, {
                 credentials: 'include'
             });
             if (!res.ok) throw new Error("Failed to fetch drugs");
             return res.json();
-        }
+        },
+        enabled: !!pharmacyId // only run query if pharmacyId is set
     });
 
     const submit = async () => {
@@ -85,11 +106,7 @@ export default function AssignPrescription() {
     };
 
     if (patients?.length === 0) {
-        return (
-            <Typography>
-                You currently have no assigned patients.
-            </Typography>
-        );
+        return <Typography>You currently have no assigned patients.</Typography>;
     }
 
     return (
@@ -98,7 +115,7 @@ export default function AssignPrescription() {
                 Assign Prescription
             </Typography>
 
-            <Typography>Choose patient</Typography>
+            <Typography>Choose Patient</Typography>
             {loadingPatients ? (
                 <CircularProgress />
             ) : (
@@ -130,6 +147,7 @@ export default function AssignPrescription() {
                         value={selectedDrugId}
                         onChange={(e) => setSelectedDrugId(e.target.value)}
                         variant="outlined"
+                        disabled={!pharmacyId}
                     >
                         {drugs?.map((drugWrapper) => (
                             <MenuItem key={drugWrapper.id} value={drugWrapper.drug.id}>
