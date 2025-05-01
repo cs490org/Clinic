@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import com.cs490.group4.demo.dao.AppointmentStatusCode;
 import com.cs490.group4.demo.dao.AppointmentStatusCodeRepository;
 
+
 @Configuration
 public class DataConfig {
 
@@ -29,6 +30,7 @@ public class DataConfig {
                 appointmentStatusCode.setStatus("CANCELLED");
                 appointmentStatusCodeRepository.save(appointmentStatusCode);
             }
+
         };
     }
 
