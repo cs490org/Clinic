@@ -21,10 +21,14 @@ export default function AssignPrescription() {
     const { roleData } = useContext(UserContext);
     const [selectedPatientId, setSelectedPatientId] = useState("");
     const [selectedDrugId, setSelectedDrugId] = useState("");
-    const [dosage, setDosage] = useState("");
-    const navigate = useNavigate();
 
-    const pharmacyId = 1; // Replace with actual pharmacy ID or derive from context
+    // Default expiration = 30 days from now
+    const defaultExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        .toISOString().slice(0, 16);
+    const [rxExpiryTimestamp, setRxExpiryTimestamp] = useState(defaultExpiry);
+
+    const navigate = useNavigate();
+    const pharmacyId = 1; // Replace with dynamic value if needed
 
     const { data: patients, isLoading: loadingPatients } = useQuery({
         queryKey: ["doctor_patients"],
@@ -49,7 +53,7 @@ export default function AssignPrescription() {
     });
 
     const submit = async () => {
-        if (!selectedPatientId || !selectedDrugId || !dosage) {
+        if (!selectedPatientId || !selectedDrugId || !rxExpiryTimestamp) {
             toast.error("All fields are required.");
             return;
         }
@@ -57,8 +61,8 @@ export default function AssignPrescription() {
         const payload = {
             patientId: selectedPatientId,
             drugId: selectedDrugId,
-            doctorId: roleData.id,
-            rxExpiryTimestamp: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString() // e.g. 30 days from now
+            rxExpiryTimestamp,
+            doctorId: roleData.id
         };
 
         try {
@@ -125,23 +129,26 @@ export default function AssignPrescription() {
                         labelId="drug-select-label"
                         value={selectedDrugId}
                         onChange={(e) => setSelectedDrugId(e.target.value)}
-                        variant="standard"
+                        variant="outlined"
                     >
-                        {drugs?.map((drug) => (
-                            <MenuItem key={drug.id} value={drug.drug.id}>
-                                {drug.drug.name}
+                        {drugs?.map((drugWrapper) => (
+                            <MenuItem key={drugWrapper.id} value={drugWrapper.drug.id}>
+                                {drugWrapper.drug.name}
                             </MenuItem>
                         ))}
                     </Select>
                 </FormControl>
             )}
 
-            <Typography sx={{ mt: 4 }}>Dosage</Typography>
+            <Typography sx={{ mt: 4 }}>Expiration Date</Typography>
             <TextField
+                type="datetime-local"
                 fullWidth
-                placeholder="e.g. 500mg twice daily"
-                value={dosage}
-                onChange={(e) => setDosage(e.target.value)}
+                value={rxExpiryTimestamp}
+                onChange={(e) => setRxExpiryTimestamp(e.target.value)}
+                inputProps={{
+                    min: new Date().toISOString().slice(0, 16)
+                }}
                 sx={{ mt: 2 }}
             />
 
