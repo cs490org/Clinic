@@ -1,5 +1,6 @@
 package com.cs490.group4.demo.dao;
 
+import com.cs490.group4.demo.security.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,8 +36,7 @@ public class Prescription {
     @JoinColumn(name = "drug_id", referencedColumnName = "id")
     private Drug drug;
 
-    @ManyToOne
-    @JoinColumn(name = "rx_status_code", referencedColumnName = "id")
+    @Enumerated(EnumType.STRING)
     private RxStatusCode rxStatusCode;
 
     private LocalDateTime rxExpiryTimestamp;

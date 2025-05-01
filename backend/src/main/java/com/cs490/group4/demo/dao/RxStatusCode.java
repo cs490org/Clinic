@@ -1,5 +1,7 @@
 package com.cs490.group4.demo.dao;
 
+import com.cs490.group4.demo.security.RoleDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -10,20 +12,11 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class RxStatusCode {
+@JsonDeserialize(using = RoleDeserializer.class)
+public enum RxStatusCode {
 
-    @Id
-    @GeneratedValue
-    private Integer id;
-
-    private String status;
-
-    private LocalDateTime createTimestamp, updateTimestamp;
-    
+    NEW_PRESCRIPTION,
+    READY_FOR_PICKUP,
+    FULFILLED
 
 }

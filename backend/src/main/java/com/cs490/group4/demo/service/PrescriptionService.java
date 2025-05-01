@@ -3,6 +3,7 @@ package com.cs490.group4.demo.service;
 import com.cs490.group4.demo.dao.*;
 import com.cs490.group4.demo.dto.PrescriptionRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +18,6 @@ public class PrescriptionService {
     @Autowired
     private PrescriptionRepository prescriptionRepository;
     @Autowired
-    private RxStatusCodeRepository rxStatusCodeRepository;
-    @Autowired
     private DoctorRepository doctorRepository;
     @Autowired
     private PatientRepository patientRepository;
@@ -29,9 +28,6 @@ public class PrescriptionService {
         return prescriptionRepository.findAll();
     }
     public Prescription createPrescription(PrescriptionRequest dto){
-        RxStatusCode status = rxStatusCodeRepository
-                .findByStatus("NEW_PRESCRIPTION");
-
         Doctor doctor =  doctorRepository.findById(dto.getDoctorId()).orElse(null);
         Patient patient = patientRepository.findById(dto.getPatientId()).orElse(null);
         Drug drug = drugRepository.findById(dto.getDrugId()).orElse(null);
@@ -40,18 +36,10 @@ public class PrescriptionService {
         prescription.setDoctor(doctor);
         prescription.setPatient(patient);
         prescription.setDrug(drug);
-        prescription.setRxStatusCode(status);
+        prescription.setRxStatusCode(RxStatusCode.NEW_PRESCRIPTION);
         prescription.setRxExpiryTimestamp(dto.getRxExpiryTimestamp());
-//        Prescription prescription = Prescription.builder()
-//                .doctor(Doctor.builder().id(dto.getDoctorId()).build())
-//                .patient(Patient.builder().id(dto.getPatientId()).build())
-//                .drug(Drug.builder().id(dto.getDrugId()).build())
-//                .rxExpiryTimestamp(dto.getRxExpiryTimestamp())
-//                .createTimestamp(LocalDateTime.now())
-//                // RxStatusCode "NEW_PRESCRIPTION" needs to exist in the database. We should probably modify the database and enum this
-////                .rxStatusCode(RxStatusCode.builder().id(NEW_PRESCRIPTION).build())
-//                .rxStatusCode(status)
-//                .build();
+        prescription.setCreateTimestamp(LocalDateTime.now());
+        prescription.setUpdateTimestamp(LocalDateTime.now());
 
         return prescriptionRepository.save(prescription);
     }
