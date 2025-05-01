@@ -18,5 +18,4 @@ def doctor_login(driver, email, password):
     sign_in_button = wait.until(EC.element_to_be_clickable((By.XPATH, '//button[@type="submit"]')))
     sign_in_button.click()
 
-    # Wait until redirected to patient dashboard
     wait.until(EC.url_contains("/patient/dashboard"))
