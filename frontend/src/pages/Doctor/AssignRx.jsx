@@ -66,7 +66,7 @@ export default function AssignPrescription() {
         };
 
         try {
-            const res = await fetch(`${API_URL}/prescriptions`, {
+            const res = await fetch(`${API_URL}/prescription`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
