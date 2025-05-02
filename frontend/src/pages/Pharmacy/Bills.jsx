@@ -1,62 +1,68 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
-    Box, Container, Typography, TextField, Select, MenuItem, IconButton,
-    Button, Table, TableBody, TableCell, TableContainer, TableHead,
-    TableRow, Paper, Stack
+    Container, Typography, Table, TableBody, TableCell, TableContainer,
+    TableHead, TableRow, Paper, Box, Stack
 } from "@mui/material";
-import FilterListIcon from '@mui/icons-material/FilterList';
-import SettingsIcon from '@mui/icons-material/Settings';
 import { PieChart, Pie, Cell, Legend } from "recharts";
-
-const data = [
-    { fullName: "name", email: "name@email.com", phone: "####", paid: true },
-    { fullName: "name", email: "name@email.com", phone: "####", paid: false },
-    { fullName: "name", email: "name@email.com", phone: "####", paid: true },
-    { fullName: "name", email: "name@email.com", phone: "####", paid: false },
-    { fullName: "name", email: "name@email.com", phone: "####", paid: true }
-];
-
-const pieData = [
-    { name: "Paid", value: data.filter(d => d.paid).length },
-    { name: "Not Paid", value: data.filter(d => !d.paid).length }
-];
+import { API_URL } from '../../utils/constants';
+import { UserContext } from '../../contexts/UserContext';
 
 const COLORS = ["#4caf50", "#f44336"];
 
 const Bills = () => {
-    const [search, setSearch] = useState("");
-    const [filterAttr, setFilterAttr] = useState("Name");
+    const { user } = useContext(UserContext);
+    const [bills, setBills] = useState([]);
 
-    const filteredData = data.filter(entry =>
-        entry.email.toLowerCase().includes(search.toLowerCase()) ||
-        entry.fullName.toLowerCase().includes(search.toLowerCase())
-    );
+    useEffect(() => {
+        if (!user?.id) return;
+
+        const fetchBills = async () => {
+            try {
+                // Step 1: Get pharmacy by userId
+                const pharmacyRes = await fetch(`${API_URL}/pharmacies?userId=${user.id}`, {
+                    credentials: "include"
+                });
+
+                const pharmacyData = await pharmacyRes.json();
+                const pharmacyId = Array.isArray(pharmacyData)
+                    ? pharmacyData[0]?.id
+                    : pharmacyData?.id;
+
+                if (!pharmacyId) {
+                    console.warn("Pharmacy ID not found");
+                    return;
+                }
+
+                // Step 2: Get bills for pharmacy
+                const billsRes = await fetch(`${API_URL}/pharmacies/bills?pharmacyId=${pharmacyId}`, {
+                    credentials: "include"
+                });
+
+                const text = await billsRes.text();
+                if (!text) {
+                    console.warn("Empty response from /bills");
+                    setBills([]);
+                    return;
+                }
+
+                const billsData = JSON.parse(text);
+                setBills(billsData);
+            } catch (err) {
+                console.error("Error fetching bills:", err);
+            }
+        };
+
+        fetchBills();
+    }, [user]);
+
+    const pieData = [
+        { name: "Paid", value: bills.filter(b => b.paid).length },
+        { name: "Not Paid", value: bills.filter(b => !b.paid).length }
+    ];
 
     return (
         <Container sx={{ mt: 4 }}>
-            <Typography variant="h3" gutterBottom> Bills </Typography>
-
-            <Stack direction="row" spacing={2} alignItems="center" mb={3}>
-                <TextField
-                    label="Search"
-                    variant="outlined"
-                    placeholder="Name, email"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
-                <Select
-                    value={filterAttr}
-                    onChange={(e) => setFilterAttr(e.target.value)}
-                    displayEmpty
-                >
-                    <MenuItem value="Name">Name</MenuItem>
-                    <MenuItem value="Email">Email</MenuItem>
-                </Select>
-                <IconButton><FilterListIcon /></IconButton>
-                <Button variant="outlined">ACTION</Button>
-                <Button variant="contained">ACTION</Button>
-                <IconButton><SettingsIcon /></IconButton>
-            </Stack>
+            <Typography variant="h3" gutterBottom> Prescription Bills </Typography>
 
             <Stack direction="row" spacing={4}>
                 <Box flex={3}>
@@ -64,19 +70,19 @@ const Bills = () => {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Full Name</TableCell>
-                                    <TableCell>Email</TableCell>
-                                    <TableCell>Phone number</TableCell>
-                                    <TableCell>Paid</TableCell>
+                                    <TableCell>Prescription ID</TableCell>
+                                    <TableCell>Amount</TableCell>
+                                    <TableCell>Status</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {filteredData.map((row, idx) => (
-                                    <TableRow key={idx}>
-                                        <TableCell>{row.fullName}</TableCell>
-                                        <TableCell>{row.email}</TableCell>
-                                        <TableCell>{row.phone}</TableCell>
-                                        <TableCell>{row.paid ? "Yes" : "No"}</TableCell>
+                                {bills.map((bill, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell>{bill.prescriptionId}</TableCell>
+                                        <TableCell>${Number(bill.amount).toFixed(2)}</TableCell>
+                                        <TableCell style={{ color: bill.paid ? "green" : "red", fontWeight: "bold" }}>
+                                            {bill.paid ? "Paid" : "Not Paid"}
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -85,7 +91,7 @@ const Bills = () => {
                 </Box>
 
                 <Box flex={2}>
-                    <Typography variant="h5" sx={{ mb: 2 }}>OVERVIEW BILLS:</Typography>
+                    <Typography variant="h5" sx={{ mb: 2 }}>Bill Status Overview</Typography>
                     <PieChart width={250} height={250}>
                         <Pie
                             data={pieData}
