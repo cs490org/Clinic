@@ -15,34 +15,62 @@ import { UserContext } from '../../contexts/UserContext';
 
 const Prescriptions = () => {
     const { user } = useContext(UserContext);
-    console.log(user);
     const [loading, setLoading] = useState(true);
     const [prescriptions, setPrescriptions] = useState([]);
 
     useEffect(() => {
+        if (!user?.id) return; // wait for user to be loaded
+
         async function run() {
-            const pharmacyRes = await fetch(API_URL + `/pharmacies?userId=${user?.id}`, { credentials: 'include' });
-            if (pharmacyRes.ok) {
-                const data = await pharmacyRes.json();
-                const drugInventoryCountRes = await fetch(API_URL + `/pharmacies/drugs?pharmacyId=${data?.id}`, { credentials: 'include' });
-                if (drugInventoryCountRes.ok) {
-                    const drugData = await drugInventoryCountRes.json();
-                    console.log(drugData);
-                    setPrescriptions([...drugData]);
+            try {
+                // Fetch pharmacy info
+                const pharmacyRes = await fetch(`${API_URL}/pharmacies?userId=${user.id}`, {
+                    credentials: 'include'
+                });
+
+                if (!pharmacyRes.ok) {
+                    console.error("Failed to fetch pharmacy");
+                    setLoading(false);
+                    return;
                 }
+
+                const pharmacyData = await pharmacyRes.json();
+                console.log("Pharmacy:", pharmacyData);
+
+                // If array, pick first item
+                const pharmacyId = Array.isArray(pharmacyData)
+                    ? pharmacyData[0]?.id
+                    : pharmacyData?.id;
+
+                if (!pharmacyId) {
+                    console.warn("No pharmacy found for this user.");
+                    setLoading(false);
+                    return;
+                }
+
+                // Fetch prescriptions for this pharmacy
+                const drugsRes = await fetch(`${API_URL}/pharmacies/drugs?pharmacyId=${pharmacyId}`, {
+                    credentials: 'include'
+                });
+
+                if (!drugsRes.ok) {
+                    console.error("Failed to fetch prescriptions");
+                    setLoading(false);
+                    return;
+                }
+
+                const drugData = await drugsRes.json();
+                console.log("Drugs:", drugData);
+                setPrescriptions(drugData);
+            } catch (err) {
+                console.error("Unexpected error:", err);
+            } finally {
+                setLoading(false);
             }
-            // const response = await fetch(API_URL + "/prescriptions", {
-            //     method: "GET",
-            //     credentials: "include"
-            // });
-            // if (response.status === 200) {
-            //     const data = await response.json();
-            //     setPrescriptions(data);
-            // }
-            // setLoading(false);
         }
+
         run();
-    }, []);
+    }, [user]);
 
     const handleDispense = (id) => {
         console.log(`Mark pill ${id} as dispensed`);
@@ -51,6 +79,22 @@ const Prescriptions = () => {
     const handleQuantityChange = (id, value) => {
         console.log(`Update quantity of pill ${id} to ${value}`);
     };
+
+    if (loading) {
+        return (
+            <Container sx={{ mt: 4 }}>
+                <Typography variant="h6">Loading prescriptions...</Typography>
+            </Container>
+        );
+    }
+
+    if (!prescriptions.length) {
+        return (
+            <Container sx={{ mt: 4 }}>
+                <Typography variant="h6">No prescriptions found for this pharmacy.</Typography>
+            </Container>
+        );
+    }
 
     return (
         <Container sx={{ mt: 4 }}>

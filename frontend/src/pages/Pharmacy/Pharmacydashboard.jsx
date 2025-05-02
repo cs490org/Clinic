@@ -1,35 +1,41 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../../contexts/UserContext.jsx';
-import { Container, Typography, Stack, Box, Grid, Paper } from '@mui/material';
-import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts'; // <-- make sure Legend is imported
+import {
+    Container, Typography, Stack, Box, Grid, Paper
+} from '@mui/material';
+import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+import axios from 'axios';
 
-import axios from 'axios';  
+const COLORS = ['#8884d8', '#83a6ed', '#8dd1e1', '#82ca9d', '#a4de6c'];
 
 const PharmacyDashboard = () => {
     const { user } = useContext(UserContext);
     const [prescriptionsData, setPrescriptionsData] = useState([]);
-    const [newCustomers, setNewCustomers] = useState(0);
-    const [profitMargin, setProfitMargin] = useState(0);
+    const [newCustomers, setNewCustomers] = useState(0); // Replace with real data if available
+    const [profitMargin, setProfitMargin] = useState(0); // Replace with real data if available
+    const [distributionData, setDistributionData] = useState([]);
 
-   
     useEffect(() => {
-        axios.get('http://localhost:8080/api/prescriptions')  
-            .then(response => {
-                setPrescriptionsData(response.data);  
-            })
-            .catch(error => {
-                console.error('There was an error fetching the prescriptions!', error);
-            });
+        axios.get('http://localhost:8080/api/prescriptions', {
+            withCredentials: true // ✅ this sends session cookie
+        })
+        .then(response => {
+            const prescriptions = response.data || [];
+            setPrescriptionsData(prescriptions);
+    
+            // Optional: group data for pie chart
+            const grouped = prescriptions.reduce((acc, item) => {
+                acc[item.pillName] = (acc[item.pillName] || 0) + 1;
+                return acc;
+            }, {});
+            const chartData = Object.entries(grouped).map(([name, value]) => ({ name, value }));
+            setDistributionData(chartData);
+        })
+        .catch(error => {
+            console.error('There was an error fetching the prescriptions!', error);
+        });
     }, []);
-
-
-    const data = [
-        { name: 'Amoxicillin', value: 400 },
-        { name: 'Ibuprofen', value: 300 },
-        { name: 'Zyrtec', value: 200 },
-        { name: 'Lisinopril', value: 100 },
-        { name: 'Metformin', value: 500 },
-    ];
+    
 
     return (
         <Container sx={{ mt: 4 }}>
@@ -37,7 +43,7 @@ const PharmacyDashboard = () => {
                 {/* Header */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                     <Typography fontWeight="bold" variant="h4" gutterBottom>
-                        Welcome Back, {user.firstName}!
+                        Welcome Back, {user?.firstName || "Pharmacist"}!
                     </Typography>
                 </Box>
 
@@ -60,26 +66,20 @@ const PharmacyDashboard = () => {
                         <Paper sx={{ p: 3 }}>
                             <Typography variant="h6" gutterBottom>Prescription Distribution</Typography>
                             <PieChart width={250} height={250}>
-    <Pie
-        data={data}
-        dataKey="value"
-        nameKey="name"
-        outerRadius={80}
-        fill="#8884d8"
-        label
-    >
-        {data.map((entry, index) => (
-            <Cell
-                key={`cell-${index}`}
-                fill={['#8884d8', '#83a6ed', '#8dd1e1', '#82ca9d', '#a4de6c'][index]}
-            />
-        ))}
-    </Pie>
-    <Tooltip />
-    <Legend layout="horizontal" align="center" verticalAlign="bottom" />
-
-</PieChart>
-
+                                <Pie
+                                    data={distributionData}
+                                    dataKey="value"
+                                    nameKey="name"
+                                    outerRadius={80}
+                                    label
+                                >
+                                    {distributionData.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip />
+                                <Legend layout="horizontal" align="center" verticalAlign="bottom" />
+                            </PieChart>
                         </Paper>
                     </Grid>
                 </Grid>
