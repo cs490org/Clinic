@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserResponseDTO {
 
-    private Integer id, creditBalance;
+    private Integer id, creditBalance, pharmacyId;
     private String firstName, lastName, email, imgUri, connectedAccountId;
     private Role role;
     private boolean mfaEnabled;

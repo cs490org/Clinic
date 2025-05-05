@@ -1,12 +1,14 @@
 package com.cs490.group4.demo.service.authentication;
 
 import com.cs490.group4.demo.dto.authentication.UserResponseDTO;
+import com.cs490.group4.demo.security.Role;
 import com.cs490.group4.demo.security.User;
 import com.cs490.group4.demo.security.UserRepository;
 import com.cs490.group4.demo.security.config.token.PasswordResetToken;
 import com.cs490.group4.demo.security.config.token.Token;
 import com.cs490.group4.demo.security.config.token.TokenRepository;
 import com.cs490.group4.demo.security.config.token.TokenResetRepository;
+import com.cs490.group4.demo.service.PharmacyService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,9 @@ public class UserService {
     private TokenResetRepository tokenResetRepository;
 
     @Autowired
+    private PharmacyService pharmacyService;
+
+    @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     public UserResponseDTO getUserDetails(String accessToken) {
@@ -45,6 +50,10 @@ public class UserService {
         userResponseDTO.setFirstName(token.getUser().getFirstName());
         userResponseDTO.setLastName(token.getUser().getLastName());
         userResponseDTO.setRole(token.getUser().getRole());
+
+        if(userResponseDTO.getRole().equals(Role.PHARMACIST)){
+            userResponseDTO.setPharmacyId(pharmacyService.getPharmacyByUserId(userResponseDTO.getId()).getId());
+        }
 
         return userResponseDTO;
     }
