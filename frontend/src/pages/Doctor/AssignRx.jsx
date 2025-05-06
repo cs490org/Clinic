@@ -50,7 +50,7 @@ export default function AssignPrescription() {
                 });
                 if (!res.ok) throw new Error("Failed to fetch pharmacy");
                 const data = await res.json();
-                setPharmacyId(data.pharmacyId); // assuming response shape
+                setPharmacyId(data.id);
             } catch (err) {
                 toast.error("Error loading preferred pharmacy");
                 setPharmacyId(null);
@@ -146,7 +146,7 @@ export default function AssignPrescription() {
                         labelId="drug-select-label"
                         value={selectedDrugId}
                         onChange={(e) => setSelectedDrugId(e.target.value)}
-                        variant="outlined"
+                        variant="standard"
                         disabled={!pharmacyId}
                     >
                         {drugs?.map((drugWrapper) => (
