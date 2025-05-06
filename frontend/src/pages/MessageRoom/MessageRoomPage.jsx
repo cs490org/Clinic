@@ -47,7 +47,7 @@ export default function MessageRoomPage() {
             const appointment = await response.json();
             
             // If appointment is completed (status code 4) and user is patient, navigate to complete page
-            if (appointment.appointmentStatusCode?.id === 4 && user?.role === 'PATIENT') {
+            if (appointment[0].appointmentStatusCode?.id === 4 && user?.role === 'PATIENT') {
                 navigate(`/appointment/${id}/complete`);
             }
         } catch (error) {

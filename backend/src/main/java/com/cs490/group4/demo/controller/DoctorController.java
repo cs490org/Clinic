@@ -1,5 +1,6 @@
 package com.cs490.group4.demo.controller;
 
+import com.cs490.group4.demo.dto.DoctorReviewDTO;
 import com.cs490.group4.demo.service.DoctorService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +52,21 @@ public class DoctorController {
     ) {
         doctorService.updateAcceptingStatus(id, request.getAcceptingNewPatients());
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/review/{doctorId}")
+    private ResponseEntity<?> submitDoctorReview(@RequestBody DoctorReviewDTO dto) {
+        return ResponseEntity.ok(doctorService.submitReview(dto));
+    }
+
+    @GetMapping("/{id}/rating")
+    private ResponseEntity<?> getDoctorRating(@PathVariable Integer id) {
+        return ResponseEntity.ok(doctorService.getAverageRating(id));
+    }
+
+    @GetMapping("/{id}/reviews")
+    private ResponseEntity<?> getDoctorReviews(@PathVariable Integer id) {
+        return ResponseEntity.ok(doctorService.getDoctorReviews(id));
     }
 }
 
