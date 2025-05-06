@@ -2,6 +2,7 @@ package com.cs490.group4.demo.service;
 
 import com.cs490.group4.demo.dao.*;
 import com.cs490.group4.demo.dto.PrescriptionRequest;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
 import org.springframework.context.annotation.DependsOn;
@@ -28,9 +29,9 @@ public class PrescriptionService {
         return prescriptionRepository.findAll();
     }
     public Prescription createPrescription(PrescriptionRequest dto){
-        Doctor doctor =  doctorRepository.findById(dto.getDoctorId()).orElse(null);
-        Patient patient = patientRepository.findById(dto.getPatientId()).orElse(null);
-        Drug drug = drugRepository.findById(dto.getDrugId()).orElse(null);
+        Doctor doctor =  doctorRepository.findById(dto.getDoctorId()).orElseThrow(()-> new EntityNotFoundException("Doctor not found"));
+        Patient patient = patientRepository.findById(dto.getPatientId()).orElseThrow(()-> new EntityNotFoundException("Patient not found"));
+        Drug drug = drugRepository.findById(dto.getDrugId()).orElseThrow(()-> new EntityNotFoundException("Drug not found"));
 
         Prescription prescription = new Prescription();
         prescription.setDoctor(doctor);

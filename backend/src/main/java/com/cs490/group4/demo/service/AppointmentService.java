@@ -1,6 +1,7 @@
 package com.cs490.group4.demo.service;
 
 import com.cs490.group4.demo.dao.*;
+import com.cs490.group4.demo.dto.AppointmentDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import lombok.Data;
@@ -109,12 +110,3 @@ public class AppointmentService {
     }
 }
 
-@Data
-class AppointmentDTO {
-    private Integer id;
-    private Doctor doctor;
-    private Patient patient;
-    private AppointmentStatusCode appointmentStatusCode;
-    private Timestamp appointmentTimestamp;
-    private String symptoms;
-}
