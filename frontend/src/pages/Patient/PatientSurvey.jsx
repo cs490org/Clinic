@@ -64,6 +64,8 @@ export default function PatientSurvey() {
     const [surveyMood, setSurveyMood] = useState(false)
     const [surveyWeight, setSurveyWeight] = useState(false)
 
+    if (!daily_surveys || !weekly_surveys) return <CircularProgress />;
+
     if (daily_surveys_loading || weekly_surveys_loading) {
         return <CircularProgress></CircularProgress>
     }
