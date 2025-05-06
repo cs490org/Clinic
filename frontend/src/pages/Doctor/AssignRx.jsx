@@ -16,6 +16,7 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../contexts/UserContext.jsx";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { convertLength } from "@mui/material/styles/cssUtils.js";
 
 export default function AssignPrescription() {
     const { roleData } = useContext(UserContext);
@@ -152,9 +153,9 @@ export default function AssignPrescription() {
                         variant="standard"
                         disabled={!pharmacyId}
                     >
-                        {drugs?.map((drugWrapper) => (
-                            <MenuItem key={drugWrapper.id} value={drugWrapper.drug.id}>
-                                {drugWrapper.drug.name}
+                        {drugs?.map((drug) => (
+                            <MenuItem key={drug.id} value={drug.id}>
+                                {drug.name}
                             </MenuItem>
                         ))}
                     </Select>
