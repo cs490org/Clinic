@@ -122,6 +122,8 @@ export default function AppointmentCompletePage() {
         );
     }
 
+console.log(appointment);
+
     // Doctor view
     return (
         <Container maxWidth="md" sx={{ py: 4 }}>

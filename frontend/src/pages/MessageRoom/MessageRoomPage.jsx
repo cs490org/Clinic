@@ -128,7 +128,7 @@ export default function MessageRoomPage() {
                     {user?.role === "DOCTOR" ? <Button variant="contained" color="error" onClick={() => {
                         axios.post(`${API_URL}/appointments/${id}/complete`, { withCredentials: true })
                             .then(() => {
-                                navigate('/appointment/52/complete');
+                                navigate(`/appointment/${id}/complete`);
                             })
                     }}>
                         End Appointment
