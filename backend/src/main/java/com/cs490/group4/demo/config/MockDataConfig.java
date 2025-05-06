@@ -49,19 +49,29 @@ public class MockDataConfig {
         return args -> {
             if (doctorService.isEmpty()) {
                 mockDoctor.createMockDoctor(
-                        "dumpling@clinic.com",
-                        "Dump",
-                        "Ling",
-                        "1111111111",
-                        "Weight Gain",
-                        2L);
+                        "samanthasalomon@clinic.com",
+                        "Samantha",
+                        "Salomon",
+                        "9732014283",
+                        "Dietitian",
+                        1L,
+                        "https://storage.googleapis.com/cs490-media/samantha%20salomon.png");
                 mockDoctor.createMockDoctor(
-                        "doctor@clinic.com",
-                        "Mario",
-                        "Mario",
-                        "1234567890",
-                        "Weight Loss",
-                        1L);
+                        "valentineobi@clinic.com",
+                        "Valentine",
+                        "Obi",
+                        "9734319430",
+                        "Cardiologist",
+                        2L,
+                        "https://storage.googleapis.com/cs490-media/valentine%20obi.png");
+                mockDoctor.createMockDoctor(
+                        "doctor1@clinic.com",
+                        "Sidra",
+                        "Sohail",
+                        "9733103090",
+                        "Endocrinologist",
+                        3L,
+                        "https://storage.googleapis.com/cs490-media/sidra%20sohail.png");
 
             }
             if (patientService.isEmpty()) {
@@ -70,7 +80,8 @@ public class MockDataConfig {
                         "Test",
                         "Patient",
                         "1234567890",
-                        "somewhere");
+                        "somewhere",
+                        "https://storage.googleapis.com/cs490-media/patient.webp");
             }
             if (pharmacyService.isEmpty()) {
                 mockPharmacy.createMockPharmacy(

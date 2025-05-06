@@ -43,7 +43,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 DISABLE_AUTH.equals("true") ? "/**" :
                                         "/auth/**",
-                                "/healthcheck"
+                                "/healthcheck",
+                                "/doctors"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

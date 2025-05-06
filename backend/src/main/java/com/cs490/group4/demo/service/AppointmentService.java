@@ -30,6 +30,10 @@ public class AppointmentService {
             .collect(Collectors.toList());
     }
 
+    public List<AppointmentDTO> getAllAppointmentsForPatient(Integer patientId, Integer statusCode) {
+        return appointmentRepository.findAll().stream().filter(a -> a.getPatient().getId().equals(patientId) && a.getAppointmentStatusCode().getId().equals(statusCode)).map(this::convertToDTO).collect(Collectors.toList());
+    }
+
     @Transactional
     public void createAppointment(Appointment appointment, String symptomsDescription) {
         appointment.setAppointmentStatusCode(appointmentStatusCodeRepository.findByStatus("PENDING"));
