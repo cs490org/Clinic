@@ -45,7 +45,7 @@ public class MockDataConfig {
      */
 
     @Bean
-    CommandLineRunner mockDataInitializer(RecipeCommentService recipeCommentService, DailySurveyService dailySurveyService, MockDailySurvey mockDailySurvey, WeeklySurveyService weeklySurveyService, MockWeeklySurvey mockWeeklySurvey, PrescriptionService prescriptionService, MockPrescription mockPrescription, DrugService drugService, MockDrug mockDrug) {
+    CommandLineRunner mockDataInitializer(RecipeCommentService recipeCommentService, DailySurveyService dailySurveyService, MockDailySurvey mockDailySurvey, WeeklySurveyService weeklySurveyService, MockWeeklySurvey mockWeeklySurvey, PrescriptionService prescriptionService, MockPrescription mockPrescription, DrugService drugService, MockDrug mockDrug, MockPatientPharmacy mockPatientPharmacy) {
         return args -> {
             if (doctorService.isEmpty()) {
                 mockDoctor.createMockDoctor(
@@ -98,6 +98,10 @@ public class MockDataConfig {
                         "8675311234",
                         "07104"
                 );
+            }
+
+            if (!patientService.isEmpty() && !pharmacyService.isEmpty()) {
+                mockPatientPharmacy.createPatientPharmacy(1,1);
             }
 
             if(ingredientService.isEmpty()){
