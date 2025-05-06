@@ -4,6 +4,7 @@ import com.cs490.group4.demo.dao.ChosenDoctor;
 import com.cs490.group4.demo.dao.Doctor;
 import com.cs490.group4.demo.dao.Patient;
 import com.cs490.group4.demo.service.ChosenDoctorService;
+import com.google.api.HttpBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +18,14 @@ public class ChosenDoctorController {
     private ChosenDoctorService chosenDoctorService;
 
     @GetMapping("/patient/doctor")
-    private ResponseEntity<ChosenDoctor> getChosenDoctor(@RequestParam Integer patientId) {
-        return ResponseEntity.ok(chosenDoctorService.getChosenDoctorByPatientId(patientId));
+    private ResponseEntity<ChosenDoctor> getChosenDoctor(@RequestParam(required = false) Integer patientId, @RequestParam(required = false) Integer userId) {
+        if(patientId != null){
+            return ResponseEntity.ok(chosenDoctorService.getChosenDoctorByPatientId(patientId));
+        } else if (userId != null) {
+            return ResponseEntity.ok(chosenDoctorService.getChosenDoctorByUserId(userId));
+        }else{
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 

@@ -83,7 +83,12 @@ const AllDoctors = ({ onBookClick }) => {
                 <TableBody>
                     {paginatedDoctors.map((doctor, index) => (
                         <TableRow key={index}>
-                            <TableCell>Dr. {doctor.firstName} {doctor.lastName}</TableCell>
+                            <TableCell>
+                                <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+                                    {doctor.user.imgUri && <img width={50} height={50} src={doctor.user.imgUri} alt="Doctor" />}
+                                    <b>Dr. {doctor.firstName} {doctor.lastName}</b>
+                                </div>
+                            </TableCell>
                             <TableCell>{doctor.specialty}</TableCell>
                             <TableCell>
                                 <Button

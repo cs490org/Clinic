@@ -167,7 +167,7 @@ const router = createBrowserRouter([
             </Auth>
     },
     {
-        path: "/message-room",
+        path: "/appointment/:id",
         element:
             <Auth allowedRoles={["PATIENT", "DOCTOR"]}>
                 <MessageRoomPage />

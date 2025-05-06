@@ -29,7 +29,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import FlatwareIcon from '@mui/icons-material/Flatware';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
-import {Medication} from "@mui/icons-material";
+import { Medication } from "@mui/icons-material";
 
 
 export default function NavBar() {
@@ -107,7 +107,7 @@ export default function NavBar() {
       >
         <Box sx={{ width: drawerWidth, p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
           <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
-            <PersonIcon />
+            {user?.imgUri ? <img src={user?.imgUri} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : user?.firstName?.charAt(0)}
           </Avatar>
           <Box>
             <Typography variant="subtitle1" fontWeight="bold">
@@ -147,15 +147,15 @@ export default function NavBar() {
           )}
 
           {user?.role === "DOCTOR" && (
-              <ListItemButton onClick={() => {
-                navigate("/doctor/assignrx");
-                setDrawerOpen(false);
-              }}>
-                <ListItemIcon>
-                  <Medication/>
-                </ListItemIcon>
-                <ListItemText primary="Assign Medication" />
-              </ListItemButton>
+            <ListItemButton onClick={() => {
+              navigate("/doctor/assignrx");
+              setDrawerOpen(false);
+            }}>
+              <ListItemIcon>
+                <Medication />
+              </ListItemIcon>
+              <ListItemText primary="Assign Medication" />
+            </ListItemButton>
           )}
 
           {(user?.role === "PATIENT" || user?.role === "DOCTOR") &&

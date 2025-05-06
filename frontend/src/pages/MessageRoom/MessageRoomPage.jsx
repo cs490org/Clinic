@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import {
     Box,
     TextField,
@@ -10,19 +10,22 @@ import {
     ListItem,
     ListItemText,
     Divider,
+    ListItemAvatar,
+    Avatar,
 } from '@mui/material';
 import { format } from 'date-fns';
 import { API_URL } from '../../utils/constants';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { UserContext } from '../../contexts/UserContext';
 
 export default function MessageRoomPage() {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
-    const [fromUserId, setFromUserId] = useState(1); // This should come from your auth context
     const [toUserId, setToUserId] = useState(2); // This should be passed as a prop or from route params
     const messagesEndRef = useRef(null);
-    const [searchParams, setSearchParams] = useSearchParams();
-    const appointmentId = searchParams.get('appointmentId');
+    const { id } = useParams();
+    const { user } = useContext(UserContext);
+    const navigate = useNavigate();
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -32,7 +35,7 @@ export default function MessageRoomPage() {
         fetchMessages();
         const interval = setInterval(fetchMessages, 5000); // Poll for new messages every 5 seconds
         return () => clearInterval(interval);
-    }, [fromUserId, toUserId]);
+    }, [user]);
 
     useEffect(() => {
         scrollToBottom();
@@ -40,7 +43,7 @@ export default function MessageRoomPage() {
 
     const fetchMessages = async () => {
         try {
-            const response = await fetch(`${API_URL}/messages/appointment/${appointmentId}`, {
+            const response = await fetch(`${API_URL}/messages/appointment/${id}`, {
                 credentials: 'include',
             });
             if (!response.ok) {
@@ -67,7 +70,7 @@ export default function MessageRoomPage() {
                     fromUserId,
                     toUserId,
                     message: newMessage,
-                    appointmentId,
+                    appointmentId: id,
                 }),
                 credentials: 'include',
             });
@@ -83,11 +86,27 @@ export default function MessageRoomPage() {
         }
     };
 
+    console.log(user)
+    console.log(messages)
+
     return (
-        <Container maxWidth="md" sx={{ height: '100vh', py: 4 }}>
+        <Container maxWidth="md" sx={{ height: '90vh', py: 4 }}>
             <Paper elevation={3} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <Typography variant="h5" sx={{ p: 2, borderBottom: 1 }}>
+                <Typography variant="h5" sx={{ p: 2, borderBottom: 1, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                     Chat Room
+
+                    {user?.role === "DOCTOR" ? <Button variant="contained" color="error" onClick={() => {
+                        axios.patch(`${API_URL}/appointments/${id}/end`, { withCredentials: true })
+                            .then(() => {
+                                toast.success('Appointment ended successfully');
+                                window.location.reload();
+                            })
+                    }}>
+                        End Appointment
+                    </Button> :
+                        <Button variant="contained" color="error" onClick={() => navigate(-1)}>
+                            Leave Appointment
+                        </Button>}
                 </Typography>
 
                 <List sx={{ flexGrow: 1, overflow: 'auto', p: 2 }}>
@@ -95,19 +114,22 @@ export default function MessageRoomPage() {
                         <React.Fragment key={message.id}>
                             <ListItem
                                 sx={{
-                                    justifyContent: message.fromUserId === fromUserId ? 'flex-end' : 'flex-start',
+                                    justifyContent: message.fromUserId.userId === user?.id ? 'flex-end' : 'flex-start',
                                     mb: 1
                                 }}
                             >
+                                {message.fromUserId.userId !== user?.id && <ListItemAvatar>
+                                    <Avatar src={message.fromUserId.imgUri} />
+                                </ListItemAvatar>}
                                 <Paper
                                     elevation={1}
                                     sx={{
                                         p: 2,
                                         maxWidth: '70%',
-                                        bgcolor: message.fromUserId === fromUserId ? 'primary.main' : 'grey.100',
+                                        bgcolor: message.fromUserId.userId === user?.id ? 'primary.main' : 'grey.100',
                                         borderRadius: 2,
-                                        ml: message.fromUserId === fromUserId ? 2 : 0,
-                                        mr: message.fromUserId === fromUserId ? 0 : 2
+                                        ml: message.fromUserId.userId === user?.id ? 2 : 0,
+                                        mr: message.fromUserId.userId === user?.id ? 0 : 2
                                     }}
                                 >
                                     <ListItemText
@@ -115,10 +137,10 @@ export default function MessageRoomPage() {
                                         secondary={format(new Date(message.sentTimestamp), 'MMM d, yyyy h:mm a')}
                                         sx={{
                                             '& .MuiListItemText-primary': {
-                                                color: message.fromUserId === fromUserId ? 'white' : 'text.primary',
+                                                color: message.fromUserId.userId === user?.id ? 'white' : 'text.primary',
                                             },
                                             '& .MuiListItemText-secondary': {
-                                                color: message.fromUserId === fromUserId ? 'rgba(255, 255, 255, 0.7)' : 'text.secondary',
+                                                color: message.fromUserId.userId === user?.id ? 'rgba(255, 255, 255, 0.7)' : 'text.secondary',
                                             },
                                         }}
                                     />

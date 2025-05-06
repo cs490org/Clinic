@@ -20,8 +20,10 @@ public class MockUser {
             String email,
             String password,
             String firstName,
-            String lastName) {
+            String lastName,
+            String imgUri) {
         User user = new User();
+        user.setImgUri(imgUri);
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
         user.setFirstName(firstName);

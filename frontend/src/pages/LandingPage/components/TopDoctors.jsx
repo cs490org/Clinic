@@ -1,9 +1,11 @@
-import {Box, Paper, Typography, Container, Avatar, Stack} from "@mui/material";
+import { Box, Paper, Typography, Container, Avatar, Stack } from "@mui/material";
 import PersonIcon from '@mui/icons-material/Person';
+import { API_URL } from "../../../utils/constants";
+import { useEffect, useState } from "react";
 
-const DoctorCard = ({name, specialty, description}) => (
-    <Paper sx={{p: 2}}>
-        <Box display={"flex"} flexDirection={"column"} alignItems={"center"}>
+const DoctorCard = ({ firstName, lastName, specialty, description, user }) => (
+    <Paper sx={{ p: 2 }}>
+        <Box display={"flex"} flexDirection={"column"} alignItems={"center"} width={"300px"}>
             <Avatar
                 sx={{
                     width: 120,
@@ -12,10 +14,10 @@ const DoctorCard = ({name, specialty, description}) => (
                     bgcolor: 'grey.200'
                 }}
             >
-                <PersonIcon sx={{fontSize: 80, color: 'grey.400'}}/>
+                <img src={user.imgUri} alt="Doctor" />
             </Avatar>
             <Typography variant="h5" fontWeight="bold" mb={1}>
-                {name}
+                {firstName} {lastName}, MD
             </Typography>
             <Typography variant="subtitle1" color="text.secondary" mb={2}>
                 {specialty}
@@ -27,30 +29,25 @@ const DoctorCard = ({name, specialty, description}) => (
     </Paper>
 );
 
-const doctors = [
-    {
-        name: "Dr. Elvin Gadd",
-        specialty: "Weight loss Specialist",
-        description: "Board-certified in obesity medicine with 15 years of experience helping patients achieve sustainable weight loss."
-    },
-    {
-        name: "Dr. Luigi Verde",
-        specialty: "Nutritionist",
-        description: "Specializes in creating personalized nutrition plans that fit into patients' lifestyles for long-term success."
-    },
-    {
-        name: "Dr. Peach Toadstool",
-        specialty: "Obesity Medicine Specialist",
-        description: "Physician specializing in non-surgical weight loss methods, including FDA-approved medications."
-    }
-];
-
 const TopDoctors = () => {
+
+    const [doctors, setDoctors] = useState([]);
+
+    useEffect(() => {
+        const fetchDoctors = async () => {
+            const response = await fetch(`${API_URL}/doctors`);
+            const data = await response.json();
+            setDoctors([...data]);
+        };
+
+        fetchDoctors();
+    }, []);
+
     return (
         <Box
             sx={{
-                py: {xs: 6, md: 10},
-                px: {xs: 2, sm: 4, md: 6},
+                py: { xs: 6, md: 10 },
+                px: { xs: 2, sm: 4, md: 6 },
                 backgroundColor: 'background.secondary'
             }}
         >
@@ -59,7 +56,7 @@ const TopDoctors = () => {
                     variant="h2"
                     component="h2"
                     textAlign="center"
-                    fontSize={{xs: "2rem", md: "3.5rem"}}
+                    fontSize={{ xs: "2rem", md: "3.5rem" }}
                     fontWeight="bold"
                     mb={3}
                 >
@@ -68,7 +65,7 @@ const TopDoctors = () => {
 
                 <Typography
                     textAlign="center"
-                    fontSize={{xs: "1rem", md: "1.25rem"}}
+                    fontSize={{ xs: "1rem", md: "1.25rem" }}
                     mb={8}
                     maxWidth="800px"
                     mx="auto"
@@ -78,9 +75,10 @@ const TopDoctors = () => {
                 </Typography>
 
                 <Stack direction="row" spacing={4} justifyContent="center">
-                    {doctors.map((doctor, index) => (
-                        <DoctorCard key={index} {...doctor} />
-                    ))}
+                    {doctors.map((doctor, index) => {
+                        console.log(doctor)
+                        return < DoctorCard key={index} {...doctor} />
+                    })}
                 </Stack>
             </Container>
         </Box>

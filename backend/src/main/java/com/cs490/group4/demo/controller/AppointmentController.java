@@ -34,6 +34,11 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.getAllAppointments());
     }
 
+    @GetMapping("/patient")
+    private ResponseEntity<?> getAppointmentsForPatient(@RequestParam Integer patientId, @RequestParam Integer status) {
+        return ResponseEntity.ok(appointmentService.getAllAppointmentsForPatient(patientId, status));
+    }
+
     @PostMapping()
     private ResponseEntity<?> createAppointment(@RequestBody AppointmentCreateRequest request) {
         appointmentService.createAppointment(request.getAppointment(), request.getSymptoms());
