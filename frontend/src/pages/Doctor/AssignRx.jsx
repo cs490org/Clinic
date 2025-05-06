@@ -64,7 +64,10 @@ export default function AssignPrescription() {
         queryKey: ["drugs", pharmacyId],
         queryFn: async () => {
             if (!pharmacyId) return [];
-            const res = await fetch(`${API_URL}/pharmacies/drugs?pharmacyId=${pharmacyId}`, {
+            // const res = await fetch(`${API_URL}/pharmacies/drugs?pharmacyId=${pharmacyId}`, {
+            //     credentials: 'include'
+            // });
+            const res = await fetch(`${API_URL}/drugs`, {
                 credentials: 'include'
             });
             if (!res.ok) throw new Error("Failed to fetch drugs");
