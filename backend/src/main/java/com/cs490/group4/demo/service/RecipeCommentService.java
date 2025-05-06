@@ -55,7 +55,7 @@ public class RecipeCommentService {
         RecipeCommentResponseDTO responseDTO = new RecipeCommentResponseDTO();
         responseDTO.setCommentId(recipeComment.getId());
         responseDTO.setRecipeId(recipeId);
-//        responseDTO.setUserId(userId);
+        responseDTO.setUserId(userId);
         responseDTO.setCommenter(user.getFirstName() + " " + user.getLastName());
         responseDTO.setComment(comment);
         return responseDTO;
@@ -69,10 +69,11 @@ public class RecipeCommentService {
 
     @Data
     public static class RecipeCommentResponseDTO {
+        private Integer userId;
+        private String commenter;
+
         private Integer commentId;
         private Integer recipeId;
-//        private Integer userId;
-        private String commenter;
         private String comment;
     }
 }
