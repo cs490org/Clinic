@@ -19,15 +19,23 @@ public class DataConfig {
         return args -> {
             if (appointmentStatusCodeRepository.count() == 0) {
                 AppointmentStatusCode appointmentStatusCode = new AppointmentStatusCode();
+                appointmentStatusCode.setId(1);
                 appointmentStatusCode.setStatus("PENDING");
                 appointmentStatusCodeRepository.save(appointmentStatusCode);
 
                 appointmentStatusCode = new AppointmentStatusCode();
+                appointmentStatusCode.setId(2);
                 appointmentStatusCode.setStatus("CONFIRMED");
                 appointmentStatusCodeRepository.save(appointmentStatusCode);
 
                 appointmentStatusCode = new AppointmentStatusCode();
+                appointmentStatusCode.setId(3);
                 appointmentStatusCode.setStatus("CANCELLED");
+                appointmentStatusCodeRepository.save(appointmentStatusCode);
+
+                appointmentStatusCode = new AppointmentStatusCode();
+                appointmentStatusCode.setId(4);
+                appointmentStatusCode.setStatus("COMPLETED");
                 appointmentStatusCodeRepository.save(appointmentStatusCode);
             }
 

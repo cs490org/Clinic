@@ -2,14 +2,13 @@ package com.cs490.group4.demo.service;
 
 import com.cs490.group4.demo.dao.*;
 import com.cs490.group4.demo.dto.MessageDTO;
-import com.cs490.group4.demo.repository.MessageRepository;
+import com.cs490.group4.demo.dao.MessageRepository;
 import com.cs490.group4.demo.security.User;
 import com.cs490.group4.demo.service.authentication.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;

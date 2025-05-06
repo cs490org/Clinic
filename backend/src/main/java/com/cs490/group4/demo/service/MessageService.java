@@ -3,12 +3,10 @@ package com.cs490.group4.demo.service;
 import com.cs490.group4.demo.dao.Appointment;
 import com.cs490.group4.demo.dao.Message;
 import com.cs490.group4.demo.dto.MessageDTO;
-import com.cs490.group4.demo.repository.MessageRepository;
-import com.cs490.group4.demo.security.User;
+import com.cs490.group4.demo.dao.MessageRepository;
 import com.cs490.group4.demo.service.authentication.UserService;
 import com.cs490.group4.demo.dao.AppointmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

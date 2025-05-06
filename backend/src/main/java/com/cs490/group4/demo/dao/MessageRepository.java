@@ -1,4 +1,4 @@
-package com.cs490.group4.demo.repository;
+package com.cs490.group4.demo.dao;
 
 import com.cs490.group4.demo.dao.Message;
 import com.cs490.group4.demo.security.User;
