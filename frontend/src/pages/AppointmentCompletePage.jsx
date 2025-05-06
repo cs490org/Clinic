@@ -21,6 +21,7 @@ export default function AppointmentCompletePage() {
     const navigate = useNavigate();
     const { user, roleData } = useContext(UserContext);
     const [rating, setRating] = useState(0);
+    const [reviewTitle, setReviewTitle] = useState('');
     const [review, setReview] = useState('');
 
     const { data: appointment, isLoading } = useQuery({
@@ -36,14 +37,17 @@ export default function AppointmentCompletePage() {
 
     const handleSubmitReview = async () => {
         try {
-            const res = await fetch(`${API_URL}/appointments/${id}/review`, {
+            const res = await fetch(`${API_URL}/doctors/review/${appointment[0].doctor.id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 credentials: 'include',
                 body: JSON.stringify({
+                    doctorId: appointment[0].doctor.id,
+                    patientId: appointment[0].patient.id,
                     rating,
+                    title: reviewTitle,
                     review
                 })
             });
@@ -73,7 +77,7 @@ export default function AppointmentCompletePage() {
                         Appointment Complete
                     </Typography>
                     <Typography variant="body1" gutterBottom>
-                        Thank you for your appointment with Dr. {appointment?.doctor?.firstName} {appointment?.doctor?.lastName}
+                        Thank you for your appointment with Dr. {appointment[0].doctor?.firstName} {appointment[0].doctor?.lastName}
                     </Typography>
                     
                     <Box sx={{ my: 4 }}>
@@ -89,6 +93,14 @@ export default function AppointmentCompletePage() {
 
                     <TextField
                         fullWidth
+                        label="Review Title"
+                        value={reviewTitle}
+                        onChange={(e) => setReviewTitle(e.target.value)}
+                        sx={{ mb: 2 }}
+                    />
+
+                    <TextField
+                        fullWidth
                         multiline
                         rows={4}
                         label="Write a review (optional)"
@@ -101,7 +113,7 @@ export default function AppointmentCompletePage() {
                         variant="contained"
                         color="primary"
                         onClick={handleSubmitReview}
-                        disabled={rating === 0}
+                        disabled={rating === 0 || !reviewTitle.trim()}
                     >
                         Submit Review
                     </Button>
@@ -118,14 +130,14 @@ export default function AppointmentCompletePage() {
                     Appointment Complete
                 </Typography>
                 <Typography variant="body1" gutterBottom>
-                    Appointment with {appointment?.patient?.firstName} {appointment?.patient?.lastName} has been completed.
+                    Appointment with {appointment[0].patient?.firstName} {appointment[0].patient?.lastName} has been completed.
                 </Typography>
 
                 <Stack spacing={2} sx={{ mt: 4 }}>
                     <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => navigate(`/doctor/assignrx?patientId=${appointment?.patient?.id}`)}
+                        onClick={() => navigate(`/doctor/assignrx?patientId=${appointment[0].patient?.id}`)}
                     >
                         Assign Prescription
                     </Button>
@@ -133,7 +145,7 @@ export default function AppointmentCompletePage() {
                     <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => navigate(`/mealplans/create?patientId=${appointment?.patient?.id}`)}
+                        onClick={() => navigate(`/mealplans/create?patientId=${appointment[0].patient?.id}`)}
                     >
                         Assign Meal Plan
                     </Button>

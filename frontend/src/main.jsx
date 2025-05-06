@@ -20,6 +20,7 @@ import { Toaster } from 'sonner';
 import Prescriptions from './pages/Pharmacy/prescriptions.jsx';
 import Patients from "./pages/Pharmacy/Patients.jsx";
 import AppointmentCompletePage from './pages/AppointmentCompletePage.jsx';
+import Reviews from './pages/Doctor/Reviews.jsx';
 
 import Recipes from "./pages/Recipes/Recipes.jsx";
 import RecipeCreate from "./pages/Recipes/RecipeCreate.jsx";
@@ -178,6 +179,13 @@ const router = createBrowserRouter([
         element:
             <Auth allowedRoles={["PATIENT", "DOCTOR"]}>
                 <AppointmentCompletePage />
+            </Auth>
+    },
+    {
+        path: '/doctor/reviews',
+        element:
+            <Auth allowedRoles={["DOCTOR"]}>
+                <Reviews />
             </Auth>
     }
 ])

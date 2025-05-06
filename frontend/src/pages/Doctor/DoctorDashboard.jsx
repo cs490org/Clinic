@@ -5,8 +5,11 @@ import {
     Switch,
     Box,
     Grid2,
+    Paper,
+    Button,
+    Rating,
 } from '@mui/material';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../../contexts/UserContext';
 import PendingAppointments from "./Appointments/PendingAppointments.jsx";
 import ConfirmedAppointments from "./Appointments/ConfirmedAppointments.jsx";
@@ -16,6 +19,7 @@ import { toast } from 'sonner';
 import SearchPatients from "./Patients/SearchPatients.jsx";
 import DoctorPatients from './DoctorPatients';
 import DoctorQuickActions from './DoctorQuickActions.jsx';
+import { useNavigate } from 'react-router-dom';
 
 const DoctorDashboard = () => {
     const { roleData } = useContext(UserContext);
@@ -61,6 +65,9 @@ const DoctorDashboard = () => {
                     <Grid2 size={4}>
                         <DoctorQuickActions />
                     </Grid2>
+                    <Grid2 size={4}>
+                        <DoctorReviews />
+                    </Grid2>
                     <Grid2 size={12}>
                         <DoctorPatients />
                     </Grid2>
@@ -76,4 +83,47 @@ const DoctorDashboard = () => {
     );
 };
 
-export default DoctorDashboard; 
+export default DoctorDashboard;
+
+function DoctorReviews() {
+    const { roleData } = useContext(UserContext);
+    const [rating, setRating] = useState(0);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchRating = async () => {
+            try {
+                const response = await axios.get(`${API_URL}/doctors/${roleData.id}/rating`, { withCredentials: true });
+                setRating(response.data);
+            } catch (error) {
+                console.error('Failed to fetch rating:', error);
+            }
+        };
+
+        if (roleData?.id) {
+            fetchRating();
+        }
+    }, [roleData?.id]);
+
+    return (
+        <Paper sx={{ p: "1rem", height: '100%' }}>
+            <Typography sx={{ fontWeight: "bold", fontSize: "1.2rem", mb: 2 }}>
+                Your Rating
+            </Typography>
+            
+            <Stack spacing={2}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Rating value={rating} precision={0.5} readOnly />
+                    <Typography>({rating.toFixed(1)})</Typography>
+                </Box>
+                <Button
+                    variant="contained"
+                    fullWidth
+                    onClick={() => navigate('/doctor/reviews')}
+                >
+                    View All Reviews
+                </Button>
+            </Stack>
+        </Paper>
+    );
+}

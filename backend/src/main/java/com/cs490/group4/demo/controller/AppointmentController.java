@@ -46,7 +46,9 @@ public class AppointmentController {
     }
 
     @GetMapping("/{appointmentId}")
-    private ResponseEntity<?> 
+    private ResponseEntity<?> getAppointment(@PathVariable Integer appointmentId) {
+        return ResponseEntity.ok(appointmentService.getAllAppointments().stream().filter(a -> a.getId().equals(appointmentId)));
+    }
 
     @PatchMapping("/{appointment_id}/confirm")
     private ResponseEntity<?> confirmAppointment(@PathVariable Integer appointment_id) {
