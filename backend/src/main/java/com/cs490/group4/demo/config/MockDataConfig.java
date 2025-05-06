@@ -104,6 +104,8 @@ public class MockDataConfig {
                 mockPatientPharmacy.createPatientPharmacy(1,1);
             }
 
+
+
             if(ingredientService.isEmpty()){
                 mockIngredient.createMockIngredient(
                         "Egg",
@@ -336,6 +338,10 @@ public class MockDataConfig {
                 mockDrug.createMockDrug("Ibuprofen", "Pain reliever", "200mg", new BigDecimal("5.99"));
                 mockDrug.createMockDrug("Lisinopril", "Blood pressure", "10mg", new BigDecimal("4.25"));
             }
+
+            mockPharmacy.createDrugInventoryInPharmacy(1,1,5);
+            mockPharmacy.createDrugInventoryInPharmacy(2,1,5);
+
             if(prescriptionService.isEmpty()) {
                 mockPrescription.createMockPrescription(1,1,1, LocalDateTime.now().plusDays(7));
                 mockPrescription.createMockPrescription(1,1,2, LocalDateTime.now().plusDays(7));
