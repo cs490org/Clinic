@@ -17,6 +17,8 @@ import { format } from 'date-fns';
 import { API_URL } from '../../utils/constants';
 import { useNavigate, useParams } from 'react-router-dom';
 import { UserContext } from '../../contexts/UserContext';
+import axios from 'axios';
+import { toast } from 'sonner';
 
 export default function MessageRoomPage() {
     const [messages, setMessages] = useState([]);
@@ -31,11 +33,34 @@ export default function MessageRoomPage() {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
+    const checkAppointmentStatus = async () => {
+        try {
+            const response = await fetch(`${API_URL}/appointments/${id}`, {
+                credentials: 'include'
+            });
+            if (!response.ok) throw new Error('Failed to fetch appointment status');
+            const appointment = await response.json();
+            
+            // If appointment is completed (status code 4) and user is patient, navigate to complete page
+            if (appointment.appointmentStatusCode?.id === 4 && user?.role === 'PATIENT') {
+                navigate(`/appointment/${id}/complete`);
+            }
+        } catch (error) {
+            console.error('Error checking appointment status:', error);
+        }
+    };
+
     useEffect(() => {
         fetchMessages();
-        const interval = setInterval(fetchMessages, 5000); // Poll for new messages every 5 seconds
-        return () => clearInterval(interval);
-    }, [user]);
+        checkAppointmentStatus();
+        const messageInterval = setInterval(fetchMessages, 5000);
+        const statusInterval = setInterval(checkAppointmentStatus, 5000);
+        
+        return () => {
+            clearInterval(messageInterval);
+            clearInterval(statusInterval);
+        };
+    }, [user, id]);
 
     useEffect(() => {
         scrollToBottom();
@@ -96,10 +121,9 @@ export default function MessageRoomPage() {
                     Chat Room
 
                     {user?.role === "DOCTOR" ? <Button variant="contained" color="error" onClick={() => {
-                        axios.patch(`${API_URL}/appointments/${id}/end`, { withCredentials: true })
+                        axios.post(`${API_URL}/appointments/${id}/complete`, { withCredentials: true })
                             .then(() => {
-                                toast.success('Appointment ended successfully');
-                                window.location.reload();
+                                navigate('/appointment/52/complete');
                             })
                     }}>
                         End Appointment

@@ -96,6 +96,12 @@ public class AppointmentService {
             .collect(Collectors.toList());
     }
 
+    public Appointment completeAppointment(Integer appointmentId){
+        Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow();
+        appointment.setAppointmentStatusCode(AppointmentStatusCode.builder().id(4).build());
+        return appointmentRepository.save(appointment);
+    }
+
     private AppointmentDTO convertToDTO(Appointment appointment) {
         AppointmentDTO dto = new AppointmentDTO();
         dto.setId(appointment.getId());

@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import {createBrowserRouter, RouterProvider} from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
@@ -15,11 +15,11 @@ import CompletePatientProfile from './pages/Patient/CompletePatientProfile.jsx';
 import Pharmacydashboard from './pages/Pharmacy/Pharmacydashboard.jsx';
 import CompleteDoctorProfile from './pages/Doctor/CompleteDoctorProfile.jsx';
 import Bills from "./pages/Pharmacy/Bills.jsx";
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {Toaster} from 'sonner';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from 'sonner';
 import Prescriptions from './pages/Pharmacy/prescriptions.jsx';
 import Patients from "./pages/Pharmacy/Patients.jsx";
-
+import AppointmentCompletePage from './pages/AppointmentCompletePage.jsx';
 
 import Recipes from "./pages/Recipes/Recipes.jsx";
 import RecipeCreate from "./pages/Recipes/RecipeCreate.jsx";
@@ -37,133 +37,133 @@ const router = createBrowserRouter([
         path: '/',
         element:
             <Auth notRequired>
-                <LandingPage/>
+                <LandingPage />
             </Auth>
     },
     {
         path: '/signin',
         element:
             <Auth>
-                <SignInPage/>
+                <SignInPage />
             </Auth>
     },
     {
         path: '/signup',
         element:
             <Auth notRequired>
-                <SignupPage/>
+                <SignupPage />
             </Auth>
     },
     {
         path: '/patient/dashboard',
         element:
             <Auth allowedRoles={["PATIENT"]}>
-                <PatientDashboard/>
+                <PatientDashboard />
             </Auth>
     },
     {
         path: '/doctor/dashboard',
         element:
             <Auth allowedRoles={["DOCTOR"]}>
-                <DoctorDashboard/>
+                <DoctorDashboard />
             </Auth>
     },
     {
         path: '/pharmacist/dashboard',
         element:
             <Auth allowedRoles={["PHARMACIST"]} >
-                <Pharmacydashboard/>
+                <Pharmacydashboard />
             </Auth>
     },
     {
         path: '/pharmacist/prescriptions',
         element:
             <Auth allowedRoles={["PHARMACIST"]}>
-                <Prescriptions/>
+                <Prescriptions />
             </Auth>
     },
     {
         path: '/patient/complete-profile',
         element:
             <Auth allowedRoles={["PATIENT"]}>
-                <CompletePatientProfile/>
+                <CompletePatientProfile />
             </Auth>
     },
     {
         path: '/doctor/complete-profile',
         element:
             <Auth allowedRoles={["DOCTOR"]}>
-                <CompleteDoctorProfile/>
-            </Auth> 
+                <CompleteDoctorProfile />
+            </Auth>
     },
     {
         path: '/patients',
         element:
-            <Auth allowedRoles={["PATIENT","DOCTOR","PHARMACIST"]}>
-                <SearchPatients/>
+            <Auth allowedRoles={["PATIENT", "DOCTOR", "PHARMACIST"]}>
+                <SearchPatients />
             </Auth>
     },
     {
         path: '/pharmacy/complete-profile',
         element:
             <Auth allowedRoles={["PHARMACIST"]}>
-                <CompletePharmacyProfile/>
+                <CompletePharmacyProfile />
             </Auth>
-    },{
+    }, {
         path: '/pharmacist/bills',
         element:
             <Auth allowedRoles={["PHARMACIST"]}>
-                <Bills/>
+                <Bills />
             </Auth>
-    },    
+    },
     {
         path: "/pharmacist/patients",
         element: (
-          <Auth allowedRoles={["PHARMACIST"]}>
-            <Patients />
-          </Auth>
+            <Auth allowedRoles={["PHARMACIST"]}>
+                <Patients />
+            </Auth>
         )
-      },
+    },
     {
         path: "/recipes",
         element:
-        <Auth allowedRoles={["PATIENT","DOCTOR"]}>
-           <Recipes/>
-        </Auth>
+            <Auth allowedRoles={["PATIENT", "DOCTOR"]}>
+                <Recipes />
+            </Auth>
     },
     {
         path: "/recipes/create",
         element:
-            <Auth allowedRoles={["PATIENT","DOCTOR"]}>
-                <RecipeCreate/>
+            <Auth allowedRoles={["PATIENT", "DOCTOR"]}>
+                <RecipeCreate />
             </Auth>
     },
     {
         path: "/ingredients/create",
         element:
-            <Auth allowedRoles={["PATIENT","DOCTOR"]}>
-                <IngredientCreate/>
+            <Auth allowedRoles={["PATIENT", "DOCTOR"]}>
+                <IngredientCreate />
             </Auth>
     },
     {
         path: "/mealplans/create",
         element:
             <Auth allowedRoles={["DOCTOR"]}>
-                <AssignMealPlan/>
+                <AssignMealPlan />
             </Auth>
     },
     {
         path: "/mealplans",
         element:
             <Auth allowedRoles={["PATIENT"]}>
-                <ViewMealPlans/>
+                <ViewMealPlans />
             </Auth>
     },
     {
         path: "/doctor/assignrx",
         element:
             <Auth allowedRoles={["DOCTOR"]}>
-                <AssignPrescription/>
+                <AssignPrescription />
             </Auth>
     },
     {
@@ -172,6 +172,13 @@ const router = createBrowserRouter([
             <Auth allowedRoles={["PATIENT", "DOCTOR"]}>
                 <MessageRoomPage />
             </Auth>
+    },
+    {
+        path: "/appointment/:id/complete",
+        element:
+            <Auth allowedRoles={["PATIENT", "DOCTOR"]}>
+                <AppointmentCompletePage />
+            </Auth>
     }
 ])
 
@@ -179,8 +186,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <QueryClientProvider client={queryClient}>
 
         {/* https://sonner.emilkowal.ski/getting-started */}
-        <Toaster expand={true}position="bottom-center" theme="light"/>
+        <Toaster expand={true} position="bottom-center" theme="light" />
 
-        <RouterProvider router={router}/>
+        <RouterProvider router={router} />
     </QueryClientProvider>
 )

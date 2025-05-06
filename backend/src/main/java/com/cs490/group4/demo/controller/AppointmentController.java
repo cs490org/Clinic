@@ -45,6 +45,9 @@ public class AppointmentController {
         return ResponseEntity.ok(request.getAppointment());
     }
 
+    @GetMapping("/{appointmentId}")
+    private ResponseEntity<?> 
+
     @PatchMapping("/{appointment_id}/confirm")
     private ResponseEntity<?> confirmAppointment(@PathVariable Integer appointment_id) {
         boolean updated = appointmentService.confirmAppointment(appointment_id);
@@ -63,6 +66,11 @@ public class AppointmentController {
         } else {
             return ResponseEntity.badRequest().body("Appointment not found or not in pending state");
         }
+    }
+
+    @PostMapping("/{appointmentId}/complete")
+    private ResponseEntity<?> completeAppointment(@PathVariable Integer appointmentId){
+        return ResponseEntity.ok(appointmentService.completeAppointment(appointmentId));
     }
 }
 
