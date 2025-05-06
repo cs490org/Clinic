@@ -204,7 +204,8 @@ const PatientDashboard = () => {
                                                                 <Button 
                                                                     variant="contained" 
                                                                     color="error" 
-                                                                    onClick={() => navigate(`/appointment/${appointment.id}`)}
+                                                                    // onClick={() => navigate(`/appointment/${appointment.id}`)}
+                                                                    onClick={() => navigate(`/appointment/${appointment.id}/${appointment.doctor.id}`)}
                                                                     disabled={!canEnter}
                                                                 >
                                                                     Enter

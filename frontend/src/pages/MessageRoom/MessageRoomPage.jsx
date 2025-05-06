@@ -15,13 +15,18 @@ import {
 } from '@mui/material';
 import { format } from 'date-fns';
 import { API_URL } from '../../utils/constants';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { UserContext } from '../../contexts/UserContext';
 
 export default function MessageRoomPage() {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
-    const [toUserId, setToUserId] = useState(2); // This should be passed as a prop or from route params
+    // const [toUserId, setToUserId] = useState(2); // This should be passed as a prop or from route params
+    // const [searchParams] = useSearchParams()
+    // const toUserId = searchParams.get("toUserId")
+
+    const { toUserId } = useParams();
+
     const messagesEndRef = useRef(null);
     const { id } = useParams();
     const { user } = useContext(UserContext);
@@ -67,7 +72,7 @@ export default function MessageRoomPage() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    fromUserId,
+                    // fromUserId, Being set based on AuthenticationPrincipal
                     toUserId,
                     message: newMessage,
                     appointmentId: id,

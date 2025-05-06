@@ -24,7 +24,7 @@ const ConfirmedAppointments = () => {
         ).then(res => res.json())
     });
 
-    const ConfirmedAppointmentCard = ({ name, time, id }) => {
+    const ConfirmedAppointmentCard = ({ name, time, id,patientId }) => {
         return (
             <Paper sx={{ p: 2 }}>
                 <Stack direction={"row"} justifyContent={"space-between"}>
@@ -36,7 +36,8 @@ const ConfirmedAppointments = () => {
                             <Typography>{dayjs(time).format("MMMM D, YYYY")}</Typography>
                             <Typography>{dayjs(time).format("h:mm A")}</Typography>
                         </Box>
-                        <Button variant={"contained"} onClick={() => navigate(`/appointment/${id}`)}>Enter</Button>
+                        {/*<Button variant={"contained"} onClick={() => navigate(`/appointment/${id}`)}>Enter</Button>*/}
+                        <Button variant={"contained"} onClick={() => navigate(`/appointment/${id}/${patientId}`)}>Enter</Button>
                     </Box>
                 </Stack>
             </Paper>
@@ -69,6 +70,7 @@ const ConfirmedAppointments = () => {
                                         name={`${appointment.patient.user.firstName} ${appointment.patient.user.lastName}`}
                                         time={appointment.appointmentTimestamp}
                                         id={appointment.id}
+                                        patientId={appointment.patient.id}
                                     />
                                 )
                             }
