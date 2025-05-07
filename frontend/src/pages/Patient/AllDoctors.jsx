@@ -69,7 +69,7 @@ const AllDoctors = ({ onBookClick }) => {
 
     return (
         <TableContainer component={Paper} sx={{ p: "1rem" }}>
-            <Typography sx={{ fontWeight: "bold" }} variant="h5" gutterBottom>
+            <Typography sx={{ fontWeight: "bold",fontSize:"1.4rem" }} variant="h5" gutterBottom>
                 Doctor registry
             </Typography>
             <Table>

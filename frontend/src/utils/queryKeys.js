@@ -9,7 +9,7 @@ export const queryKeys = {
         all: ["appointments"],
         pending: (doctorId) => ["appointments", "pending", doctorId],
         confirmed: (doctorId) => ["appointments", "confirmed", doctorId],
-        // cancelled: (doctorId) => ["appointments", "cancelled", doctorId],
+        cancelled: (doctorId) => ["appointments", "cancelled", doctorId],
     },
     pharmacies: {
         all: ["pharmacies"]

@@ -37,7 +37,7 @@ public class ChosenDoctorService {
     }
 
     public ChosenDoctor getChosenDoctorByUserId(Integer userId) {
-        return chosenDoctorRepository.findByUserId(userId).orElseThrow(()->new RuntimeException("Could not find patient with USER id " + userId));
+        return chosenDoctorRepository.findByUserId(userId).orElseThrow(()->new RuntimeException("When getting chosen doctor by userid, could not find the patient with the USER id " + userId));
     }
 
 

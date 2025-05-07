@@ -155,7 +155,7 @@ export default function PatientSurvey() {
     return (
         <Paper sx={{ p: "1rem" }}>
             <Stack spacing={2}>
-                <Typography sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Daily and Weekly Survey</Typography>
+                <Typography sx={{ fontWeight: "bold", fontSize: "1.4rem" }}>Daily and Weekly Survey</Typography>
                 <Box width={"100%"}>
                     <Box sx={{display:"flex", gap:".5rem"}}>
                         {
