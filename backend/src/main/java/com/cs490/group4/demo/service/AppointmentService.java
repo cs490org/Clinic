@@ -75,7 +75,10 @@ public class AppointmentService {
 
         Appointment appointment = optionalAppointment.get();
 
-        if (!"PENDING".equals(appointment.getAppointmentStatusCode().getStatus())) {
+        if ("CANCELLED".equals(appointment.getAppointmentStatusCode().getStatus())) {
+            return false;
+        }
+        if ("COMPLETED".equals(appointment.getAppointmentStatusCode().getStatus())) {
             return false;
         }
 

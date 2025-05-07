@@ -52,9 +52,9 @@ export default function MealPlansWidget() {
     }
 
     return (
-        <Paper sx={{ p: "1rem" }}>
+        <Paper sx={{ height:"100%",p: "1rem" }}>
             <Box sx={{ mb: 2 }}>
-                <Typography sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                <Typography sx={{ fontWeight: "bold", fontSize: "1.4rem" }}>
                     Current Meal Plan
                 </Typography>
             </Box>

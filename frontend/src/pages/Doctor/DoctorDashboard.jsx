@@ -20,6 +20,7 @@ import SearchPatients from "./Patients/SearchPatients.jsx";
 import DoctorPatients from './DoctorPatients';
 import DoctorQuickActions from './DoctorQuickActions.jsx';
 import { useNavigate } from 'react-router-dom';
+import CancelledAppointments from "./Appointments/CancelledAppointments.jsx";
 
 const DoctorDashboard = () => {
     const { roleData } = useContext(UserContext);
@@ -76,6 +77,9 @@ const DoctorDashboard = () => {
                     </Grid2>
                     <Grid2 size={4}>
                         <PendingAppointments />
+                    </Grid2>
+                    <Grid2 size={4}>
+                        <CancelledAppointments/>
                     </Grid2>
                 </Grid2>
             </Stack>

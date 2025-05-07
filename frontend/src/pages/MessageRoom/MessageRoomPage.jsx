@@ -50,6 +50,13 @@ export default function MessageRoomPage() {
             if (appointment[0].appointmentStatusCode?.id === 4 && user?.role === 'PATIENT') {
                 navigate(`/appointment/${id}/complete`);
             }
+
+
+            // if it cancelled, leave
+            if (appointment[0].appointmentStatusCode?.id === 3){
+                navigate(-1);
+                toast("The patient has cancelled the appointment.")
+            }
         } catch (error) {
             console.error('Error checking appointment status:', error);
         }

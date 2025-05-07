@@ -66,7 +66,7 @@ public class AppointmentController {
         if (updated) {
             return ResponseEntity.ok("Appointment rejected successfully");
         } else {
-            return ResponseEntity.badRequest().body("Appointment not found or not in pending state");
+            return ResponseEntity.badRequest().body("Appointment not found or not in valid state to reject");
         }
     }
 
