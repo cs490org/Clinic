@@ -27,6 +27,7 @@ public class PatientSymptomsService {
 
     @Transactional
     public List<PatientSymptoms> setPatientSymptoms(List<PatientSymptomCreateRequestDTO> symptoms) {
+        if (symptoms.size() == 0) { return List.of(); }
         patientSymptomsRepository.deleteByPatientId(symptoms.get(0).getPatientId());
 
         List<PatientSymptoms> patientSymptoms = symptoms.stream().map(dto -> {

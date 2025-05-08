@@ -13,7 +13,7 @@ import {
     MenuItem,
     Skeleton,
     FormControlLabel,
-    Checkbox,
+    Checkbox, Divider,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "../../utils/constants";
@@ -21,10 +21,23 @@ import { UserContext } from "../../contexts/UserContext";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../utils/queryKeys";
 import { toast } from 'sonner';
+import PatientSymptoms from "./PatientSymptoms.jsx";
 
 const CompletePatientProfile = () => {
     const navigate = useNavigate();
-    const { user } = useContext(UserContext);
+    const { user} = useContext(UserContext);
+
+    useEffect(() => {
+        const run = async () => {
+            const res = await fetch(API_URL + `/patients?userId=${user.id}`)
+            // already have patient with that user id
+            if(res.ok){
+                navigate("/patient/dashboard")
+            }
+        }
+        run()
+    }, []);
+
     const [formData, setFormData] = useState({
         phone: '',
         address: '',
@@ -40,8 +53,10 @@ const CompletePatientProfile = () => {
             });
             if (!res.ok) throw new Error('Failed to fetch pharmacies');
             return res.json();
-        }
+        },
     });
+
+
 
     const handleChange = (e) => {
         const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
@@ -73,7 +88,8 @@ const CompletePatientProfile = () => {
 
             if (res.ok) {
                 toast.success('Profile completed successfully!');
-                navigate('/patient/dashboard');
+                // navigate('/patient/dashboard');
+                navigate('/patient/symptoms');
 
                 // ensure we get role info
                 window.location.reload()
@@ -83,12 +99,13 @@ const CompletePatientProfile = () => {
         }
     };
 
+
+
     return (
-        <Container maxWidth="sm" sx={{
+        <Container maxWidth="lg" sx={{
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            height: '100vh'
         }}>
             <Paper elevation={3} sx={{ p: 4 }}>
                 <Stack spacing={2}>
@@ -101,7 +118,7 @@ const CompletePatientProfile = () => {
                     </Typography>
 
                     <form onSubmit={handleSubmit}>
-                        <Stack spacing={2}>
+                        <Stack spacing={2} alignItems={"center"}>
                             <TextField
                                 required
                                 fullWidth
@@ -188,7 +205,7 @@ const CompletePatientProfile = () => {
                                 fullWidth
                                 disabled={!formData.hipaaAgreed}
                             >
-                                Complete Profile
+                                Next
                             </Button>
                         </Stack>
                     </form>

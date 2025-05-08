@@ -29,6 +29,7 @@ import AllDoctors from './AllDoctors';
 import PatientSurvey from "./PatientSurvey.jsx";
 import { useNavigate } from 'react-router-dom';
 import PendingAppointments from "./PendingAppointments.jsx";
+import PatientQuickActions from "./PatientQuickActions.jsx";
 const PatientDashboard = () => {
     const { user, roleData } = useContext(UserContext);
     const [openBooking, setOpenBooking] = useState(false);
@@ -60,6 +61,9 @@ const PatientDashboard = () => {
     const Widgets = () => {
         return (
             <>
+                <Grid2 size={4} sx={{height:"100%",display:"flex",flexDirection:"column"}}>
+                    <PatientQuickActions/>
+                </Grid2 >
                 <Grid2 size={4}>
                     <Paper sx={{ height: "100%", p: "1rem" }}>
                         <Typography sx={{ fontWeight: "bold", fontSize: "1.5rem" }}>
@@ -117,10 +121,10 @@ const PatientDashboard = () => {
                 <Grid2 size={4} sx={{height:"100%"}}>
                     <MealPlansWidget/>
                 </Grid2>
-                <Grid2 size={4} sx={{height:"100%"}}>
+                <Grid2 size={8} sx={{height:"100%"}}>
                     <AllDoctors onBookClick={handleBookClick} />
                 </Grid2>
-                <Grid2 size={8} sx={{height:"100%"}}>
+                <Grid2 size={12} sx={{height:"100%"}}>
                     <PatientSurvey />
                 </Grid2>
             </>
