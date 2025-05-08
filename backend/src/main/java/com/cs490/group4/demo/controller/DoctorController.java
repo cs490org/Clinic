@@ -75,7 +75,7 @@ class DoctorCreateRequest {
     private Integer userId;
     private String phone;
     private String specialty;
-    private Long licenseNumber;
+    private String licenseNumber;
 }
 
 @Data

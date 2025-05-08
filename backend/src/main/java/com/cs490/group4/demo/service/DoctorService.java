@@ -36,7 +36,7 @@ public class DoctorService {
         return doctor;
     }
 
-    public Doctor createDoctor(Integer userId, String phone, String specialty, Long licenseNumber) {
+    public Doctor createDoctor(Integer userId, String phone, String specialty, String licenseNumber) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
 

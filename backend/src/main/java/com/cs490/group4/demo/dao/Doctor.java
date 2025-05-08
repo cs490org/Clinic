@@ -38,7 +38,7 @@ public class Doctor {
 
     private String firstName, lastName, email, phone, specialty;
     @Column(unique = true,nullable = false)
-    private Long licenseNumber;
+    private String licenseNumber;
     private Boolean acceptingNewPatients = true;
 
     @CreationTimestamp

@@ -22,7 +22,7 @@ public class MockDoctor {
             String lastName,
             String phone,
             String specialty,
-            Long licenseNumber,
+            String licenseNumber,
             String imgUri) {
         Doctor doctor = new Doctor();
         User user = mockUser.createMockUser(Role.DOCTOR, email, "password123", firstName, lastName, imgUri);
