@@ -87,16 +87,16 @@ class DoctorServiceTest {
         savedDoctor.setUser(mockUser);
         savedDoctor.setPhone("123-456-7890");
         savedDoctor.setSpecialty("Cardiology");
-        savedDoctor.setLicenseNumber(12345L);
+        savedDoctor.setLicenseNumber("MD-123456");
 
         when(doctorRepository.save(any(Doctor.class))).thenReturn(savedDoctor);
 
-        Doctor result = doctorService.createDoctor(1, "123-456-7890", "Cardiology", 12345L);
+        Doctor result = doctorService.createDoctor(1, "123-456-7890", "Cardiology", "MD-123456");
 
         assertEquals(1, result.getId());
         assertEquals("123-456-7890", result.getPhone());
         assertEquals("Cardiology", result.getSpecialty());
-        assertEquals(12345L, result.getLicenseNumber());
+        assertEquals("MD-123456", result.getLicenseNumber());
         verify(userRepository).findById(1);
         verify(doctorRepository).save(any(Doctor.class));
     }
@@ -106,7 +106,7 @@ class DoctorServiceTest {
         when(userRepository.findById(99)).thenReturn(Optional.empty());
 
         EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> {
-            doctorService.createDoctor(99, "123-456-7890", "Cardiology", 12345L);
+            doctorService.createDoctor(99, "123-456-7890", "Cardiology", "MD-123456");
         });
 
         assertTrue(ex.getMessage().contains("User not found"));

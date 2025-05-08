@@ -13,6 +13,7 @@ import {API_URL} from "../../utils/constants";
 import {toast} from "sonner";
 import {useContext} from "react";
 import {UserContext} from "../../contexts/UserContext";
+import { MenuItem } from "@mui/material";
 
 const CompleteDoctorProfile = () => {
     const navigate = useNavigate();
@@ -41,10 +42,68 @@ const CompleteDoctorProfile = () => {
             ...prev,
             [name]: value,
         }));
+        setErrors((prev) => ({
+            ...prev,
+            [name]: "",
+        }));
+    };
+
+    const specialties = [
+        "Allergy and Immunology",
+        "Anesthesiology",
+        "Cardiology",
+        "Dermatology",
+        "Emergency Medicine",
+        "Endocrinology",
+        "Family Medicine",
+        "Gastroenterology",
+        "General Surgery",
+        "Geriatrics",
+        "Hematology",
+        "Internal Medicine",
+        "Nephrology",
+        "Neurology",
+        "Obstetrics and Gynecology",
+        "Oncology",
+        "Ophthalmology",
+        "Orthopedics",
+        "Otolaryngology (ENT)",
+        "Pediatrics",
+        "Plastic Surgery",
+        "Psychiatry",
+        "Pulmonology",
+        "Radiology",
+        "Rheumatology",
+        "Urology",
+    ];
+
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!formData.phone.match(/^\d{10,15}$/)) {
+            newErrors.phone = "Phone must be 10 to 15 digits.";
+        }
+
+        if (!formData.specialty.trim()) {
+            newErrors.specialty = "Specialty is required.";
+        }
+
+        if (!formData.licenseNumber.match(/^MD-[a-zA-Z0-9]{6,}$/)) {
+            newErrors.licenseNumber =
+                "License must start with 'MD-' and have at least 6 alphanumeric characters. Note no special characters allowed after MD-.";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!validateForm()) {
+            toast.error("Please correct the highlighted fields.");
+            return;
+        }
         try {
             const response = await fetch(API_URL + "/doctors", {
                 method: "POST",
@@ -106,25 +165,37 @@ const CompleteDoctorProfile = () => {
                             label="Phone Number"
                             value={formData.phone}
                             onChange={handleChange}
+                            error={!!errors.phone}
+                            helperText={errors.phone}
                         />
 
                         <TextField
                             name="specialty"
                             required
+                            select
                             fullWidth
                             label="Specialty"
                             value={formData.specialty}
                             onChange={handleChange}
-                        />
+                            error={!!errors.specialty}
+                            helperText={errors.specialty}
+                        >
+                            {specialties.map((option) => (
+                                <MenuItem key={option} value={option}>
+                                    {option}
+                                </MenuItem>
+                            ))}
+                        </TextField>
 
                         <TextField
                             name="licenseNumber"
                             required
                             fullWidth
                             label="License Number"
-                            type="number"
                             value={formData.licenseNumber}
                             onChange={handleChange}
+                            error={!!errors.licenseNumber}
+                            helperText={errors.licenseNumber}
                         />
 
 

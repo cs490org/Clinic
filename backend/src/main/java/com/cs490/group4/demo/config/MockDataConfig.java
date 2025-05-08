@@ -55,7 +55,7 @@ public class MockDataConfig {
                         "Salomon",
                         "9732014283",
                         "Dietitian",
-                        1L,
+                        "MD-230213",
                         "https://storage.googleapis.com/cs490-media/samantha%20salomon.png");
                 mockDoctor.createMockDoctor(
                         "valentineobi@clinic.com",
@@ -63,7 +63,7 @@ public class MockDataConfig {
                         "Obi",
                         "9734319430",
                         "Cardiologist",
-                        2L,
+                        "MD-351571",
                         "https://storage.googleapis.com/cs490-media/valentine%20obi.png");
                 mockDoctor.createMockDoctor(
                         "doctor1@clinic.com",
@@ -71,7 +71,7 @@ public class MockDataConfig {
                         "Sohail",
                         "9733103090",
                         "Endocrinologist",
-                        3L,
+                        "MD-145A33",
                         "https://storage.googleapis.com/cs490-media/sidra%20sohail.png");
 
             }

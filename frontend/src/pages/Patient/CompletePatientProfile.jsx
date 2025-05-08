@@ -40,10 +40,15 @@ const CompletePatientProfile = () => {
 
     const [formData, setFormData] = useState({
         phone: '',
-        address: '',
+        street: '',
+        city: '',
+        state: '',
+        zipCode: '',
         pharmacyId: '',
         hipaaAgreed: false
     });
+
+    const [errors, setErrors] = useState("");
 
     const { data: pharmacies, isLoading: isLoadingPharmacies } = useQuery({
         queryKey: queryKeys.pharmacies.all,
@@ -66,8 +71,33 @@ const CompletePatientProfile = () => {
         });
     };
 
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!formData.phone.match(/^\d{10,15}$/)) {
+            newErrors.phone = "Phone must be 10 to 15 digits.";
+        }
+
+        if (!formData.zipCode.match(/^\d{5}$/)) {
+            newErrors.zipCode = "ZIP code must be exactly 5 digits.";
+        }
+        if (!formData.state.match(/^[A-Z]{2}$/)) {
+            newErrors.state = "State must be a 2-letter uppercase code.";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+
+        if (!validateForm()) {
+            toast.error("Please correct the highlighted fields.");
+            return
+        }
+      
         if (!formData.hipaaAgreed) {
             toast.error('You must agree to the HIPAA Privacy Notice to continue');
             return;
@@ -80,9 +110,13 @@ const CompletePatientProfile = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    ...formData,
+                    phone: formData.phone,
+                    address: `${formData.street}, ${formData.city}, ${formData.state}, ${formData.zipCode}`,
+                    pharmacyId: formData.pharmacyId,
+                    hipaaAgreed: formData.hipaaAgreed,
                     userId: user.id
                 }),
+
                 credentials: 'include'
             });
 
@@ -126,18 +160,47 @@ const CompletePatientProfile = () => {
                                 name="phone"
                                 value={formData.phone}
                                 onChange={handleChange}
+                                error={!!errors.phone}
+                                helperText={errors.phone}
                             />
 
                             <TextField
                                 required
                                 fullWidth
-                                label="Address"
-                                name="address"
-                                value={formData.address}
+                                label="Street Address"
+                                name="street"
+                                value={formData.street}
                                 onChange={handleChange}
-                                multiline
-                                rows={2}
                             />
+                            <TextField
+                                required
+                                fullWidth
+                                label="City"
+                                name="city"
+                                value={formData.city}
+                                onChange={handleChange}
+                            />
+                            <TextField
+                                required
+                                fullWidth
+                                label="State (e.g., NY)"
+                                name="state"
+                                value={formData.state}
+                                onChange={handleChange}
+                                error={!!errors.state}
+                                helperText={errors.state}
+                            />
+                            <TextField
+                                required
+                                fullWidth
+                                label="ZIP Code"
+                                name="zipCode"
+                                value={formData.zipCode}
+                                onChange={handleChange}
+                                error={!!errors.zipCode}
+                                helperText={errors.zipCode}
+                            />
+
 
                             <FormControl fullWidth required>
                                 <InputLabel>Preferred Pharmacy</InputLabel>
