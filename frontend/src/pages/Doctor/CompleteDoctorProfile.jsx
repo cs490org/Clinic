@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {
     Container,
     Paper,
@@ -18,6 +18,17 @@ import { MenuItem } from "@mui/material";
 const CompleteDoctorProfile = () => {
     const navigate = useNavigate();
     const {user} = useContext(UserContext);
+
+    useEffect(() => {
+        const run = async () => {
+            const res = await fetch(API_URL + `/doctors?userId=${user.id}`)
+            if(res.ok){
+                navigate("/doctor/dashboard")
+            }
+        }
+        run()
+    }, []);
+
     const [formData, setFormData] = useState({
         phone: "",
         specialty: "",

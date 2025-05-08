@@ -1,4 +1,6 @@
-import { useState, useContext } from "react";
+
+import {useEffect, useState} from "react";
+
 import {
     Container,
     Paper,
@@ -30,7 +32,18 @@ const pharmacyOptions = [
 
 const CompletePharmacyProfile = () => {
     const navigate = useNavigate();
-    const { user } = useContext(UserContext);
+
+    const {user} = useContext(UserContext);
+    useEffect(() => {
+        const run = async () => {
+            const res = await fetch(API_URL + `/pharmacies?userId=${user.id}`)
+            if(res.ok){
+                navigate("/pharmacist/dashboard")
+            }
+        }
+        run()
+    }, []);
+
     const [formData, setFormData] = useState({
         name: "",
         zipCode: "",

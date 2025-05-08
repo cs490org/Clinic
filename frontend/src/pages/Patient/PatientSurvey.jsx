@@ -16,7 +16,6 @@ import { useContext, useState } from "react";
 import { UserContext } from "../../contexts/UserContext.jsx";
 import dayjs from "dayjs";
 import Box from "@mui/material/Box";
-import ThumbsUp from "../../assets/thumbs_up.png"
 import { toast } from "sonner";
 
 // monolith for all things daily and weekly survey
@@ -248,7 +247,7 @@ export default function PatientSurvey() {
                     <Box>
                         <Typography>Average Mood</Typography>
                         <Typography>{Math.trunc(daily_mood.reduce((acc, curr) => curr + acc, 0) / daily_mood.length)} / 10 mood units</Typography>
-                        <Box width={"100px"} component="img" src={ThumbsUp} />
+                        {/*<Box width={"100px"} component="img" src={ThumbsUp} />*/}
                     </Box>
                     }
                 </Stack>

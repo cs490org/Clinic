@@ -7,7 +7,7 @@ import {
     Grid2,
     Paper,
     Button,
-    Rating,
+    Rating, useMediaQuery, useTheme,
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../../contexts/UserContext';
@@ -39,7 +39,8 @@ const DoctorDashboard = () => {
             event.target.checked = !event.target.checked;
         }
     };
-
+    const theme = useTheme()
+    const isMdUp = useMediaQuery(theme.breakpoints.up("md"))
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4, px: 4 }}>
             <Stack spacing={3}>
@@ -61,33 +62,47 @@ const DoctorDashboard = () => {
                         />
                     </Box>
                 </Box>
+                { isMdUp ?
                 <Grid2 container spacing={2}>
-
-                    <Grid2 size={4}>
-                        <DoctorQuickActions />
-                    </Grid2>
-                    <Grid2 size={4}>
-                        <DoctorReviews />
-                    </Grid2>
-                    <Grid2 size={12}>
-                        <DoctorPatients />
-                    </Grid2>
-                    <Grid2 size={4}>
-                        <ConfirmedAppointments />
-                    </Grid2>
-                    <Grid2 size={4}>
-                        <PendingAppointments />
-                    </Grid2>
-                    <Grid2 size={4}>
-                        <CancelledAppointments/>
-                    </Grid2>
+                    <Widgets/>
                 </Grid2>
+                    :
+                <Stack spacing={2}>
+                    <Widgets/>
+                </Stack>
+                }
             </Stack>
         </Container >
     );
 };
 
 export default DoctorDashboard;
+
+function Widgets(){
+    return(
+       <>
+           <Grid2 size={4}>
+               <DoctorQuickActions />
+           </Grid2>
+           <Grid2 size={4}>
+               <DoctorReviews />
+           </Grid2>
+           <Grid2 size={12}>
+               <DoctorPatients />
+           </Grid2>
+           <Grid2 size={4}>
+               <ConfirmedAppointments />
+           </Grid2>
+           <Grid2 size={4}>
+               <PendingAppointments />
+           </Grid2>
+           <Grid2 size={4}>
+               <CancelledAppointments/>
+           </Grid2>
+       </>
+    )
+}
+
 
 function DoctorReviews() {
     const { roleData } = useContext(UserContext);
