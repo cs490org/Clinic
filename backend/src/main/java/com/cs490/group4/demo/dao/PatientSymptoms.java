@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -26,8 +27,9 @@ public class PatientSymptoms {
     @JoinColumn(name = "patient_id", referencedColumnName = "id")
     private Patient patient;
 
-
-
+    @ManyToOne
+    @JoinColumn(name = "symptom_id", referencedColumnName = "id")
+    private Symptom symptom;
 
     @CreationTimestamp
     private LocalDateTime createTimestamp;
