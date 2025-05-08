@@ -90,7 +90,7 @@ const CompleteDoctorProfile = () => {
         e.preventDefault();
 
         if (!validateForm()) {
-            toast.error("Please input valid data as shown.");
+            toast.error("Please correct the highlighted fields.");
             return;
         }
         try {
