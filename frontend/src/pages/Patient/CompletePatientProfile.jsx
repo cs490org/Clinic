@@ -28,6 +28,7 @@ const CompletePatientProfile = () => {
         address: '',
         pharmacyId: ''
     });
+    const [errors, setErrors] = useState("");
 
     const {data: pharmacies, isLoading: isLoadingPharmacies} = useQuery({
         queryKey: queryKeys.pharmacies.all,
@@ -47,8 +48,28 @@ const CompletePatientProfile = () => {
         });
     };
 
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!formData.phone.match(/^\d{10,15}$/)) {
+            newErrors.phone = "Phone must be 10 to 15 digits.";
+        }
+
+        if (!/^\d+\s[a-zA-Z\s]+,\s[a-zA-Z]+,\s[A-Z]{2},\s\d{5}$/.test(formData.address)) {
+            newErrors.address = "Invalid address format. Please enter a valid address ex.\"123 Main Ave, Newark, NJ, 07024 \"";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!validateForm()) {
+            toast.error("Please correct the highlighted fields.");
+            return;
+        }
         try {
             // Create patient profile with associated userId and pharmacyId
             const res = await fetch(API_URL + '/patients', {
@@ -101,17 +122,19 @@ const CompletePatientProfile = () => {
                                 name="phone"
                                 value={formData.phone}
                                 onChange={handleChange}
+                                error={!!errors.phone}
+                                helperText={errors.phone}
                             />
 
                             <TextField
                                 required
                                 fullWidth
-                                label="Address"
+                                label="Address, City, State, ZIP code"
                                 name="address"
                                 value={formData.address}
                                 onChange={handleChange}
-                                multiline
-                                rows={2}
+                                error={!!errors.address}
+                                helperText={errors.address}
                             />
 
                             <FormControl fullWidth required>
