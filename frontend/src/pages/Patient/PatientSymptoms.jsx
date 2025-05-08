@@ -7,8 +7,8 @@ import {UserContext} from "../../contexts/UserContext.jsx";
 import {toast} from "sonner";
 import {useNavigate} from "react-router-dom";
 
-export default function PatientSymptoms(){
-    const { user,roleData } = useContext(UserContext);
+export default function PatientSymptoms({view_only = false, patient_id}){
+    // const { user,roleData } = useContext(UserContext);
     const {data:symptoms, isLoading: isLoadingSymptoms} = useQuery({
         queryKey: queryKeys.symptoms.all,
         queryFn: async () => {
@@ -34,7 +34,8 @@ export default function PatientSymptoms(){
     const {data:patient_symptoms, isLoading: isLoadingPatientSymptoms} = useQuery({
         queryKey: queryKeys.symptoms.patient,
         queryFn: async () => {
-            const res = await fetch(API_URL + `/patient/${roleData.id}/symptoms`, {
+            // const res = await fetch(API_URL + `/patient/${roleData.id}/symptoms`, {
+                const res = await fetch(API_URL + `/patient/${patient_id}/symptoms`, {
                 method: "GET",
                 credentials: "include"
             });
@@ -47,7 +48,8 @@ export default function PatientSymptoms(){
     useEffect(() => {
         if (patient_symptoms) {
             setPayload(patient_symptoms.map(sym => ({
-                patientId: roleData.id,
+                // patientId: roleData.id,
+                patientId: patient_id,
                 symptomId: sym.symptom.id
             })));
         }
@@ -57,7 +59,8 @@ export default function PatientSymptoms(){
     const navigate = useNavigate();
     const onSubmit = async () =>{
         try{
-            const res = await fetch(API_URL+`/patient/${roleData.id}/symptoms`,
+            // const res = await fetch(API_URL+`/patient/${roleData.id}/symptoms`,
+            const res = await fetch(API_URL+`/patient/${patient_id}/symptoms`,
                 {
                     method:"PUT",
                     credentials:"include",
@@ -103,10 +106,12 @@ export default function PatientSymptoms(){
                                                     <Stack key={index} justifyContent={"space-between"} direction={"row"} alignItems={"center"}>
                                                         <Typography>{symptom.name}</Typography>
                                                         <Checkbox
+                                                            disabled={view_only}
                                                             checked={payload.some(entry => entry.symptomId === symptom.id)}
                                                             onChange={(e)=>{
                                                             const newEntry = {
-                                                                patientId: roleData.id,
+                                                                // patientId: roleData.id,
+                                                                patientId: patient_id,
                                                                 symptomId: symptom.id
                                                             }
                                                             setPayload((prev)=>
@@ -123,7 +128,9 @@ export default function PatientSymptoms(){
                                     </Box>)
                             })}
                             </Stack>
-                            <Button onClick={()=>onSubmit()} sx={{mt:"1rem"}}fullWidth size={"large"} variant={"contained"}>Update symptoms</Button>
+                            {!view_only &&
+                                <Button onClick={()=>onSubmit()} sx={{mt:"1rem"}}fullWidth size={"large"} variant={"contained"}>Update symptoms</Button>
+                            }
                         </Paper>
                     </>
                 )
