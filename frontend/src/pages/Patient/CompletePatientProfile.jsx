@@ -40,10 +40,14 @@ const CompletePatientProfile = () => {
 
     const [formData, setFormData] = useState({
         phone: '',
-        address: '',
+        street: '',
+        city: '',
+        state: '',
+        zipCode: '',
         pharmacyId: '',
         hipaaAgreed: false
     });
+
     const [errors, setErrors] = useState("");
 
     const { data: pharmacies, isLoading: isLoadingPharmacies } = useQuery({
@@ -74,8 +78,11 @@ const CompletePatientProfile = () => {
             newErrors.phone = "Phone must be 10 to 15 digits.";
         }
 
-        if (!/^\d+\s[a-zA-Z\s]+,\s[a-zA-Z]+,\s[A-Z]{2},\s\d{5}$/.test(formData.address)) {
-            newErrors.address = "Invalid address format. Please enter a valid address ex.\"123 Main Ave, Newark, NJ, 07024 \"";
+        if (!formData.zipCode.match(/^\d{5}$/)) {
+            newErrors.zipCode = "ZIP code must be exactly 5 digits.";
+        }
+        if (!formData.state.match(/^[A-Z]{2}$/)) {
+            newErrors.state = "State must be a 2-letter uppercase code.";
         }
 
         setErrors(newErrors);
@@ -103,9 +110,13 @@ const CompletePatientProfile = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    ...formData,
+                    phone: formData.phone,
+                    address: `${formData.street}, ${formData.city}, ${formData.state}, ${formData.zipCode}`,
+                    pharmacyId: formData.pharmacyId,
+                    hipaaAgreed: formData.hipaaAgreed,
                     userId: user.id
                 }),
+
                 credentials: 'include'
             });
 
@@ -156,13 +167,40 @@ const CompletePatientProfile = () => {
                             <TextField
                                 required
                                 fullWidth
-                                label="Address, City, State, ZIP code"
-                                name="address"
-                                value={formData.address}
+                                label="Street Address"
+                                name="street"
+                                value={formData.street}
                                 onChange={handleChange}
-                                error={!!errors.address}
-                                helperText={errors.address}
                             />
+                            <TextField
+                                required
+                                fullWidth
+                                label="City"
+                                name="city"
+                                value={formData.city}
+                                onChange={handleChange}
+                            />
+                            <TextField
+                                required
+                                fullWidth
+                                label="State (e.g., NY)"
+                                name="state"
+                                value={formData.state}
+                                onChange={handleChange}
+                                error={!!errors.state}
+                                helperText={errors.state}
+                            />
+                            <TextField
+                                required
+                                fullWidth
+                                label="ZIP Code"
+                                name="zipCode"
+                                value={formData.zipCode}
+                                onChange={handleChange}
+                                error={!!errors.zipCode}
+                                helperText={errors.zipCode}
+                            />
+
 
                             <FormControl fullWidth required>
                                 <InputLabel>Preferred Pharmacy</InputLabel>
