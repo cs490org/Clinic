@@ -6,7 +6,7 @@ export default function DoctorQuickActions() {
 
     return (
         <Paper sx={{ p: "1rem", height: '100%' }}>
-            <Typography sx={{ fontWeight: "bold", fontSize: "1.2rem", mb: 2 }}>
+            <Typography sx={{ fontWeight: "bold", fontSize: "1.4rem", mb: 2 }}>
                 Quick Actions
             </Typography>
             <Stack spacing={2}>

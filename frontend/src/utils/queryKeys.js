@@ -37,6 +37,12 @@ export const queryKeys = {
 
     drugs:{
         all: ["drugs"]
+    },
+
+    symptoms:{
+        all:["symptoms"],
+        types:["symptoms","types"],
+        patient:["symptoms","patient"]
     }
 
 

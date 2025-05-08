@@ -1,6 +1,7 @@
 package com.cs490.group4.demo.config;
 
 import com.cs490.group4.demo.dao.Recipe;
+import com.cs490.group4.demo.dao.SymptomType;
 import com.cs490.group4.demo.dto.IngredientRequestDTO;
 import com.cs490.group4.demo.service.*;
 import com.cs490.group4.demo.service.authentication.UserService;
@@ -45,7 +46,7 @@ public class MockDataConfig {
      */
 
     @Bean
-    CommandLineRunner mockDataInitializer(RecipeCommentService recipeCommentService, DailySurveyService dailySurveyService, MockDailySurvey mockDailySurvey, WeeklySurveyService weeklySurveyService, MockWeeklySurvey mockWeeklySurvey, PrescriptionService prescriptionService, MockPrescription mockPrescription, DrugService drugService, MockDrug mockDrug, MockPatientPharmacy mockPatientPharmacy) {
+    CommandLineRunner mockDataInitializer(RecipeCommentService recipeCommentService, DailySurveyService dailySurveyService, MockDailySurvey mockDailySurvey, WeeklySurveyService weeklySurveyService, MockWeeklySurvey mockWeeklySurvey, PrescriptionService prescriptionService, MockPrescription mockPrescription, DrugService drugService, MockDrug mockDrug, MockPatientPharmacy mockPatientPharmacy, SymptomService symptomService, MockSymptom mockSymptom) {
         return args -> {
             if (doctorService.isEmpty()) {
                 mockDoctor.createMockDoctor(
@@ -345,6 +346,51 @@ public class MockDataConfig {
             if(prescriptionService.isEmpty()) {
                 mockPrescription.createMockPrescription(1,1,1, LocalDateTime.now().plusDays(7));
                 mockPrescription.createMockPrescription(1,1,2, LocalDateTime.now().plusDays(7));
+            }
+
+            if (symptomService.isEmpty()) {
+                // PHYSICAL
+                mockSymptom.createSymptom("Fatigue", SymptomType.PHYSICAL);
+                mockSymptom.createSymptom("Muscle ache", SymptomType.PHYSICAL);
+                mockSymptom.createSymptom("Joint pain", SymptomType.PHYSICAL);
+                mockSymptom.createSymptom("Dizziness", SymptomType.PHYSICAL);
+                mockSymptom.createSymptom("Sweating", SymptomType.PHYSICAL);
+                mockSymptom.createSymptom("Weight loss", SymptomType.PHYSICAL);
+
+                // MENTAL
+                mockSymptom.createSymptom("Anxiety", SymptomType.MENTAL);
+                mockSymptom.createSymptom("Depression", SymptomType.MENTAL);
+                mockSymptom.createSymptom("Irritability", SymptomType.MENTAL);
+                mockSymptom.createSymptom("Mood swings", SymptomType.MENTAL);
+                mockSymptom.createSymptom("Insomnia", SymptomType.MENTAL);
+
+                // NEUROLOGICAL
+                mockSymptom.createSymptom("Headache", SymptomType.NEUROLOGICAL);
+                mockSymptom.createSymptom("Numbness", SymptomType.NEUROLOGICAL);
+                mockSymptom.createSymptom("Tingling", SymptomType.NEUROLOGICAL);
+                mockSymptom.createSymptom("Seizures", SymptomType.NEUROLOGICAL);
+                mockSymptom.createSymptom("Memory loss", SymptomType.NEUROLOGICAL);
+
+                // GASTROINTESTINAL
+                mockSymptom.createSymptom("Nausea", SymptomType.GASTROINTESTINAL);
+                mockSymptom.createSymptom("Vomiting", SymptomType.GASTROINTESTINAL);
+                mockSymptom.createSymptom("Diarrhea", SymptomType.GASTROINTESTINAL);
+                mockSymptom.createSymptom("Constipation", SymptomType.GASTROINTESTINAL);
+                mockSymptom.createSymptom("Abdominal pain", SymptomType.GASTROINTESTINAL);
+
+                // RESPIRATORY
+                mockSymptom.createSymptom("Cough", SymptomType.RESPIRATORY);
+                mockSymptom.createSymptom("Shortness of breath", SymptomType.RESPIRATORY);
+                mockSymptom.createSymptom("Wheezing", SymptomType.RESPIRATORY);
+                mockSymptom.createSymptom("Chest tightness", SymptomType.RESPIRATORY);
+                mockSymptom.createSymptom("Runny nose", SymptomType.RESPIRATORY);
+
+                // OTHER
+                mockSymptom.createSymptom("Fever", SymptomType.OTHER);
+                mockSymptom.createSymptom("Chills", SymptomType.OTHER);
+                mockSymptom.createSymptom("Swelling", SymptomType.OTHER);
+                mockSymptom.createSymptom("Rash", SymptomType.OTHER);
+                mockSymptom.createSymptom("Blurred vision", SymptomType.OTHER);
             }
 
         };

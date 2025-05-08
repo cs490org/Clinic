@@ -30,6 +30,7 @@ import FlatwareIcon from '@mui/icons-material/Flatware';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import { Medication } from "@mui/icons-material";
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 
 
 export default function NavBar() {
@@ -158,6 +159,17 @@ export default function NavBar() {
             </ListItemButton>
           )}
 
+          {user?.role === "PATIENT" && (
+              <ListItemButton onClick={() => {
+                navigate("/patient/symptoms");
+                setDrawerOpen(false);
+              }}>
+                <ListItemIcon>
+                  <LocalHospitalIcon/>
+                </ListItemIcon>
+                <ListItemText primary="My Symptoms" />
+              </ListItemButton>
+          )}
           {(user?.role === "PATIENT" || user?.role === "DOCTOR") &&
             <ListItemButton
               onClick={() => {
@@ -178,7 +190,7 @@ export default function NavBar() {
               <ListItemIcon>
                 <RestaurantIcon />
               </ListItemIcon>
-              <ListItemText primary="View my Meal Plans" />
+              <ListItemText primary="Assigned Meal Plans" />
             </ListItemButton>
           )}
           {user?.role === "DOCTOR" && (
