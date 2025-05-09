@@ -5,9 +5,7 @@ import com.cs490.group4.demo.dao.Pharmacy;
 import com.cs490.group4.demo.service.PatientPharmacyService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class PatientPharmacyController {
@@ -18,10 +16,16 @@ public class PatientPharmacyController {
    }
 
 
-   @GetMapping("/patient/pharmacy")
-   public ResponseEntity<Pharmacy> getPreferredPharmacy(@RequestParam Integer patientId) {
+   @GetMapping("/patient/{patientId}/pharmacy")
+   public ResponseEntity<Pharmacy> getPreferredPharmacy(@PathVariable Integer patientId) {
          return ResponseEntity.ok(patientPharmacyService.getByPatientId(patientId));
    }
+
+   @PutMapping("/patient/{patientId}/pharmacy/{pharmacyId}")
+   public ResponseEntity<PatientPharmacy> updatePreferredPharmacy(@PathVariable Integer patientId, @PathVariable Integer pharmacyId) {
+      return ResponseEntity.ok(patientPharmacyService.setPreferredPharmacy(patientId,pharmacyId));
+   }
+
 
 }
 

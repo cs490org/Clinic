@@ -9,11 +9,12 @@ import {
     Skeleton,
     Stack, Typography
 } from "@mui/material";
-import {useQuery} from "@tanstack/react-query";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {queryKeys} from "../../utils/queryKeys.js";
 import {API_URL} from "../../utils/constants.js";
 import {useContext, useEffect, useState} from "react";
 import {UserContext} from "../../contexts/UserContext.jsx";
+import {toast} from "sonner";
 
 export default function PatientEditPreferredPharmacy(){
     const {roleData} = useContext(UserContext)
@@ -32,7 +33,7 @@ export default function PatientEditPreferredPharmacy(){
         {
             queryKey: queryKeys.pharmacies.patient,
             queryFn: async () => {
-                const res = await fetch(API_URL + `/patient/pharmacy?patientId=${roleData.id}`, {
+                const res = await fetch(API_URL + `/patient/${roleData.id}/pharmacy`, {
                     credentials: 'include'
                 });
                 if (!res.ok) throw new Error('Failed to fetch patients\' preferred pharmacy');
@@ -41,7 +42,7 @@ export default function PatientEditPreferredPharmacy(){
 
         }
     )
-    const [selectedPharmacyId, setSelectedPharmacyId] = useState(patientPreferredPharmacy?.id)
+    const [selectedPharmacyId, setSelectedPharmacyId] = useState(null)
     useEffect(() => {
         if (patientPreferredPharmacy?.id) {
             setSelectedPharmacyId(patientPreferredPharmacy.id)
@@ -51,19 +52,18 @@ export default function PatientEditPreferredPharmacy(){
     const handleChange = (e) => {
         setSelectedPharmacyId(e.target.value)
     };
+    const queryClient = useQueryClient()
    return (
            <Paper sx={{p:2, }}>
                <FormControl fullWidth required>
-                   <InputLabel>Preferred Pharmacy</InputLabel>
                    {isLoadingPharmacies ? (
                        <Skeleton />
                    ) : (
                        <Stack spacing={1}>
+                           <Typography sx={{fontWeight:"bold",fontSize:"1.4rem"}}>Preferred pharmacy - {patientPreferredPharmacy.name}</Typography>
                            <Select
-                               name="pharmacyId"
                                value={selectedPharmacyId}
                                onChange={handleChange}
-                               label="Preferred Pharmacy"
                            >
                                {pharmacies?.map((pharmacy) => (
                                    <MenuItem key={pharmacy.id} value={pharmacy.id}>
@@ -71,7 +71,29 @@ export default function PatientEditPreferredPharmacy(){
                                    </MenuItem>
                                ))}
                            </Select>
-                           <Button disabled={patientPreferredPharmacy.id === selectedPharmacyId} variant={"contained"}>Change preferred pharmacy</Button>
+                           <Button onClick={()=>{
+                               const run = async () => {
+                                   try {
+                                       const res = await fetch(API_URL + `/patient/${roleData.id}/pharmacy/${selectedPharmacyId}`,
+                                           {
+                                               method: "PUT",
+                                               credentials: "include"
+                                           })
+                                       if (res.ok) {
+                                           toast.success("Changed preferred pharmacy")
+                                           queryClient.invalidateQueries(queryKeys.pharmacies.patient)
+                                       }else {
+                                           throw new Error()
+                                       }
+
+                                   }catch(e) {
+                                       toast.error("There was an error while trying to change the preferred pharmacy.")
+                                   }
+                               }
+                               run()
+
+
+                           }} disabled={patientPreferredPharmacy.id === selectedPharmacyId} variant={"contained"}>Change preferred pharmacy</Button>
                        </Stack>
                    )}
                </FormControl>

@@ -27,7 +27,7 @@ export default function PatientPharmacy(){
     return  (
         <Container>
             <Typography sx={{fontWeight:"bold", fontSize:"1.4rem", textAlign:"center"}}>{patientPreferredPharmacy.name}</Typography>
-            <PatientEditPreferredPharmacy/>
+            {/*<PatientEditPreferredPharmacy/>*/}
         </Container>
     )
 }
