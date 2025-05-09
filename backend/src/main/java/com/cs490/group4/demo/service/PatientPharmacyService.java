@@ -2,10 +2,9 @@ package com.cs490.group4.demo.service;
 
 import com.cs490.group4.demo.dao.*;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class PatientPharmacyService {
@@ -26,9 +25,10 @@ public class PatientPharmacyService {
         return patientPharmacy.getPharmacy();
     }
 
-
-    public PatientPharmacy createPatientPharmacy(Integer patientId, Integer pharmacyId) {
+    @Transactional
+    public PatientPharmacy setPreferredPharmacy(Integer patientId, Integer pharmacyId) {
         Patient patient = patientRepository.findById(patientId).orElseThrow(()->new EntityNotFoundException("patient not found"));
+        patientPharmacyRepository.deleteByPatientId(patientId);
         Pharmacy pharmacy= pharmacyRepository.findById(pharmacyId).orElseThrow(()->new EntityNotFoundException("pharmacy not found"));
 
         PatientPharmacy patientPharmacy = new PatientPharmacy();
@@ -36,4 +36,5 @@ public class PatientPharmacyService {
         patientPharmacy.setPharmacy(pharmacy);
         return patientPharmacyRepository.save(patientPharmacy);
     }
+
 }
