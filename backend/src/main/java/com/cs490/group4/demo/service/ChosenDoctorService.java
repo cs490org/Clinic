@@ -4,6 +4,7 @@ import com.cs490.group4.demo.dao.ChosenDoctor;
 import com.cs490.group4.demo.dao.ChosenDoctorRepository;
 import com.cs490.group4.demo.dao.Doctor;
 import com.cs490.group4.demo.dao.Patient;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,11 +34,11 @@ public class ChosenDoctorService {
     }
 
     public ChosenDoctor getChosenDoctorByPatientId(Integer patientId) {
-        return chosenDoctorRepository.findByPatientId(patientId).orElseThrow(()->new RuntimeException("Could not find patient with PATIENT id " + patientId));
+        return chosenDoctorRepository.findByPatientId(patientId).orElseThrow(()->new EntityNotFoundException("Could not find patient with PATIENT id " + patientId));
     }
 
     public ChosenDoctor getChosenDoctorByUserId(Integer userId) {
-        return chosenDoctorRepository.findByUserId(userId).orElseThrow(()->new RuntimeException("When getting chosen doctor by userid, could not find the patient with the USER id " + userId));
+        return chosenDoctorRepository.findByUserId(userId).orElseThrow(()->new EntityNotFoundException("When getting chosen doctor by userid, could not find the patient with the USER id " + userId));
     }
 
 

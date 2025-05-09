@@ -32,6 +32,7 @@ import SearchPatients from "./pages/Doctor/Patients/SearchPatients.jsx";
 import AssignPrescription from "./pages/Doctor/AssignRx.jsx";
 import MessageRoomPage from "./pages/MessageRoom/MessageRoomPage.jsx";
 import CompletePatientSymptoms from "./pages/Patient/CompletePatientSymptoms.jsx";
+import PatientPharmacy from "./pages/Patient/Pharmacy/PatientPharmacy.jsx";
 
 const queryClient = new QueryClient()
 const router = createBrowserRouter([
@@ -68,6 +69,13 @@ const router = createBrowserRouter([
         element:
             <Auth allowedRoles={["PATIENT"]}>
                 <CompletePatientSymptoms/>
+            </Auth>
+    },
+    {
+        path: '/patient/pharmacy',
+        element:
+            <Auth allowedRoles={["PATIENT"]}>
+                <PatientPharmacy/>
             </Auth>
     },
     {

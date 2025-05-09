@@ -12,7 +12,8 @@ export const queryKeys = {
         cancelled: (doctorId) => ["appointments", "cancelled", doctorId],
     },
     pharmacies: {
-        all: ["pharmacies"]
+        all: ["pharmacies"],
+        patient: ["pharmacies","patient"]
     },
     recipes:{
         all: ["recipes"],

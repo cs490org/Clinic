@@ -31,6 +31,13 @@ export default function PatientQuickActions() {
                 >
                     View meal plans
                 </Button>
+                <Button
+                    variant="contained"
+                    fullWidth
+                    onClick={() => navigate('/patient/pharmacy')}
+                >
+                    View my pharmacy
+                </Button>
             </Stack>
         </Paper>
     );
