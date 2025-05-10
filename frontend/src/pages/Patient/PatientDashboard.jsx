@@ -52,25 +52,25 @@ const PatientDashboard = () => {
     const Widgets = () => {
         return (
             <>
-                <Grid2 size={4} sx={{height:"100%",display:"flex",flexDirection:"column"}}>
+                <Grid2 size={4} sx={{display:"flex",flexDirection:"column"}}>
                     <PatientQuickActions/>
                 </Grid2 >
                 <Grid2 size={4}>
                     <PatientChosenDoctor/>
                 </Grid2>
-                <Grid2 size={4} sx={{height:"100%"}}>
+                <Grid2 size={4} >
                     <PendingAppointments/>
                 </Grid2 >
-                <Grid2 size={4} sx={{height:"100%"}}>
+                <Grid2 size={4} >
                     <MealPlansWidget/>
                 </Grid2>
-                <Grid2 size={8} sx={{height:"100%"}}>
+                <Grid2 size={8} >
                     <AllDoctors onBookClick={handleBookClick} />
                 </Grid2>
-                <Grid2 size={4} sx={{height:"100%"}}>
+                <Grid2 size={4} >
                     <PatientEditPreferredPharmacy/>
                 </Grid2>
-                <Grid2 size={8} sx={{height:"100%"}}>
+                <Grid2 size={8} >
                     <PatientSurvey />
                 </Grid2>
             </>

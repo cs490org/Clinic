@@ -20,7 +20,7 @@ const features = [
 ];
 
 const FeatureCard = ({title, description}) => (
-    <Paper sx={{p: 2}}>
+    <Paper sx={{p: 2,minWidth:"333px"}}>
         <Typography variant="h6" fontWeight="bold" mb={2}>
             {title}
         </Typography>
@@ -63,7 +63,14 @@ const AboutUs = () => {
                     weight management and overall wellness.
                 </Typography>
 
-                <Stack direction={"row"} spacing={4} justifyContent={"center"}>
+                <Stack
+                    direction="row"
+                    spacing={2}
+                    sx={{
+                        overflowX: 'scroll',
+                        flexWrap: 'nowrap',
+                    }}
+                >
                     {features.map((feature, index) => (
                         <FeatureCard key={index} {...feature} />
                     ))}
