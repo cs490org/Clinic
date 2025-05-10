@@ -29,6 +29,9 @@ public class PharmacyDrugInventory {
 
     private LocalDateTime createTimestamp, updateTimestamp;
 
+    @Column(nullable = false)
+        private boolean dispensed;  // <-- NEW FIELD
+
     private Integer inventory;
 
 }

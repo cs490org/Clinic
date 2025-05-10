@@ -45,6 +45,7 @@ const Prescriptions = () => {
 
         const drugData = await drugsRes.json();
         setPrescriptions(drugData);
+        console.log(drugData);
       } catch (err) {
         console.error("Error loading prescriptions:", err);
       } finally {

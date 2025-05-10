@@ -399,19 +399,19 @@ public class MockDataConfig {
 
             }
             
-                mockPharmacy.createDrugInventoryInPharmacy(1,1,5);
-                mockPharmacy.createDrugInventoryInPharmacy(2,1,5);
+                mockPharmacy.createDrugInventoryInPharmacy(1,1,5, false);
+                mockPharmacy.createDrugInventoryInPharmacy(2,1,5, false);
             // Pharmacy 1 
-                mockPharmacy.createDrugInventoryInPharmacy(1, 3, 10); // Metformin
-                mockPharmacy.createDrugInventoryInPharmacy(1, 4, 7);  // Amoxicillin
-                mockPharmacy.createDrugInventoryInPharmacy(1, 5, 5);  // Atorvastatin
-                mockPharmacy.createDrugInventoryInPharmacy(1, 2, 10);
+                mockPharmacy.createDrugInventoryInPharmacy(1, 3, 10, false); // Metformin
+                mockPharmacy.createDrugInventoryInPharmacy(1, 4, 7, true);  // Amoxicillin
+                mockPharmacy.createDrugInventoryInPharmacy(1, 5, 5, false);  // Atorvastatin
+                mockPharmacy.createDrugInventoryInPharmacy(1, 2, 10, false);
 
                 // Pharmacy 2
-                mockPharmacy.createDrugInventoryInPharmacy(2, 3, 8);
-                mockPharmacy.createDrugInventoryInPharmacy(2, 4, 4);
-                mockPharmacy.createDrugInventoryInPharmacy(2, 5, 6);
-                mockPharmacy.createDrugInventoryInPharmacy(1, 2, 10);
+                mockPharmacy.createDrugInventoryInPharmacy(2, 3, 8, false);
+                mockPharmacy.createDrugInventoryInPharmacy(2, 4, 4, false);
+                mockPharmacy.createDrugInventoryInPharmacy(2, 5, 6, true);
+                mockPharmacy.createDrugInventoryInPharmacy(1, 2, 10, false);
 
 
 
