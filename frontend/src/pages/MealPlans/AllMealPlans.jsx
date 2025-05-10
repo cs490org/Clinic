@@ -8,6 +8,7 @@ import {UserContext} from "../../contexts/UserContext.jsx";
 import {queryKeys} from "../../utils/queryKeys.js";
 import {toast} from "sonner";
 import MealPlanCard from "./MealPlanCard.jsx";
+import FoodNav from "../FoodNav.jsx";
 
 export default function AllMealPlans(){
 
@@ -32,34 +33,41 @@ export default function AllMealPlans(){
 
 
     return (
+        <>
+            <FoodNav></FoodNav>
         <Container>
-            <Typography sx={{fontWeight:"bold",fontSize:"2rem", textAlign:"center" , mb:"2rem"}}>
+            <Typography sx={{fontWeight:"bold",fontSize:"2rem" }}>
                 Meal Plans
             </Typography>
+            <Typography variant={"body2"}>
+                View our comphrensive meal plans for your weight management needs.
+            </Typography>
+            <Divider sx={{my:"1rem"}}/>
             {
                 !isLoading && mealPlans.length === 0 ?
                     <Typography> No meal plans have been posted yet</Typography>
 
                     :
                     (
-                    <Grid2 container spacing={2}>
+                    <Box sx={{display:"flex", gap:"1.5rem", flexWrap:"wrap"}}>
                         {
                         mealPlans?.map((mealPlan,i)=>{
 
                             return(
-                                <MealPlanCard
-                                    key={i}
-                                    author={mealPlan.author}
-                                    breakfast={mealPlan.mealPlan.breakfast}
-                                    lunch={mealPlan.mealPlan.lunch}
-                                    dinner={mealPlan.mealPlan.dinner}
-                                />
+                                    <MealPlanCard
+                                        key={i}
+                                        author={mealPlan.author}
+                                        breakfast={mealPlan.mealPlan.breakfast}
+                                        lunch={mealPlan.mealPlan.lunch}
+                                        dinner={mealPlan.mealPlan.dinner}
+                                    />
                             )
                         })
                         }
-                    </Grid2>
+                    </Box>
                     )
             }
         </Container>
+            </>
     )
 }

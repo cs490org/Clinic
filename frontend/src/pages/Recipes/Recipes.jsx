@@ -6,7 +6,7 @@ import {
 import { useEffect, useState } from "react";
 import { API_URL } from "../../utils/constants.js";
 import RecipeCard from "./RecipeCard.jsx";
-import RecipeNav from "./RecipeNav.jsx";
+import FoodNav from "../FoodNav.jsx";
 
 export default function Recipes() {
 
@@ -31,7 +31,7 @@ export default function Recipes() {
 
     return (
         <>
-            <RecipeNav />
+            <FoodNav />
             <Container sx={{ display: "flex", justifyContent: "Center" }}>
 
                 <Stack spacing={2}>

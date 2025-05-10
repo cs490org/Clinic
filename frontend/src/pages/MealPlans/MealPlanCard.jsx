@@ -20,7 +20,7 @@ import {toast} from "sonner";
 import {queryKeys} from "../../utils/queryKeys.js";
 import dayjs from "dayjs";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
-import ViewSingleRecipe from "../Recipes/ViewSingleRecipe.jsx";
+import Recipe from "../Recipes/Recipe.jsx";
 
 export default function MealPlanCard ({author, breakfast,lunch,dinner}){
 
@@ -79,36 +79,38 @@ export default function MealPlanCard ({author, breakfast,lunch,dinner}){
 
         return (
             <>
-                <Card variant={"outlined"} elevation={1} sx={{ minWidth: 350, maxWidth: 600 }}>
+                <Card variant={"outlined"} elevation={1}>
                     <CardActionArea onClick={handleOpen}>
                         <CardContent>
-                            <Stack direction={"row"} justifyContent={"space-between"}>
-                               <Typography sx={{fontWeight:"bold", fontSize:"1.2rem"}}>{type}</Typography>
-                                <Chip label={ingredientDTOs?.reduce((acc, ingredientDTO) => { return acc + ingredientDTO.ingredient.calories * ingredientDTO.quantity }, 0)
-                                    + " calories"}/>
+                            <Stack spacing={1}>
+                                <Stack direction={"row"} justifyContent={"space-between"}>
+                                   <Typography sx={{fontWeight:"bold", fontSize:"1.2rem"}}>{type}</Typography>
+                                    <Chip size={"small"} label={ingredientDTOs?.reduce((acc, ingredientDTO) => { return acc + ingredientDTO.ingredient.calories * ingredientDTO.quantity }, 0)
+                                        + " calories"}/>
 
-                            </Stack>
-                            <Stack direction={"row"} spacing={2}>
-                                <Box>
-                                    <CardMedia
-                                        sx={{ width:"100px", height: "100px",objectFit:"cover",borderRadius:1 }}
-                                        component="img"
-                                        image={image}
-                                        alt={image}
-                                    />
-                                </Box>
-                                <Box>
-                                    <Stack>
-                                    <Typography sx={{ fontWeight: "bold", fontSize: "1rem" }}>
-                                        {recipeName}
-                                    </Typography>
-                                    <Typography variant={"body2"} sx={{ color: "text.secondary" }}>
-                                        {description}
-                                    </Typography>
+                                </Stack>
+                                <Stack direction={"row"} spacing={2}>
+                                    <Box>
+                                        <CardMedia
+                                            sx={{ width:"100px", height: "100px",objectFit:"cover",borderRadius:1 }}
+                                            component="img"
+                                            image={image}
+                                            alt={image}
+                                        />
+                                    </Box>
+                                    <Box>
+                                        <Stack>
+                                        <Typography sx={{ fontWeight: "bold", fontSize: "1rem" }}>
+                                            {recipeName}
+                                        </Typography>
+                                        <Typography variant={"body2"} sx={{ color: "text.secondary" }}>
+                                            {description}
+                                        </Typography>
 
 
-                                    </Stack>
-                                </Box>
+                                        </Stack>
+                                    </Box>
+                                </Stack>
                             </Stack>
 
                         </CardContent>
@@ -119,13 +121,8 @@ export default function MealPlanCard ({author, breakfast,lunch,dinner}){
                     <DialogContent dividers>
                         {recipeIsLoading ? <CircularProgress></CircularProgress> :
                             <>
-                                {/*<Typography variant="subtitle1" gutterBottom>*/}
-                                {/*    {recipe.description}*/}
-                                {/*</Typography>*/}
-                                {/*<Typography variant="body2" gutterBottom>*/}
-                                {/*    Instructions: {instructions}*/}
-                                {/*</Typography>*/}
-                                <ViewSingleRecipe id={id}></ViewSingleRecipe>
+                                {/*<ViewSingleRecipe id={id}></ViewSingleRecipe>*/}
+                                <Recipe id={id} reduced={true}></Recipe>
                             </>
                         }
                     </DialogContent>
@@ -139,13 +136,55 @@ export default function MealPlanCard ({author, breakfast,lunch,dinner}){
     }
 
 
+
+
     if(!author || !breakfast || !lunch || !dinner){
         return <CircularProgress></CircularProgress>
     }
+    const getIngredientDTOs = async (id) => {
+        try {
+            const response = await fetch(API_URL + "/recipes/ingredients?recipeId=" + id,
+                {
+                    method: "GET",
+                    credentials: "include"
+                }
+            )
+            const data = await response.json()
+            return data
+        } catch (e) {
+            toast.error("Something went wrong when trying to get ingredients.")
+            console.log(e)
+        }
+    }
+    const {data:breakfastIngredients, loading: breakfastIngredientsLoading} = useQuery({
+        queryKey: queryKeys.recipes.ingredients(breakfast.id),
+        queryFn: getIngredientDTOs(breakfast.id)
+    })
+    const {data:lunchIngredients, loading: lunchIngredientsLoading} = useQuery({
+        queryKey: queryKeys.recipes.ingredients(lunch.id),
+        queryFn: getIngredientDTOs(lunch.id)
+    })
+    const {data:dinnerIngredients, loading: dinnerIngredientsLoading} = useQuery({
+        queryKey: queryKeys.recipes.ingredients(breakfast.id),
+        queryFn: getIngredientDTOs(breakfast.id)
+    })
+    if(breakfastIngredientsLoading || lunchIngredientsLoading || dinnerIngredientsLoading){
+        return <CircularProgress></CircularProgress>
+    }
+
+    const breakfastCalories = breakfastIngredients?.reduce((acc,element)=>{return acc+element.ingredient.calories * element.quantity},0)
+    const lunchCalories = lunchIngredients?.reduce((acc,element)=>{return acc+element.ingredient.calories * element.quantity},0)
+    const dinnerCalories = dinnerIngredients?.reduce((acc,element)=>{return acc+element.ingredient.calories * element.quantity},0)
+    const totalCalories = breakfastCalories + lunchCalories + dinnerCalories
     return (
-        <Card variant={"outlined"} sx={{maxWidth:360}}>
+        <Card variant={"outlined"} sx={{flex:1,minWidth:"325px"}}>
             <CardContent>
-                <Typography>{author}'s meal plan</Typography>
+                {/*<Typography sx={{fontWeight:"bold", fontSize:"1.4rem"}}>{author}'s meal plan</Typography>*/}
+                <Chip label={totalCalories + " calories"}/>
+                <Typography sx={{fontWeight:"bold", fontSize:"1.4rem"}}>{
+
+
+                }</Typography>
             </CardContent>
             <RecipePreview
                 type={"Breakfast"}

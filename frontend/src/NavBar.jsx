@@ -179,21 +179,33 @@ export default function NavBar() {
               <ListItemIcon>
                 <FlatwareIcon />
               </ListItemIcon>
-              <ListItemText primary={"Recipes"} />
+              <ListItemText primary={"Food"} />
             </ListItemButton>
           }
-          {(user?.role === "PATIENT" || user?.role === "DOCTOR") &&
-              <ListItemButton
-                  onClick={() => {
-                    navigate("/mealplans");
-                    setDrawerOpen(false);
-                  }}>
-                <ListItemIcon>
-                  <FlatwareIcon />
-                </ListItemIcon>
-                <ListItemText primary={"Meal Plans"} />
-              </ListItemButton>
-          }
+          {/*{(user?.role === "PATIENT" || user?.role === "DOCTOR") &&*/}
+          {/*    <ListItemButton*/}
+          {/*        onClick={() => {*/}
+          {/*          navigate("/mealplans");*/}
+          {/*          setDrawerOpen(false);*/}
+          {/*        }}>*/}
+          {/*      <ListItemIcon>*/}
+          {/*        <FlatwareIcon />*/}
+          {/*      </ListItemIcon>*/}
+          {/*      <ListItemText primary={"Meal Plans"} />*/}
+          {/*    </ListItemButton>*/}
+          {/*}*/}
+          {/*{(user?.role === "PATIENT" || user?.role === "DOCTOR") &&*/}
+          {/*    <ListItemButton*/}
+          {/*        onClick={() => {*/}
+          {/*          navigate("/mealplans/create");*/}
+          {/*          setDrawerOpen(false);*/}
+          {/*        }}>*/}
+          {/*      <ListItemIcon>*/}
+          {/*        <FlatwareIcon />*/}
+          {/*      </ListItemIcon>*/}
+          {/*      <ListItemText primary={"Create a Meal Plan"} />*/}
+          {/*    </ListItemButton>*/}
+          {/*}*/}
           {user?.role === "PATIENT" && (
             <ListItemButton onClick={() => {
               navigate("/mealplans/assigned");

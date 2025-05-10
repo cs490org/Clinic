@@ -21,6 +21,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Dropzone from "react-dropzone";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import FoodNav from "../FoodNav.jsx";
 
 export default function RecipeCreate() {
     const { user } = useContext(UserContext)
@@ -111,6 +112,8 @@ export default function RecipeCreate() {
         }
     }
     return (
+        <>
+            <FoodNav/>
         <Box sx={{display:"flex", justifyContent:"center",alignItems:"center"}}>
             <Container >
                 <Paper elevation={3} sx={{ p: 2 }}>
@@ -265,6 +268,7 @@ export default function RecipeCreate() {
                 </Paper>
             </Container>
         </Box>
+           </>
     )
 
 }

@@ -26,7 +26,7 @@ import Recipes from "./pages/Recipes/Recipes.jsx";
 import RecipeCreate from "./pages/Recipes/RecipeCreate.jsx";
 import CompletePharmacyProfile from "./pages/Pharmacy/CompletePharmacyProfile.jsx";
 import IngredientCreate from "./pages/Recipes/Ingredients/IngredientCreate.jsx";
-import AssignMealPlan from "./pages/Recipes/AssignMealPlan.jsx";
+import AssignMealPlan from "./pages/Doctor/AssignMealPlan.jsx";
 import ViewAssignedMealPlans from "./pages/Patient/ViewAssignedMealPlans.jsx";
 import SearchPatients from "./pages/Doctor/Patients/SearchPatients.jsx";
 import AssignPrescription from "./pages/Doctor/AssignRx.jsx";
@@ -34,6 +34,7 @@ import MessageRoomPage from "./pages/MessageRoom/MessageRoomPage.jsx";
 import CompletePatientSymptoms from "./pages/Patient/CompletePatientSymptoms.jsx";
 import PatientPharmacy from "./pages/Patient/Pharmacy/PatientPharmacy.jsx";
 import AllMealPlans from "./pages/MealPlans/AllMealPlans.jsx";
+import CreateMealPlan from "./pages/MealPlans/CreateMealPlan.jsx";
 
 const queryClient = new QueryClient()
 const router = createBrowserRouter([
@@ -175,6 +176,13 @@ const router = createBrowserRouter([
         element:
             <Auth allowedRoles={["DOCTOR","PATIENT"]}>
                 <AllMealPlans/>
+            </Auth>
+    },
+    {
+        path: "/mealplans/create",
+        element:
+            <Auth allowedRoles={["DOCTOR","PATIENT"]}>
+                <CreateMealPlan/>
             </Auth>
     },
     {
