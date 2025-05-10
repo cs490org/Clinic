@@ -60,7 +60,7 @@ public class MockDataConfig {
      */
 
     @Bean
-    CommandLineRunner mockDataInitializer() {
+    CommandLineRunner mockDataInitializer(MockDoctorReview mockDoctorReview) {
         return args -> {
             if (doctorService.isEmpty()) {
                 mockDoctor.createMockDoctor(
@@ -92,11 +92,18 @@ public class MockDataConfig {
             if (patientService.isEmpty()) {
                 mockPatient.createMockPatient(
                         "patient@clinic.com",
-                        "Test",
-                        "Patient",
-                        "1234567890",
-                        "somewhere",
+                        "Michael",
+                        "Smith",
+                        "8561992475",
+                        "123 Main Street, Newark, NJ, 07103",
                         "https://storage.googleapis.com/cs490-media/patient.webp");
+                mockPatient.createMockPatient(
+                        "patient2@clinic.com",
+                        "Andrew",
+                        "Williams",
+                        "9185834196",
+                        "518 Somewhere, New Jersey, NJ, 83134",
+                        "https://storage.googleapis.com/cs490-media/patient2.webp");
             }
             if (pharmacyService.isEmpty()) {
                 mockPharmacy.createMockPharmacy(
@@ -120,6 +127,14 @@ public class MockDataConfig {
                         "1926135093",
                         "10002"
                 );
+            }
+
+            if(!doctorService.isEmpty() && !doctorService.reviewsExist()){
+                mockDoctorReview.createMockDoctorReview(1,1,5,"Would recommend","10/10 would recommend");
+                mockDoctorReview.createMockDoctorReview(2,2,5,"Helped achieved my weightloss goals","Through Obi's help, I was able to achieve my weightloss goals");
+                mockDoctorReview.createMockDoctorReview(2, 2, 5, "Excellent guidance and support", "Provided clear steps and consistent support that made my weight loss journey successful.");
+                mockDoctorReview.createMockDoctorReview(2, 2, 4, "Great motivator!", "Thanks to Dr. Obi’s motivation and dietary advice, I saw real progress in just a few months.");
+                mockDoctorReview.createMockDoctorReview(2, 1, 5, "Transformed my lifestyle", "Helped me build sustainable habits that completely transformed how I approach fitness and nutrition.");
             }
 
             if (!patientService.isEmpty() && !pharmacyService.isEmpty()) {

@@ -124,6 +124,7 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
                 />
             {!reduced ?
                 <CardMedia
+                    sx={{ height: 500}}
                     component="img"
                     image={image}
                     alt={image}

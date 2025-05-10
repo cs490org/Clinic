@@ -74,7 +74,14 @@ const TopDoctors = () => {
                     management and nutrition.
                 </Typography>
 
-                <Stack direction="row" spacing={4} justifyContent="center">
+                    <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{
+                            overflowX: 'scroll',
+                            flexWrap: 'nowrap',
+                        }}
+                    >
                     {doctors.map((doctor, index) => {
                         console.log(doctor)
                         return < DoctorCard key={index} {...doctor} />

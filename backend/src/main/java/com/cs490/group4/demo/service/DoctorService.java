@@ -88,4 +88,12 @@ public class DoctorService {
         return doctorReviewsRepository.findByDoctorId(doctorId);
     }
 
+    public List<DoctorReviews> getAllDoctorReviews() {
+        return doctorReviewsRepository.findAll();
+    }
+
+    public boolean reviewsExist(){
+        return doctorReviewsRepository.count() > 0;
+    }
+
 }
