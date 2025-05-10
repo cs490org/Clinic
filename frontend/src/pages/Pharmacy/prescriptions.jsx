@@ -1,9 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
   Container, Grid, Card, CardContent, Typography, Box, Button, CardMedia,
-  Dialog, DialogActions, DialogContent, DialogTitle, TextField, Slide, Fab, List, ListItem, ListItemText
+  Dialog, DialogActions, DialogContent, DialogTitle, TextField, Slide, List, ListItem, ListItemText
 } from '@mui/material';
-import HistoryIcon from '@mui/icons-material/History';
 import { API_URL } from '../../utils/constants';
 import { UserContext } from '../../contexts/UserContext';
 
@@ -27,33 +26,32 @@ const Prescriptions = () => {
   const [openHistory, setOpenHistory] = useState(false);
   const [historyData, setHistoryData] = useState([]);
 
+  const fetchPrescriptions = async () => {
+    setLoading(true);
+    try {
+      const pharmacyRes = await fetch(`${API_URL}/pharmacies?userId=${user.id}`, {
+        credentials: 'include'
+      });
+      const pharmacyData = await pharmacyRes.json();
+      const pharmacyId = Array.isArray(pharmacyData) ? pharmacyData[0]?.id : pharmacyData?.id;
+      if (!pharmacyId) return;
+
+      const drugsRes = await fetch(`${API_URL}/pharmacies/drugs?pharmacyId=${pharmacyId}`, {
+        credentials: 'include'
+      });
+
+      const drugData = await drugsRes.json();
+      setPrescriptions(drugData);
+    } catch (err) {
+      console.error("Error loading prescriptions:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!user?.id) return;
-
-    async function run() {
-      try {
-        const pharmacyRes = await fetch(`${API_URL}/pharmacies?userId=${user.id}`, {
-          credentials: 'include'
-        });
-        const pharmacyData = await pharmacyRes.json();
-        const pharmacyId = Array.isArray(pharmacyData) ? pharmacyData[0]?.id : pharmacyData?.id;
-        if (!pharmacyId) return;
-
-        const drugsRes = await fetch(`${API_URL}/pharmacies/drugs?pharmacyId=${pharmacyId}`, {
-          credentials: 'include'
-        });
-
-        const drugData = await drugsRes.json();
-        setPrescriptions(drugData);
-        console.log(drugData);
-      } catch (err) {
-        console.error("Error loading prescriptions:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    run();
+    fetchPrescriptions();
   }, [user]);
 
   const handleOpenDialog = (pill) => {
@@ -71,25 +69,26 @@ const Prescriptions = () => {
   const handleSaveQuantity = async () => {
     if (!selectedPill) return;
 
+    const qty = Number(newQuantity);
+    if (isNaN(qty) || qty < 0) {
+      alert("Quantity must be a non-negative number.");
+      return;
+    }
+
     try {
-      await fetch(`${API_URL}/pharmacies/inventory`, {
-        method: 'PUT',
+      await fetch(`${API_URL}/pharmacies/drugs/inventory`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          pharmacyId: selectedPill.pharmacyId,
-          drugId: selectedPill.drugId,
-          quantity: Number(newQuantity)
+          pharmacyId: selectedPill.pharmacy.id,
+          drugId: selectedPill.drug.id,
+          quantity: qty,
+          dispensed: false
         })
       });
 
-      setPrescriptions(prev =>
-        prev.map(p =>
-          p.id === selectedPill.id
-            ? { ...p, inventory: Number(newQuantity) }
-            : p
-        )
-      );
+      await fetchPrescriptions(); // Refresh list
       handleCloseDialog();
     } catch (err) {
       console.error('Failed to update inventory:', err);
@@ -97,32 +96,26 @@ const Prescriptions = () => {
   };
 
   const handleDispense = async (pill) => {
-    console.log(pill);
     try {
       await fetch(`${API_URL}/pharmacies/drugs/inventory`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          pharmacyId: pill.pharmacyId,
-          drugId: pill.drugId,
+          pharmacyId: pill.pharmacy.id,
+          drugId: pill.drug.id,
           quantity: pill.inventory,
           dispensed: true
         })
       });
-      // Update local state to reflect change
-      setPrescriptions(prev =>
-          prev.map(p =>
-              p.id === pill.id ? { ...p, dispensed: true } : p
-          )
-      );
+
+      await fetchPrescriptions(); // Refresh after dispense
     } catch (err) {
       console.error('Failed to mark as dispensed:', err);
     }
   };
 
   const openPillHistory = (pill) => {
-    // Dummy logic for now – simulate per-pill dispense history
     const mock = [
       { quantity: 2, date: "2025-05-09" },
       { quantity: 1, date: "2025-05-07" },
@@ -141,91 +134,92 @@ const Prescriptions = () => {
   }
 
   return (
-    <Container sx={{ mt: 4 }}>
-      <Typography variant="h4" gutterBottom fontWeight="bold">Prescription Inventory</Typography>
+      <Container sx={{ mt: 4 }}>
+        <Typography variant="h4" gutterBottom fontWeight="bold">Prescription Inventory</Typography>
 
-      <Box display="flex" gap={2} mb={2}>
-        <Typography><span style={{ color: "green" }}>🟢</span> Enough</Typography>
-        <Typography><span style={{ color: "orange" }}>🟡</span> Low (&lt; 10)</Typography>
-        <Typography><span style={{ color: "red" }}>🔴</span> Out of Stock</Typography>
-      </Box>
+        <Box display="flex" gap={2} mb={2}>
+          <Typography><span style={{ color: "green" }}>🟢</span> Enough</Typography>
+          <Typography><span style={{ color: "orange" }}>🟡</span> Low (&lt; 10)</Typography>
+          <Typography><span style={{ color: "red" }}>🔴</span> Out of Stock</Typography>
+        </Box>
 
-      <Grid container spacing={4}>
-        {prescriptions.map((pill) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={pill.id}>
-            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', boxShadow: 3, borderRadius: 2 }}>
-              <CardMedia
-                component="img"
-                height="200"
-                image={pill.drug?.image}
-                alt={pill.drug?.name}
-                sx={{ objectFit: 'contain', p: 1 }}
-              />
-              <CardContent sx={{ flex: 1 }}>
-                <Typography variant="h6">{pill.drug?.name}</Typography>
-                <Typography variant="body2">{pill.drug?.description}</Typography>
-                <Typography variant="body2"><strong>Dosage:</strong> {pill.drug?.dosage}</Typography>
-                <Typography variant="body2"><strong>Price:</strong> ${pill.drug?.price}</Typography>
-                <Typography variant="body2">
-                  <strong>Quantity:</strong> {pill.inventory} {getColorDot(pill.inventory)}
-                </Typography>
-                <Typography variant="body2" color={pill.dispensed ? 'green' : 'warning.main'} fontWeight="bold">
-                  <strong>Status:</strong> {pill.dispensed ? 'Dispensed' : 'Not Dispensed'}
-                </Typography>
-              </CardContent>
-              <Box px={2} pb={2}>
-                <Button variant="contained" fullWidth sx={{ mb: 1 }} onClick={() => handleDispense(pill)} disabled={pill.dispensed}>
-                  Mark as Dispensed
-                </Button>
-                <Button variant="outlined" fullWidth sx={{ mb: 1 }} onClick={() => handleOpenDialog(pill)}>
-                  Modify Quantity
-                </Button>
-                <Button variant="text" fullWidth onClick={() => openPillHistory(pill)}>
-                  See Dispense History
-                </Button>
-              </Box>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+        <Grid container spacing={4}>
+          {prescriptions.map((pill) => (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={pill.id}>
+                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', boxShadow: 3, borderRadius: 2 }}>
+                  <CardMedia
+                      component="img"
+                      height="200"
+                      image={pill.drug?.image}
+                      alt={pill.drug?.name}
+                      sx={{ objectFit: 'contain', p: 1 }}
+                  />
+                  <CardContent sx={{ flex: 1 }}>
+                    <Typography variant="h6">{pill.drug?.name}</Typography>
+                    <Typography variant="body2">{pill.drug?.description}</Typography>
+                    <Typography variant="body2"><strong>Dosage:</strong> {pill.drug?.dosage}</Typography>
+                    <Typography variant="body2"><strong>Price:</strong> ${pill.drug?.price}</Typography>
+                    <Typography variant="body2">
+                      <strong>Quantity:</strong> {pill.inventory} {getColorDot(pill.inventory)}
+                    </Typography>
+                    <Typography variant="body2" color={pill.dispensed ? 'green' : 'warning.main'} fontWeight="bold">
+                      <strong>Status:</strong> {pill.dispensed ? 'Dispensed' : 'Not Dispensed'}
+                    </Typography>
+                  </CardContent>
+                  <Box px={2} pb={2}>
+                    <Button variant="contained" fullWidth sx={{ mb: 1 }} onClick={() => handleDispense(pill)} disabled={pill.dispensed}>
+                      Mark as Dispensed
+                    </Button>
+                    <Button variant="outlined" fullWidth sx={{ mb: 1 }} onClick={() => handleOpenDialog(pill)} >
+                      Modify Quantity
+                    </Button>
+                    <Button variant="text" fullWidth onClick={() => openPillHistory(pill)}>
+                      See Dispense History
+                    </Button>
+                  </Box>
+                </Card>
+              </Grid>
+          ))}
+        </Grid>
 
-      {/* Modify Quantity */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} TransitionComponent={Transition}>
-        <DialogTitle>Modify Quantity</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="New Quantity"
-            type="number"
-            fullWidth
-            value={newQuantity}
-            onChange={(e) => setNewQuantity(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={handleSaveQuantity} variant="contained">Save</Button>
-        </DialogActions>
-      </Dialog>
+        {/* Modify Quantity */}
+        <Dialog open={openDialog} onClose={handleCloseDialog} TransitionComponent={Transition}>
+          <DialogTitle>Modify Quantity</DialogTitle>
+          <DialogContent>
+            <TextField
+                autoFocus
+                margin="dense"
+                label="New Quantity"
+                type="number"
+                fullWidth
+                value={newQuantity}
+                onChange={(e) => setNewQuantity(e.target.value)}
+                inputProps={{ min: 0 }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDialog}>Cancel</Button>
+            <Button onClick={handleSaveQuantity} variant="contained">Save</Button>
+          </DialogActions>
+        </Dialog>
 
-      {/* Pill History */}
-      <Dialog open={openHistory} onClose={() => setOpenHistory(false)} TransitionComponent={Transition}>
-        <DialogTitle>History for {selectedPill?.drug?.name}</DialogTitle>
-        <DialogContent>
-          <List>
-            {historyData.map((entry, i) => (
-              <ListItem key={i}>
-                <ListItemText primary={`${entry.quantity} pills`} secondary={`Date: ${entry.date}`} />
-              </ListItem>
-            ))}
-          </List>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenHistory(false)}>Close</Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+        {/* Pill History */}
+        <Dialog open={openHistory} onClose={() => setOpenHistory(false)} TransitionComponent={Transition}>
+          <DialogTitle>History for {selectedPill?.drug?.name}</DialogTitle>
+          <DialogContent>
+            <List>
+              {historyData.map((entry, i) => (
+                  <ListItem key={i}>
+                    <ListItemText primary={`${entry.quantity} pills`} secondary={`Date: ${entry.date}`} />
+                  </ListItem>
+              ))}
+            </List>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenHistory(false)}>Close</Button>
+          </DialogActions>
+        </Dialog>
+      </Container>
   );
 };
 
