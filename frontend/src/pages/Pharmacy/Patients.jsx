@@ -1,83 +1,93 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Box, Container, Typography, TextField, Select, MenuItem, IconButton,
-  Button, Table, TableBody, TableCell, TableContainer, TableHead,
-  TableRow, Paper, Stack
+  Container, Typography, Table, TableBody, TableCell,
+  TableContainer, TableHead, TableRow, Paper, Button
 } from "@mui/material";
-import FilterListIcon from '@mui/icons-material/FilterList';
-import SettingsIcon from '@mui/icons-material/Settings';
-
-const dummyPatients = [
-  { fullName: "name", email: "name@email.com", phone: "####", paid: true },
-  { fullName: "name", email: "name@email.com", phone: "####", paid: false },
-  { fullName: "name", email: "name@email.com", phone: "####", paid: true },
-  { fullName: "name", email: "name@email.com", phone: "####", paid: false },
-  { fullName: "name", email: "name@email.com", phone: "####", paid: true },
-];
+import axios from "axios";
 
 export default function Patients() {
-  const [search, setSearch] = useState("");
-  const [filterAttr, setFilterAttr] = useState("Name");
+  const [patients, setPatients] = useState([]);
+  const [prescriptions, setPrescriptions] = useState([]);
 
-  const filteredPatients = dummyPatients.filter(p =>
-    p.fullName.toLowerCase().includes(search.toLowerCase()) ||
-    p.email.toLowerCase().includes(search.toLowerCase())
-  );
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [patRes, presRes] = await Promise.all([
+          axios.get('http://localhost:8080/patients', { withCredentials: true }),
+          axios.get('http://localhost:8080/prescriptions', { withCredentials: true }),
+        ]);
+
+        const allPatients = patRes.data || [];
+        const allPrescriptions = presRes.data || [];
+
+        const enriched = allPatients.map(p => {
+          const pills = allPrescriptions
+            .filter(pr => pr.patientId === p.id)
+            .map(pr => pr.drug?.name || pr.pillName || 'N/A');
+          return { ...p, drugs: pills };
+        });
+
+        setPatients(enriched);
+        setPrescriptions(allPrescriptions);
+      } catch (err) {
+        console.error("Error fetching patients or prescriptions:", err);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const handleContact = (patient) => {
+    console.log(`📨 Send message to: ${patient.firstName} ${patient.lastName} (${patient.email})`);
+    // Here, integrate with RabbitMQ or backend endpoint
+    // Example: axios.post('/api/contact', { patientId: patient.id, message: "..." })
+  };
 
   return (
     <Container sx={{ mt: 4 }}>
-      <Typography variant="h3" gutterBottom>
-        Patients
+      <Typography variant="h4" gutterBottom fontWeight="bold">
+        Patients at Your Pharmacy
       </Typography>
 
-      <Stack direction="row" spacing={2} alignItems="center" mb={3}>
-        <TextField
-          label="Search"
-          variant="outlined"
-          placeholder="Name, email, etc..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <Select
-          value={filterAttr}
-          onChange={(e) => setFilterAttr(e.target.value)}
-        >
-          <MenuItem value="Name">Name</MenuItem>
-          <MenuItem value="Email">Email</MenuItem>
-        </Select>
-        <IconButton><FilterListIcon /></IconButton>
-        <Button variant="outlined">ACTION</Button>
-        <Button variant="contained">ACTION</Button>
-        <IconButton><SettingsIcon /></IconButton>
-      </Stack>
-
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Full Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Phone Number</TableCell>
-              <TableCell>Paid</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredPatients.map((p, i) => (
-              <TableRow key={i}>
-                <TableCell>{p.fullName}</TableCell>
-                <TableCell>{p.email}</TableCell>
-                <TableCell>{p.phone}</TableCell>
-                <TableCell>{p.paid ? "Yes" : "No"}</TableCell>
+      <Paper sx={{ mt: 3 }}>
+        <TableContainer>
+          <Table>
+            <TableHead sx={{ backgroundColor: '#212121' }}>
+              <TableRow>
+                <TableCell sx={{ color: "#fff" }}><strong>Name</strong></TableCell>
+                <TableCell sx={{ color: "#fff" }}><strong>Email</strong></TableCell>
+                <TableCell sx={{ color: "#fff" }}><strong>Address</strong></TableCell>
+                <TableCell sx={{ color: "#fff" }}><strong>Phone</strong></TableCell>
+                <TableCell sx={{ color: "#fff" }}><strong>Drugs</strong></TableCell>
+                <TableCell sx={{ color: "#fff" }}><strong>Action</strong></TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      <Box mt={2} display="flex" justifyContent="space-between">
-        <Typography variant="body2">Rows per page: 10</Typography>
-        <Typography variant="body2" color="primary">1–5 of 13</Typography>
-      </Box>
+            </TableHead>
+            <TableBody>
+              {patients.length > 0 ? patients.map((p, i) => (
+                <TableRow key={i}>
+                  <TableCell>{p.firstName} {p.lastName}</TableCell>
+                  <TableCell>{p.email}</TableCell>
+                  <TableCell>{p.address}</TableCell>
+                  <TableCell>{p.phone}</TableCell>
+                  <TableCell>{p.drugs.join(", ")}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => handleContact(p)}
+                    >
+                      💬 Talk
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              )) : (
+                <TableRow>
+                  <TableCell colSpan={6} align="center">No patients found</TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
     </Container>
   );
 }

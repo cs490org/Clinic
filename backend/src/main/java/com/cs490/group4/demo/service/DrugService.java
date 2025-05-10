@@ -27,6 +27,7 @@ public class DrugService {
                 .description(dto.getDescription())
                 .dosage(dto.getDosage())
                 .price(dto.getPrice())
+                .image(dto.getImage())
                 .createTimestamp(LocalDateTime.now())
                 .updateTimestamp(LocalDateTime.now())
                 .build();

@@ -88,14 +88,18 @@ public class MockDataConfig {
 
             }
             if (patientService.isEmpty()) {
-                mockPatient.createMockPatient(
-                        "patient@clinic.com",
-                        "Test",
-                        "Patient",
-                        "1234567890",
-                        "somewhere",
-                        "https://storage.googleapis.com/cs490-media/patient.webp");
+                mockPatient.createMockPatient("olivia.smith@clinic.com", "Olivia", "Smith", "9735551001", "123 Maple Street", "https://storage.googleapis.com/cs490-media/patient1.webp");
+                mockPatient.createMockPatient("liam.johnson@clinic.com", "Liam", "Johnson", "9735551002", "456 Oak Avenue", "https://storage.googleapis.com/cs490-media/patient2.webp");
+                mockPatient.createMockPatient("emma.williams@clinic.com", "Emma", "Williams", "9735551003", "789 Pine Lane", "https://storage.googleapis.com/cs490-media/patient3.webp");
+                mockPatient.createMockPatient("noah.brown@clinic.com", "Noah", "Brown", "9735551004", "321 Cedar Blvd", "https://storage.googleapis.com/cs490-media/patient4.webp");
+                mockPatient.createMockPatient("ava.jones@clinic.com", "Ava", "Jones", "9735551005", "654 Birch Road", "https://storage.googleapis.com/cs490-media/patient5.webp");
+                mockPatient.createMockPatient("william.miller@clinic.com", "William", "Miller", "9735551006", "987 Walnut Drive", "https://storage.googleapis.com/cs490-media/patient6.webp");
+                mockPatient.createMockPatient("sophia.davis@clinic.com", "Sophia", "Davis", "9735551007", "159 Elm Street", "https://storage.googleapis.com/cs490-media/patient7.webp");
+                mockPatient.createMockPatient("james.garcia@clinic.com", "James", "Garcia", "9735551008", "753 Chestnut Ave", "https://storage.googleapis.com/cs490-media/patient8.webp");
+                mockPatient.createMockPatient("isabella.martinez@clinic.com", "Isabella", "Martinez", "9735551009", "852 Poplar Court", "https://storage.googleapis.com/cs490-media/patient9.webp");
+                mockPatient.createMockPatient("benjamin.rodriguez@clinic.com", "Benjamin", "Rodriguez", "9735551010", "951 Hickory Way", "https://storage.googleapis.com/cs490-media/patient10.webp");
             }
+            
             if (pharmacyService.isEmpty()) {
                 mockPharmacy.createMockPharmacy(
                         "pharmacy@clinic.com",
@@ -353,13 +357,63 @@ public class MockDataConfig {
             }
 
 
-            if(drugService.isEmpty()){
-                mockDrug.createMockDrug("Ibuprofen", "Pain reliever", "200mg", new BigDecimal("5.99"));
-                mockDrug.createMockDrug("Lisinopril", "Blood pressure", "10mg", new BigDecimal("4.25"));
-            }
+            if (drugService.isEmpty()) {
+                mockDrug.createMockDrug(
+                    "Ibuprofen",
+                    "Pain reliever",
+                    "200mg",
+                    new BigDecimal("5.99"),
+                    "https://storage.googleapis.com/cs490-media/Ibuprofen1.png"
+                );
+            
+                mockDrug.createMockDrug(
+                    "Lisinopril",
+                    "Blood pressure control",
+                    "10mg",
+                    new BigDecimal("4.25"),
+                    "https://storage.googleapis.com/cs490-media/Resized_Pill_2.png"
+                );
+                mockDrug.createMockDrug(
+                "Metformin",
+                "Blood sugar control",
+                "500mg",
+                new BigDecimal("6.49"),
+                "https://storage.googleapis.com/cs490-media/Resized_Pill_3.png"
+                );
 
-            mockPharmacy.createDrugInventoryInPharmacy(1,1,5);
-            mockPharmacy.createDrugInventoryInPharmacy(2,1,5);
+                mockDrug.createMockDrug(
+                "Amoxicillin",
+                "Antibiotic for bacterial infections",
+                "250mg",
+                new BigDecimal("7.99"),
+                "https://storage.googleapis.com/cs490-media/Resized_Pill_4.png"
+                );
+
+                mockDrug.createMockDrug(
+                "Atorvastatin",
+                "Cholesterol-lowering",
+                "20mg",
+                new BigDecimal("9.99"),
+                "https://storage.googleapis.com/cs490-media/Resized_Yellow_In_Amber_Bottle.png"
+                );
+
+            }
+            
+                mockPharmacy.createDrugInventoryInPharmacy(1,1,5);
+                mockPharmacy.createDrugInventoryInPharmacy(2,1,5);
+            // Pharmacy 1 
+                mockPharmacy.createDrugInventoryInPharmacy(1, 3, 10); // Metformin
+                mockPharmacy.createDrugInventoryInPharmacy(1, 4, 7);  // Amoxicillin
+                mockPharmacy.createDrugInventoryInPharmacy(1, 5, 5);  // Atorvastatin
+                mockPharmacy.createDrugInventoryInPharmacy(1, 2, 10);
+
+                // Pharmacy 2
+                mockPharmacy.createDrugInventoryInPharmacy(2, 3, 8);
+                mockPharmacy.createDrugInventoryInPharmacy(2, 4, 4);
+                mockPharmacy.createDrugInventoryInPharmacy(2, 5, 6);
+                mockPharmacy.createDrugInventoryInPharmacy(1, 2, 10);
+
+
 
             if(prescriptionService.isEmpty()) {
                 mockPrescription.createMockPrescription(1,1,1, LocalDateTime.now().plusDays(7));
