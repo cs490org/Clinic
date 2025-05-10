@@ -96,9 +96,29 @@ const Prescriptions = () => {
     }
   };
 
-  const handleDispense = (id) => {
-    console.log(`Mark pill ${id} as dispensed`);
-    // update backend & history optionally
+  const handleDispense = async (pill) => {
+    console.log(pill);
+    try {
+      await fetch(`${API_URL}/pharmacies/drugs/inventory`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          pharmacyId: pill.pharmacyId,
+          drugId: pill.drugId,
+          quantity: pill.inventory,
+          dispensed: true
+        })
+      });
+      // Update local state to reflect change
+      setPrescriptions(prev =>
+          prev.map(p =>
+              p.id === pill.id ? { ...p, dispensed: true } : p
+          )
+      );
+    } catch (err) {
+      console.error('Failed to mark as dispensed:', err);
+    }
   };
 
   const openPillHistory = (pill) => {
@@ -154,7 +174,7 @@ const Prescriptions = () => {
                 </Typography>
               </CardContent>
               <Box px={2} pb={2}>
-                <Button variant="contained" fullWidth sx={{ mb: 1 }} onClick={() => handleDispense(pill.id)}>
+                <Button variant="contained" fullWidth sx={{ mb: 1 }} onClick={() => handleDispense(pill)} disabled={pill.dispensed}>
                   Mark as Dispensed
                 </Button>
                 <Button variant="outlined" fullWidth sx={{ mb: 1 }} onClick={() => handleOpenDialog(pill)}>

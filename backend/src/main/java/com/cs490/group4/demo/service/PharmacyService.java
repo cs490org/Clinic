@@ -36,6 +36,7 @@ public class PharmacyService {
         return pharmacy;
     }
 
+
     @Transactional
     public Pharmacy createPharmacy(PharmacyCreateDTO pharmacyCreateDTO) {
         User user = userRepository.findById(pharmacyCreateDTO.getUserId()).orElseThrow(
@@ -66,6 +67,7 @@ public class PharmacyService {
                 .inventory(dto.getQuantity())
                 .createTimestamp(LocalDateTime.now())
                 .updateTimestamp(LocalDateTime.now())
+                .dispensed(dto.getDispensed())
                 .build();
 
         PharmacyDrugInventory pharmacyDrugInventory = pharmacyDrugInventoryRepository.findByDrugIdAndPharmacyId(dto.getPharmacyId(), dto.getDrugId());
