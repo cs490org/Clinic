@@ -23,7 +23,7 @@ import { API_URL } from '../../utils/constants';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { UserContext } from '../../contexts/UserContext';
-import { useQuery } from "@tanstack/react-query";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import MealPlansWidget from "./MealPlansWidget.jsx";
 import AllDoctors from './AllDoctors';
 import PatientSurvey from "./PatientSurvey.jsx";
@@ -32,6 +32,7 @@ import PendingAppointments from "./PendingAppointments.jsx";
 import PatientQuickActions from "./PatientQuickActions.jsx";
 import PatientEditPreferredPharmacy from "./PatientEditPreferredPharmacy.jsx";
 import PatientChosenDoctor from "./PatientChosenDoctor.jsx";
+import {queryKeys} from "../../utils/queryKeys.js";
 const PatientDashboard = () => {
     const { user, roleData } = useContext(UserContext);
     const [openBooking, setOpenBooking] = useState(false);
@@ -48,7 +49,7 @@ const PatientDashboard = () => {
     };
 
     const theme = useTheme();
-    const isMdUp = useMediaQuery(theme.breakpoints.up("md"))
+    const isMdUp= useMediaQuery(theme.breakpoints.up("md"))
     const Widgets = () => {
         return (
             <>
@@ -78,12 +79,13 @@ const PatientDashboard = () => {
     }
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4, px: 4 }}>
-            <Typography variant="h4" sx={{ fontWeight: "bold" }} gutterBottom>
+            <Typography sx={{fontSize:"1.6rem", fontWeight: "bold" }} gutterBottom>
                 Patient Dashboard
             </Typography>
+            <Divider sx={{mb:"2rem"}}></Divider>
             {
-                isMdUp ?
-                    <Grid2 wrap={"wrap"} container spacing={3}>
+                isMdUp?
+                    <Grid2 wrap={"wrap"} container spacing={1}>
                         <Widgets />
                     </Grid2>
                     :
@@ -111,6 +113,7 @@ function BookAppointmentDialog({ openBooking, setOpenBooking, roleData, selected
         setSymptoms('');
     };
 
+    const queryClient = useQueryClient()
     const handleBookAppointment = async () => {
         const request = {
             appointment: {
@@ -130,7 +133,8 @@ function BookAppointmentDialog({ openBooking, setOpenBooking, roleData, selected
             await axios.put(`${API_URL}/patient/doctor?patientId=${roleData.id}&doctorId=${selectedDoctor.id}`
                 , { withCredentials: true });
             toast.success('Appointment created successfully!');
-            window.location.reload()
+            queryClient.invalidateQueries(queryKeys.appointments.all)
+            // window.location.reload()
         } catch (error) {
             console.error('Error creating appointment:', error);
             toast.error('Failed to create appointment');

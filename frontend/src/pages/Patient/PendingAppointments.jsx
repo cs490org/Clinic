@@ -1,4 +1,4 @@
-import { Avatar, Button, Divider, Paper, Tooltip, Typography } from "@mui/material";
+import {Avatar, Button, Divider, Paper, Stack, Tooltip, Typography} from "@mui/material";
 import axios from "axios";
 import { API_URL } from "../../utils/constants.js";
 import { toast } from "sonner";
@@ -40,7 +40,7 @@ export default function PendingAppointments() {
                 </Typography>
 
                 {pendingAppointments.length > 0 ? (
-                    <>
+                    <Stack spacing={{md:6, lg:0}}>
                         {pendingAppointments.map((appointment, index) => {
                             const appointmentDate = new Date(appointment.appointmentTimestamp);
                             const currentDate = new Date();
@@ -117,7 +117,7 @@ export default function PendingAppointments() {
                                 </div>
                             );
                         })}
-                    </>
+                    </Stack>
                 ) : <Typography>You have no pending appointments.</Typography>}
 
             </Paper>
