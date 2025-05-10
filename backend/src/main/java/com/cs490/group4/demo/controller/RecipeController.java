@@ -16,9 +16,14 @@ public class RecipeController{
     private final RecipeService recipeService;
 
     @GetMapping()
-    private ResponseEntity<?> getRecipes(){
-        return ResponseEntity.ok(recipeService.getRecipes());
+    private ResponseEntity<?> getRecipes(@RequestParam(required = false) Integer id){
+        if (id != null) {
+            return ResponseEntity.ok(recipeService.getRecipe(id));
+        }else {
+            return ResponseEntity.ok(recipeService.getRecipes());
+        }
     }
+
 
     @PostMapping(consumes = {"application/json", "multipart/form-data"})
     private ResponseEntity<?> createRecipe(@ModelAttribute RecipeCreateDTO body){

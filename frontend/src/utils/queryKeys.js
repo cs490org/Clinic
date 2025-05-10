@@ -17,15 +17,16 @@ export const queryKeys = {
     },
     recipes:{
         all: ["recipes"],
+        id:(recipeId) => ["recipes",recipeId],
         comments: (recipeId) => ["recipes","comments",recipeId],
         ingredients: (recipeId) => ["recipes","ingredients",recipeId]
-
     },
     ingredients:{
         all:["ingredients"]
     },
     mealplans:{
-        all:["mealplans"]
+        all:["mealplans"],
+        assigned:["mealplans","assigned"]
     },
     daily_surveys:{
         all:["daily_surveys"],

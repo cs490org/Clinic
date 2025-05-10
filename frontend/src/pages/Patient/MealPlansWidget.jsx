@@ -31,6 +31,9 @@ export default function MealPlansWidget() {
     })
 
     const MealPlanCard = ({ breakfast, lunch, dinner }) => {
+        if(!breakfast || !lunch || !dinner){
+            return <CircularProgress></CircularProgress>
+        }
         return (
             <Box sx={{ mb: 2 }}>
                 <Stack spacing={1}>
@@ -62,18 +65,26 @@ export default function MealPlansWidget() {
             {!isLoading && mealPlans?.length === 0 && (
                 <Typography>You currently have no meal plans.</Typography>
             )}
-            {mealPlans?.map((mealPlan, i) => (
-                <MealPlanCard
-                    key={i}
-                    breakfast={mealPlan.breakfast}
-                    lunch={mealPlan.lunch}
-                    dinner={mealPlan.dinner}
-                />
-            ))}
+            {/*{mealPlans?.map((mealPlan, i) => (*/}
+            {/*    <MealPlanCard*/}
+            {/*        key={i}*/}
+            {/*        breakfast={mealPlan.mealPlan.breakfast}*/}
+            {/*        lunch={mealPlan.mealPlan.lunch}*/}
+            {/*        dinner={mealPlan.mealPlan.dinner}*/}
+            {/*    />*/}
+            {/*))}*/}
+            {/* just get the first one. */}
+            {!isLoading && mealPlans?.length > 0 &&
+            <MealPlanCard
+                breakfast={mealPlans[0].mealPlan.breakfast}
+                lunch={mealPlans[0].mealPlan.lunch}
+                dinner={mealPlans[0].mealPlan.dinner}
+            />
+            }
             <Button
                 variant="outlined"
                 size="small"
-                onClick={() => navigate('/mealplans')}
+                onClick={() => navigate('/mealplans/assigned')}
             >
                 View More
             </Button>

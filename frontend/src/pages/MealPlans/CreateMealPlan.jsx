@@ -6,41 +6,27 @@ import {
     InputLabel,
     MenuItem,
     Select,
-    Stack,
+    Stack, TextField,
     Typography
 } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
-import { API_URL } from "../../utils/constants.js";
-import { useContext, useState } from "react";
-import { UserContext } from "../../contexts/UserContext.jsx";
-import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import {useContext, useState} from "react";
+import {UserContext} from "../../contexts/UserContext.jsx";
+import {useNavigate} from "react-router-dom";
+import {useQuery} from "@tanstack/react-query";
+import {API_URL} from "../../utils/constants.js";
+import {toast} from "sonner";
+import FoodNav from "../FoodNav.jsx";
 
-export default function AssignMealPlan() {
-    const { user, roleData } = useContext(UserContext)
-    const [selectedPatientId, setSelectedPatientId] = useState("");
+export default function CreateMealPlan(){
+
+    const {user} = useContext(UserContext)
+    const [mealPlanName,setMealPlanName] = useState();
     const [breakfastId, setBreakfastId] = useState("");
     const [lunchId, setLunchId] = useState("");
     const [dinnerId, setDinnerId] = useState("");
     const navigate = useNavigate()
 
-    const handleChange = (event) => {
-        setSelectedPatientId(event.target.value);
-    };
-
-
-    const { data: patients, isLoading: recipesIsLoading } = useQuery({
-        queryKey: ["doctors_patients"],
-        queryFn: async () => {
-            const res = await fetch(API_URL + `/doctor/patients?doctorId=${roleData.id}`, {
-                credentials: 'include'
-            });
-            if (!res.ok) throw new Error('Failed to fetch recipes');
-            return res.json();
-        }
-    });
-
-    const { data: recipes, isLoading } = useQuery({
+    const { data: recipes, isLoading:recipesIsLoading } = useQuery({
         queryKey: ["recipes"],
         queryFn: async () => {
             const res = await fetch(API_URL + `/recipes`, {
@@ -52,18 +38,18 @@ export default function AssignMealPlan() {
     });
 
     const submit = async () => {
-        if (!selectedPatientId || !breakfastId || !lunchId || !dinnerId) {
+        if (!breakfastId || !lunchId || !dinnerId || !mealPlanName) {
             toast.error("All fields are required.");
             return;
         }
 
         const payload = {
-            patientId: selectedPatientId,
+            name:mealPlanName,
+            authorId:user.id,
             breakfastId,
             lunchId,
             dinnerId
         };
-        console.log(payload)
 
         try {
             const res = await fetch(API_URL + `/mealplans`, {
@@ -79,8 +65,8 @@ export default function AssignMealPlan() {
                 throw new Error("Failed to create meal plan");
             }
 
-            toast.success("Meal plan assigned successfully!");
-            navigate(-1)
+            toast.success("Meal plan created successfully!");
+            navigate("/mealplans")
 
 
         } catch (err) {
@@ -88,43 +74,12 @@ export default function AssignMealPlan() {
         }
     };
 
-    if (patients?.length == 0) {
 
-        return (
-            <Typography>
-                You currently have no assigned patients.
-            </Typography>
-        )
-    }
     return (
+        <>
+        <FoodNav />
         <Container>
-            <Typography sx={{ fontSize: "2rem", fontWeight: "bold", mb: "2rem" }}>
-                Assign meal plan
-            </Typography>
-            <Typography>
-                Choose patient
-            </Typography>
-            {
-                isLoading ? (
-                    <CircularProgress />
-                ) : (
-                    <FormControl fullWidth sx={{ mt: 2 }}>
-                        <InputLabel id="patient-select-label">Patient</InputLabel>
-                        <Select
-                            labelId="patient-select-label"
-                            value={selectedPatientId}
-                            onChange={handleChange}
-                        >
-                            {patients?.map((patient) => (
-                                <MenuItem key={patient.id} value={patient.id}>
-                                    {patient.firstName} {patient.lastName}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                )
-            }
-
+            <Typography sx={{fontWeight:"bold",fontSize:"1.4rem"}}>Create a meal plan</Typography>
 
             <Typography sx={{ mt: 4 }}>Choose recipes</Typography>
 
@@ -132,6 +87,7 @@ export default function AssignMealPlan() {
                 <CircularProgress />
             ) : (
                 <Stack spacing={2}>
+                    <TextField onChange={(e)=>setMealPlanName(e.target.value)} label="Name" variant="outlined" />
                     <FormControl fullWidth >
                         <InputLabel id="breakfast-select-label">Breakfast</InputLabel>
                         <Select
@@ -177,14 +133,14 @@ export default function AssignMealPlan() {
                         </Select>
                     </FormControl>
 
-                    <Button variant="contained" onClick={() => submit()}>Assign</Button>
+                    <Button variant="contained" onClick={() => submit()}>Create</Button>
                 </Stack>
             )}
         </Container>
+            </>
 
 
 
 
     )
-
 }

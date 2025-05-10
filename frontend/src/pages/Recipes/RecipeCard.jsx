@@ -108,8 +108,7 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
     console.log(author)
 
     return (
-        <Card variant={"elevation"} elevation={1} sx={{ minWidth: 350, maxWidth: 600 }}>
-            {!reduced &&
+        <Card variant={"elevation"} elevation={1} sx={{ minWidth: 300, maxWidth: 600 }}>
                 <CardHeader
                     avatar={
                         <Avatar>
@@ -123,7 +122,6 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
                     }
                     subheader={dayjs(createTimestamp).format('MMMM D, YYYY')}
                 />
-            }
             {!reduced ?
                 <CardMedia
                     component="img"
@@ -132,7 +130,7 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
                 />
                 :
                 <CardMedia
-                    sx={{ height: 140 }}
+                    sx={{ height: 250 }}
                     component="img"
                     image={image}
                     alt={image}
@@ -148,7 +146,6 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
                 </Typography>
                 <Divider></Divider>
 
-                {!reduced &&
                     <>
                         <Typography mt="1rem" fontWeight={"medium"} fontSize={"1.1rem"}>
                             Nutrition information:
@@ -171,7 +168,6 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
                             }
                         </Typography>
                     </>
-                }
 
                 {!ingredientsIsLoading && ingredientDTOs &&
                     <>
@@ -197,9 +193,6 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
 
 
             </CardContent>
-            {
-                !reduced &&
-                <>
                     <CardActions sx={{ mt: "-16px" }} disableSpacing>
                         {
                             !commentsIsLoading && comments && comments.length > 0 &&
@@ -277,8 +270,6 @@ export default function RecipeCard({ id, author, recipeName, createTimestamp, im
                             </Stack>
                         </CardActions>
                     </form>
-                </>
-            }
         </Card>
     )
 }

@@ -25,6 +25,13 @@ public class MockDataConfig {
     private final MockRecipe mockRecipe;
     private final MockRecipeComment mockRecipeComment;
     private final MockIngredient mockIngredient;
+    private final MockDailySurvey mockDailySurvey;
+    private final MockWeeklySurvey mockWeeklySurvey;
+    private final MockSymptom mockSymptom;
+    private final MockPrescription mockPrescription;
+    private final MockMealPlan mockMealPlan;
+    private final MockDrug mockDrug;
+    private final MockPatientPharmacy mockPatientPharmacy;
 
     private final UserService userService;
     private final DoctorService doctorService;
@@ -32,6 +39,11 @@ public class MockDataConfig {
     private final PharmacyService pharmacyService;
     private final RecipeService recipeService;
     private final IngredientService ingredientService;
+    private final DailySurveyService dailySurveyService;
+    private final WeeklySurveyService weeklySurveyService;
+    private final SymptomService symptomService;
+    private final PrescriptionService prescriptionService;
+    private final DrugService drugService;
 
     private final ArrayList<Recipe> recipes = new ArrayList<>();
 
@@ -46,7 +58,7 @@ public class MockDataConfig {
      */
 
     @Bean
-    CommandLineRunner mockDataInitializer(RecipeCommentService recipeCommentService, DailySurveyService dailySurveyService, MockDailySurvey mockDailySurvey, WeeklySurveyService weeklySurveyService, MockWeeklySurvey mockWeeklySurvey, PrescriptionService prescriptionService, MockPrescription mockPrescription, DrugService drugService, MockDrug mockDrug, MockPatientPharmacy mockPatientPharmacy, SymptomService symptomService, MockSymptom mockSymptom) {
+    CommandLineRunner mockDataInitializer() {
         return args -> {
             if (doctorService.isEmpty()) {
                 mockDoctor.createMockDoctor(
@@ -266,7 +278,7 @@ public class MockDataConfig {
 
                 recipes.add(mockRecipe.createMockRecipe(
                         "Rice and Chicken",
-                        "",
+                        "A simple and hearty dish featuring tender seared chicken served over fluffy white rice.",
                         "Cook 1 cup of rice, sear 2 chicken breasts in olive oil over medium heat for 5–6 minutes per side until cooked through. serve over the rice.",
                         riceAndChickenIngredients,
                         1,
@@ -274,7 +286,7 @@ public class MockDataConfig {
                 ));
                 recipes.add(mockRecipe.createMockRecipe(
                         "Avocado Egg Toast",
-                        "",
+                        "A nutritious breakfast toast topped with creamy avocado and a perfectly cooked egg.",
                         "Toast a slice of bread, mash half an avocado on top, and season with salt. Fry or poach an egg, place it over the avocado, and finish with pepper or chili flakes.",
                         avocadoToastIngredients,
                         1,
@@ -282,7 +294,7 @@ public class MockDataConfig {
                 ));
                 recipes.add(mockRecipe.createMockRecipe(
                         "Lemon Garlic Baked Salmon with Veggies",
-                        "",
+                        "A flavorful salmon bake with roasted sweet potatoes and green beans, infused with lemon and garlic.",
                         "Preheat oven to 400°F. Place salmon on a baking sheet, drizzle with olive oil, lemon juice, minced garlic, salt, and pepper. Bake for 15–20 minutes. Roast sweet potatoes and green beans for about 25 minutes. Serve together.",
                         lemonGarlicBakedSalmon,
                         1,
@@ -306,6 +318,12 @@ public class MockDataConfig {
                             comments[commentIndex]
                     );
                 }
+            }
+
+
+            if(!recipeService.isEmpty() && recipeService.count() >= 3 && !userService.getAllUsers().isEmpty()) {
+                mockMealPlan.createMockMealPlan("Example plan",1,1,2,3);
+                mockMealPlan.createMockMealPlan("Just rice and chicken",1,1,1,1);
             }
 
             if(!patientService.isEmpty() && dailySurveyService.isEmpty()) {

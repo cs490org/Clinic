@@ -60,7 +60,7 @@ export default function PatientEditPreferredPharmacy(){
                        <Skeleton />
                    ) : (
                        <Stack spacing={1}>
-                           <Typography sx={{fontWeight:"bold",fontSize:"1.4rem"}}>Preferred pharmacy - {patientPreferredPharmacy.name}</Typography>
+                           <Typography sx={{fontWeight:"bold",fontSize:"1.4rem"}}>Preferred pharmacy - {patientPreferredPharmacy?.name}</Typography>
                            <Select
                                value={selectedPharmacyId}
                                onChange={handleChange}
