@@ -4,10 +4,8 @@ import lombok.Data;
 
 @Data
 public class MealPlanCreateRequestDTO {
-    private Integer patientId;
-
-//    private MultipartFile image;
-
+    private Integer authorId;
+    //recipes
     private Integer breakfastId;
     private Integer lunchId;
     private Integer dinnerId;

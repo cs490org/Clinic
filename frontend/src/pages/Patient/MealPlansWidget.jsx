@@ -31,6 +31,9 @@ export default function MealPlansWidget() {
     })
 
     const MealPlanCard = ({ breakfast, lunch, dinner }) => {
+        if(!breakfast || !lunch || !dinner){
+            return <CircularProgress></CircularProgress>
+        }
         return (
             <Box sx={{ mb: 2 }}>
                 <Stack spacing={1}>

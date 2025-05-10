@@ -182,9 +182,21 @@ export default function NavBar() {
               <ListItemText primary={"Recipes"} />
             </ListItemButton>
           }
+          {(user?.role === "PATIENT" || user?.role === "DOCTOR") &&
+              <ListItemButton
+                  onClick={() => {
+                    navigate("/mealplans");
+                    setDrawerOpen(false);
+                  }}>
+                <ListItemIcon>
+                  <FlatwareIcon />
+                </ListItemIcon>
+                <ListItemText primary={"Meal Plans"} />
+              </ListItemButton>
+          }
           {user?.role === "PATIENT" && (
             <ListItemButton onClick={() => {
-              navigate("/mealplans");
+              navigate("/mealplans/assigned");
               setDrawerOpen(false);
             }}>
               <ListItemIcon>
@@ -195,7 +207,7 @@ export default function NavBar() {
           )}
           {user?.role === "DOCTOR" && (
             <ListItemButton onClick={() => {
-              navigate("/mealplans/create");
+              navigate("/mealplans/assign");
               setDrawerOpen(false);
             }}>
               <ListItemIcon>

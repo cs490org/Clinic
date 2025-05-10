@@ -13,7 +13,7 @@ export default function DoctorQuickActions() {
                 <Button
                     variant="contained"
                     fullWidth
-                    onClick={() => navigate('/mealplans/create')}
+                    onClick={() => navigate('/mealplans/assign')}
                 >
                     Assign Meal Plan
                 </Button>

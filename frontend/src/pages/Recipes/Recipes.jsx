@@ -29,14 +29,6 @@ export default function Recipes() {
     }, []);
 
 
-
-    const mockData = [{
-        author: "Doctor Dump Ling",
-        subheader: "March 30, 2025",
-        image: "/src/assets/garlic_chicken.jpg",
-        recipeName: "Honey Garlic Chicken",
-        description: "Delicious honey garlic chicken with lower calories",
-    }]
     return (
         <>
             <RecipeNav />

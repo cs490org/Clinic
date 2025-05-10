@@ -32,6 +32,9 @@ public class RecipeService {
         return recipeOwnerRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    public RecipeResponseDTO getRecipe(Integer id){
+        return recipeOwnerRepository.findById(id).map(this::convertToDTO).orElseThrow(()->new EntityNotFoundException("Recipe not found"));
+    }
     // recipes associated with users.
     // uses multipart
     @Transactional
@@ -91,9 +94,8 @@ public class RecipeService {
     }
 
 
-
-
     @Transactional
+    // deletes associated media
     public ResponseEntity<String> deleteRecipe(Integer recipeId) {
         Recipe recipe = recipeRepository.findById(recipeId).orElseThrow(
                 () -> new EntityNotFoundException("Recipe not found with ID: " + recipeId)
@@ -114,6 +116,10 @@ public class RecipeService {
 
     public boolean isEmpty(){
         return recipeRepository.count() == 0;
+    }
+
+    public long count(){
+        return recipeRepository.count();
     }
     private RecipeResponseDTO convertToDTO(RecipeOwner recipeOwner) {
         RecipeResponseDTO recipeResponseDTO = new RecipeResponseDTO();

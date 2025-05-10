@@ -27,12 +27,13 @@ import RecipeCreate from "./pages/Recipes/RecipeCreate.jsx";
 import CompletePharmacyProfile from "./pages/Pharmacy/CompletePharmacyProfile.jsx";
 import IngredientCreate from "./pages/Recipes/Ingredients/IngredientCreate.jsx";
 import AssignMealPlan from "./pages/Recipes/AssignMealPlan.jsx";
-import ViewMealPlans from "./pages/Recipes/ViewMealPlans.jsx";
+import ViewAssignedMealPlans from "./pages/Patient/ViewAssignedMealPlans.jsx";
 import SearchPatients from "./pages/Doctor/Patients/SearchPatients.jsx";
 import AssignPrescription from "./pages/Doctor/AssignRx.jsx";
 import MessageRoomPage from "./pages/MessageRoom/MessageRoomPage.jsx";
 import CompletePatientSymptoms from "./pages/Patient/CompletePatientSymptoms.jsx";
 import PatientPharmacy from "./pages/Patient/Pharmacy/PatientPharmacy.jsx";
+import AllMealPlans from "./pages/MealPlans/AllMealPlans.jsx";
 
 const queryClient = new QueryClient()
 const router = createBrowserRouter([
@@ -163,7 +164,7 @@ const router = createBrowserRouter([
             </Auth>
     },
     {
-        path: "/mealplans/create",
+        path: "/mealplans/assign",
         element:
             <Auth allowedRoles={["DOCTOR"]}>
                 <AssignMealPlan />
@@ -172,8 +173,15 @@ const router = createBrowserRouter([
     {
         path: "/mealplans",
         element:
+            <Auth allowedRoles={["DOCTOR","PATIENT"]}>
+                <AllMealPlans/>
+            </Auth>
+    },
+    {
+        path: "/mealplans/assigned",
+        element:
             <Auth allowedRoles={["PATIENT"]}>
-                <ViewMealPlans />
+                <ViewAssignedMealPlans />
             </Auth>
     },
     {
