@@ -48,5 +48,10 @@ public class PrescriptionService {
     public boolean isEmpty(){
         return prescriptionRepository.findAll().isEmpty();
     }
+    /* Part of the modified prescription by id
+    public List<Prescription> getPrescriptionsByPatientId(Integer patientId) {
+        return prescriptionRepository.findByPatientId(patientId);
+    } */
+    
 
 }
