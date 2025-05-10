@@ -1,180 +1,93 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-    Container,
-    Typography,
-    TextField,
-    Select,
-    MenuItem,
-    FormControl,
-    InputLabel,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    Stack,
-    TablePagination,
-    Box
+  Container, Typography, Table, TableBody, TableCell,
+  TableContainer, TableHead, TableRow, Paper, Button
 } from "@mui/material";
+import axios from "axios";
 
-import SearchIcon from '@mui/icons-material/Search';
-import { API_URL } from "../../utils/constants";
-import { UserContext } from "../../contexts/UserContext";
+export default function Patients() {
+  const [patients, setPatients] = useState([]);
+  const [prescriptions, setPrescriptions] = useState([]);
 
-export default function PharmacyPatients() {
-    const { user } = useContext(UserContext);
-    const [patients, setPatients] = useState([]);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [searchField, setSearchField] = useState("name");
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [patRes, presRes] = await Promise.all([
+          axios.get('http://localhost:8080/patients', { withCredentials: true }),
+          axios.get('http://localhost:8080/prescriptions', { withCredentials: true }),
+        ]);
 
-    useEffect(() => {
-        if (!user?.id) return;
+        const allPatients = patRes.data || [];
+        const allPrescriptions = presRes.data || [];
 
-        const fetchPatientsForPharmacy = async () => {
-            try {
-                const pharmacyRes = await fetch(`${API_URL}/pharmacies?userId=${user.id}`, {
-                    credentials: "include"
-                });
+        const enriched = allPatients.map(p => {
+          const pills = allPrescriptions
+            .filter(pr => pr.patientId === p.id)
+            .map(pr => pr.drug?.name || pr.pillName || 'N/A');
+          return { ...p, drugs: pills };
+        });
 
-                const pharmacyData = await pharmacyRes.json();
-                const pharmacyId = Array.isArray(pharmacyData)
-                    ? pharmacyData[0]?.id
-                    : pharmacyData?.id;
-
-                if (!pharmacyId) {
-                    console.warn("No pharmacy found.");
-                    return;
-                }
-
-                const patientsRes = await fetch(`${API_URL}/pharmacies/patients?pharmacyId=${pharmacyId}`, {
-                    credentials: "include"
-                });
-
-                if (patientsRes.ok) {
-                    const patientsData = await patientsRes.json();
-                    setPatients(patientsData);
-                }
-            } catch (error) {
-                console.error("Error fetching pharmacy patients:", error);
-            }
-        };
-
-        fetchPatientsForPharmacy();
-    }, [user]);
-
-    const filteredPatients = patients.filter((patient) => {
-        if (!searchTerm) return true;
-        const searchTermLower = searchTerm.toLowerCase();
-        switch (searchField) {
-            case "name":
-                return `${patient.firstName} ${patient.lastName}`.toLowerCase().includes(searchTermLower);
-            case "email":
-                return patient.email?.toLowerCase().includes(searchTermLower);
-            case "address":
-                return patient.address?.toLowerCase().includes(searchTermLower);
-            case "phone":
-                return patient.phone?.toLowerCase().includes(searchTermLower);
-            default:
-                return true;
-        }
-    });
-
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
+        setPatients(enriched);
+        setPrescriptions(allPrescriptions);
+      } catch (err) {
+        console.error("Error fetching patients or prescriptions:", err);
+      }
     };
+    fetchData();
+  }, []);
 
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
+  const handleContact = (patient) => {
+    console.log(`📨 Send message to: ${patient.firstName} ${patient.lastName} (${patient.email})`);
+    // Here, integrate with RabbitMQ or backend endpoint
+    // Example: axios.post('/api/contact', { patientId: patient.id, message: "..." })
+  };
 
-    return (
-        <Container sx={{ mt: 4 }}>
-            <Typography variant="h4" gutterBottom fontWeight="bold">
-                Patients at Your Pharmacy
-            </Typography>
+  return (
+    <Container sx={{ mt: 4 }}>
+      <Typography variant="h4" gutterBottom fontWeight="bold">
+        Patients at Your Pharmacy
+      </Typography>
 
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={2} mb={2}>
-                <FormControl fullWidth>
-                    <InputLabel>Search by</InputLabel>
-                    <Select
-                        value={searchField}
-                        label="Search by"
-                        onChange={(e) => setSearchField(e.target.value)}
-                        sx={{ height: 40 }}
+      <Paper sx={{ mt: 3 }}>
+        <TableContainer>
+          <Table>
+            <TableHead sx={{ backgroundColor: '#212121' }}>
+              <TableRow>
+                <TableCell sx={{ color: "#fff" }}><strong>Name</strong></TableCell>
+                <TableCell sx={{ color: "#fff" }}><strong>Email</strong></TableCell>
+                <TableCell sx={{ color: "#fff" }}><strong>Address</strong></TableCell>
+                <TableCell sx={{ color: "#fff" }}><strong>Phone</strong></TableCell>
+                <TableCell sx={{ color: "#fff" }}><strong>Drugs</strong></TableCell>
+                <TableCell sx={{ color: "#fff" }}><strong>Action</strong></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {patients.length > 0 ? patients.map((p, i) => (
+                <TableRow key={i}>
+                  <TableCell>{p.firstName} {p.lastName}</TableCell>
+                  <TableCell>{p.email}</TableCell>
+                  <TableCell>{p.address}</TableCell>
+                  <TableCell>{p.phone}</TableCell>
+                  <TableCell>{p.drugs.join(", ")}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => handleContact(p)}
                     >
-                        <MenuItem value="name">Name</MenuItem>
-                        <MenuItem value="email">Email</MenuItem>
-                        <MenuItem value="address">Address</MenuItem>
-                        <MenuItem value="phone">Phone</MenuItem>
-                    </Select>
-                </FormControl>
-
-                <TextField
-                    fullWidth
-                    placeholder={`Search by ${searchField}...`}
-                    value={searchTerm}
-                    onChange={(e) => {
-                        setSearchTerm(e.target.value);
-                        setPage(0);
-                    }}
-                    InputProps={{
-                        startAdornment: <SearchIcon sx={{ color: 'text.secondary', mr: 1 }} />
-                    }}
-                />
-            </Stack>
-
-            <Paper>
-                <TableContainer>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Name</TableCell>
-                                <TableCell>Email</TableCell>
-                                <TableCell>Address</TableCell>
-                                <TableCell>Phone</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {filteredPatients.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={4} align="center">
-                                        {searchTerm
-                                            ? `No patients found matching your search by ${searchField}.`
-                                            : "No patients found."}
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                filteredPatients
-                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((patient) => (
-                                        <TableRow key={patient.id}>
-                                            <TableCell>{patient.firstName} {patient.lastName}</TableCell>
-                                            <TableCell>{patient.email}</TableCell>
-                                            <TableCell>{patient.address}</TableCell>
-                                            <TableCell>{patient.phone}</TableCell>
-                                        </TableRow>
-                                    ))
-                            )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-                {filteredPatients.length > 0 && (
-                    <TablePagination
-                        component="div"
-                        count={filteredPatients.length}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        rowsPerPage={rowsPerPage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                        rowsPerPageOptions={[5, 10, 25]}
-                    />
-                )}
-            </Paper>
-        </Container>
-    );
+                      💬 Talk
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              )) : (
+                <TableRow>
+                  <TableCell colSpan={6} align="center">No patients found</TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+    </Container>
+  );
 }
