@@ -322,8 +322,8 @@ public class MockDataConfig {
 
 
             if(!recipeService.isEmpty() && recipeService.count() >= 3 && !userService.getAllUsers().isEmpty()) {
-                mockMealPlan.createMockMealPlan(1,1,2,3);
-                mockMealPlan.createMockMealPlan(1,1,1,1);
+                mockMealPlan.createMockMealPlan("Example plan",1,1,2,3);
+                mockMealPlan.createMockMealPlan("Just rice and chicken",1,1,1,1);
             }
 
             if(!patientService.isEmpty() && dailySurveyService.isEmpty()) {

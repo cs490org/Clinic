@@ -15,13 +15,15 @@ import { useContext, useState } from "react";
 import { UserContext } from "../../contexts/UserContext.jsx";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import {queryKeys} from "../../utils/queryKeys.js";
 
 export default function AssignMealPlan() {
     const { user, roleData } = useContext(UserContext)
     const [selectedPatientId, setSelectedPatientId] = useState("");
-    const [breakfastId, setBreakfastId] = useState("");
-    const [lunchId, setLunchId] = useState("");
-    const [dinnerId, setDinnerId] = useState("");
+    // const [breakfastId, setBreakfastId] = useState("");
+    // const [lunchId, setLunchId] = useState("");
+    // const [dinnerId, setDinnerId] = useState("");
+    const [mealPlanId, setMealPlanId] = useState("");
     const navigate = useNavigate()
 
     const handleChange = (event) => {
@@ -40,33 +42,31 @@ export default function AssignMealPlan() {
         }
     });
 
-    const { data: recipes, isLoading } = useQuery({
-        queryKey: ["recipes"],
+    const { data: mealplans, isLoading } = useQuery({
+        queryKey:queryKeys.mealplans.all,
         queryFn: async () => {
-            const res = await fetch(API_URL + `/recipes`, {
+            const res = await fetch(API_URL + `/mealplans`, {
                 credentials: 'include'
             });
-            if (!res.ok) throw new Error('Failed to fetch patients');
+            if (!res.ok) throw new Error('Failed to fetch meal plans');
             return res.json();
         }
     });
 
     const submit = async () => {
-        if (!selectedPatientId || !breakfastId || !lunchId || !dinnerId) {
+        if (!selectedPatientId || !mealPlanId) {
             toast.error("All fields are required.");
             return;
         }
 
         const payload = {
             patientId: selectedPatientId,
-            breakfastId,
-            lunchId,
-            dinnerId
+            mealPlanId
         };
         console.log(payload)
 
         try {
-            const res = await fetch(API_URL + `/mealplans`, {
+            const res = await fetch(API_URL + `/mealplans/patient`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -133,49 +133,21 @@ export default function AssignMealPlan() {
             ) : (
                 <Stack spacing={2}>
                     <FormControl fullWidth >
-                        <InputLabel id="breakfast-select-label">Breakfast</InputLabel>
+                        <InputLabel id="mealplan-label">Meal plan</InputLabel>
                         <Select
-                            labelId="breakfast-select-label"
-                            value={breakfastId}
-                            onChange={(e) => setBreakfastId(e.target.value)}
+                            labelId="mealplan-label"
+                            value={mealPlanId}
+                            onChange={(e) => setMealPlanId(e.target.value)}
                         >
-                            {recipes?.map((recipe) => (
-                                <MenuItem key={recipe.id} value={recipe.id}>
-                                    {recipe.name}
+                            {/*lol */}
+                            {mealplans?.map((mealplan) => (
+                                <MenuItem key={mealplan.mealPlan.id} value={mealplan.mealPlan.id}>
+                                    {mealplan.mealPlan.name}
                                 </MenuItem>
                             ))}
                         </Select>
                     </FormControl>
 
-                    <FormControl fullWidth >
-                        <InputLabel id="lunch-select-label">Lunch</InputLabel>
-                        <Select
-                            labelId="lunch-select-label"
-                            value={lunchId}
-                            onChange={(e) => setLunchId(e.target.value)}
-                        >
-                            {recipes?.map((recipe) => (
-                                <MenuItem key={recipe.id} value={recipe.id}>
-                                    {recipe.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-
-                    <FormControl fullWidth >
-                        <InputLabel id="dinner-select-label">Dinner</InputLabel>
-                        <Select
-                            labelId="dinner-select-label"
-                            value={dinnerId}
-                            onChange={(e) => setDinnerId(e.target.value)}
-                        >
-                            {recipes?.map((recipe) => (
-                                <MenuItem key={recipe.id} value={recipe.id}>
-                                    {recipe.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
 
                     <Button variant="contained" onClick={() => submit()}>Assign</Button>
                 </Stack>

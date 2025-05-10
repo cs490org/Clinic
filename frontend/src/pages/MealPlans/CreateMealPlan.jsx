@@ -6,7 +6,7 @@ import {
     InputLabel,
     MenuItem,
     Select,
-    Stack,
+    Stack, TextField,
     Typography
 } from "@mui/material";
 import {useContext, useState} from "react";
@@ -20,6 +20,7 @@ import FoodNav from "../FoodNav.jsx";
 export default function CreateMealPlan(){
 
     const {user} = useContext(UserContext)
+    const [mealPlanName,setMealPlanName] = useState();
     const [breakfastId, setBreakfastId] = useState("");
     const [lunchId, setLunchId] = useState("");
     const [dinnerId, setDinnerId] = useState("");
@@ -37,12 +38,13 @@ export default function CreateMealPlan(){
     });
 
     const submit = async () => {
-        if (!breakfastId || !lunchId || !dinnerId) {
+        if (!breakfastId || !lunchId || !dinnerId || !mealPlanName) {
             toast.error("All fields are required.");
             return;
         }
 
         const payload = {
+            name:mealPlanName,
             authorId:user.id,
             breakfastId,
             lunchId,
@@ -85,6 +87,7 @@ export default function CreateMealPlan(){
                 <CircularProgress />
             ) : (
                 <Stack spacing={2}>
+                    <TextField onChange={(e)=>setMealPlanName(e.target.value)} label="Name" variant="outlined" />
                     <FormControl fullWidth >
                         <InputLabel id="breakfast-select-label">Breakfast</InputLabel>
                         <Select

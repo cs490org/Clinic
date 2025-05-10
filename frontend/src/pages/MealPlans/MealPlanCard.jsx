@@ -22,7 +22,7 @@ import dayjs from "dayjs";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import Recipe from "../Recipes/Recipe.jsx";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-export default function MealPlanCard ({id,author, breakfast,lunch,dinner}){
+export default function MealPlanCard ({id,name,author, breakfast,lunch,dinner}){
 
     const {user} = useContext(UserContext)
     const RecipePreview = ({ type, id, author, recipeName, createTimestamp, image, description, instructions}) =>{
@@ -205,7 +205,8 @@ export default function MealPlanCard ({id,author, breakfast,lunch,dinner}){
                 {/*<Typography sx={{fontWeight:"bold", fontSize:"1.4rem"}}>{author}'s meal plan</Typography>*/}
                 <Stack spacing={1} direction={"column"} justifyContent={"space-between"}>
                     <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
-                        <Typography sx={{fontWeight:"bold", fontSize:"1.3rem"}}>{author.firstName}'s Meal Plan</Typography>
+                        {/*<Typography sx={{fontWeight:"bold", fontSize:"1.3rem"}}>{author.firstName}'s Meal Plan</Typography>*/}
+                        <Typography sx={{fontWeight:"bold", fontSize:"1.3rem"}}>{name}</Typography>
                         {
                             author.userId == user.id  &&
                             <>
@@ -222,22 +223,24 @@ export default function MealPlanCard ({id,author, breakfast,lunch,dinner}){
                                     }}
                                 >
                                     <Button onClick={()=>{
-                                        const run = async () => {
-                                            const res = await fetch(API_URL + `/mealplans?id=${id}`,
-                                                {
-                                                    method:"DELETE",
-                                                    credentials:"include"
+                                        if(confirm("are you sure you want to delete the meal plan?")) {
+                                            const run = async () => {
+                                                const res = await fetch(API_URL + `/mealplans?id=${id}`,
+                                                    {
+                                                        method: "DELETE",
+                                                        credentials: "include"
+                                                    }
+                                                )
+                                                if (res.ok) {
+                                                    toast.success("Deleted meal plan.")
+                                                } else {
+                                                    toast.error("There was an error when trying to delete the meal plan.")
+                                                    throw new Error()
                                                 }
-                                            )
-                                            if(res.ok) {
-                                                toast.success("Deleted meal plan.")
-                                            }else {
-                                                toast.error("There was an error when trying to delete the meal plan.")
-                                                throw new Error()
+                                                queryClient.invalidateQueries(queryKeys.mealplans.all)
                                             }
-                                            queryClient.invalidateQueries(queryKeys.mealplans.all)
+                                            run()
                                         }
-                                        run()
                                     }}>Delete</Button>
                                 </Popover>
                         </>

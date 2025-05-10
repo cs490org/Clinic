@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface MealPlanOwnerRepository extends JpaRepository<MealPlanOwner, Integer> {
     public void deleteAllByMealPlanId(Integer mealPlanId);
+    public MealPlanOwner findByMealPlanId(Integer mealPlanId);
 }

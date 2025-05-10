@@ -20,6 +20,7 @@ public class MealPlan {
 //    @ManyToOne
 //    @JoinColumn(name = "patient_id", referencedColumnName = "id")
 //    private Patient patient;
+    private String name;
 
     @ManyToOne
     @JoinColumn(referencedColumnName = "id")

@@ -14,8 +14,9 @@ public class MockMealPlan {
         this.mealPlanService = mealPlanService;
     }
 
-    public MealPlan createMockMealPlan(Integer authorId, Integer breakfastId, Integer lunchId, Integer dinnerId) {
+    public MealPlan createMockMealPlan(String name,Integer authorId, Integer breakfastId, Integer lunchId, Integer dinnerId) {
         MealPlanCreateRequestDTO mealPlanCreateRequestDTO = new MealPlanCreateRequestDTO();
+        mealPlanCreateRequestDTO.setName(name);
         mealPlanCreateRequestDTO.setAuthorId(authorId);
 
         mealPlanCreateRequestDTO.setBreakfastId(breakfastId);

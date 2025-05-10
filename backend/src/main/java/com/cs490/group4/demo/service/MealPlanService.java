@@ -3,6 +3,7 @@ package com.cs490.group4.demo.service;
 import com.cs490.group4.demo.dao.*;
 import com.cs490.group4.demo.dto.MealPlanAssignRequestDTO;
 import com.cs490.group4.demo.dto.MealPlanCreateRequestDTO;
+import com.cs490.group4.demo.dto.MealPlanResponseDTO;
 import com.cs490.group4.demo.security.User;
 import com.cs490.group4.demo.security.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -44,6 +45,7 @@ public class MealPlanService {
                 ()->new EntityNotFoundException("Recipe not found when creating MealPlan"));
 
         MealPlan mealPlan = new MealPlan();
+        mealPlan.setName(mealPlanDTO.getName());
         mealPlan.setBreakfast(breakfast);
         mealPlan.setLunch(lunch);
         mealPlan.setDinner(dinner);
@@ -56,7 +58,7 @@ public class MealPlanService {
         return mealPlanRepository.save(mealPlan);
     }
     @Transactional
-    public MealPlan assignMealPlan(MealPlanAssignRequestDTO assignDTO) {
+    public PatientMealPlan assignMealPlan(MealPlanAssignRequestDTO assignDTO) {
         Patient patient = patientRepository.findById(assignDTO.getPatientId()).orElseThrow(
                 ()->new EntityNotFoundException("Patient not found"));
         MealPlan mealPlan = mealPlanRepository.findById(assignDTO.getMealPlanId()).orElseThrow(
@@ -65,7 +67,7 @@ public class MealPlanService {
         PatientMealPlan patientMealPlan = new PatientMealPlan();
         patientMealPlan.setPatient(patient);
         patientMealPlan.setMealPlan(mealPlan);
-        return mealPlanRepository.save(mealPlan);
+        return patientMealPlanRepository.save(patientMealPlan);
     }
 
 
@@ -91,9 +93,4 @@ public class MealPlanService {
         mealPlanRepository.delete(mealPlan);
     }
 
-    @Data
-    class MealPlanResponseDTO{
-        private User author;
-        private MealPlan mealPlan;
-    }
 }

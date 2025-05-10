@@ -1,8 +1,10 @@
 package com.cs490.group4.demo.controller;
 
 import com.cs490.group4.demo.dao.MealPlan;
+import com.cs490.group4.demo.dao.PatientMealPlan;
 import com.cs490.group4.demo.dto.MealPlanAssignRequestDTO;
 import com.cs490.group4.demo.dto.MealPlanCreateRequestDTO;
+import com.cs490.group4.demo.dto.MealPlanResponseDTO;
 import com.cs490.group4.demo.service.MealPlanService;
 import com.cs490.group4.demo.service.PatientMealPlanService;
 import lombok.Data;
@@ -38,22 +40,14 @@ public class MealPlanController {
 
 
     @GetMapping("/patient/{id}")
-    private ResponseEntity<List<MealPlan>> getPatientAssignedMealPlans(@PathVariable Integer id){
+    private ResponseEntity<List<MealPlanResponseDTO>> getPatientAssignedMealPlans(@PathVariable Integer id){
         return ResponseEntity.ok(patientMealPlanService.getPatientAssignedMealPlans(id));
     }
     @PostMapping("/patient")
-    private ResponseEntity<MealPlan> assignMealPlan(@RequestBody MealPlanAssignRequestDTO mealPlanAssignRequestDTO){
+    private ResponseEntity<PatientMealPlan> assignMealPlan(@RequestBody MealPlanAssignRequestDTO mealPlanAssignRequestDTO){
         return ResponseEntity.ok(mealPlanService.assignMealPlan(mealPlanAssignRequestDTO));
     }
 
-    @Data
-    public class MealPlanWithOwnerDTO {
-        private Integer id;
-        private String name;
-        private String description;
-        private Integer creatorId;
-        private String creatorName;
-    }
 
 
 }

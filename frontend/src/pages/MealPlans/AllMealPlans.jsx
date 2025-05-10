@@ -42,7 +42,7 @@ export default function AllMealPlans(){
                 Meal Plans
             </Typography>
             <Typography variant={"body2"}>
-                View our comphrensive meal plans for your weight management needs.
+                View our comphrensive meal plans for your weight management goals.
             </Typography>
             <Divider sx={{my:"1rem"}}/>
             {
@@ -61,6 +61,7 @@ export default function AllMealPlans(){
                                                 <MealPlanCard
                                                     key={i}
                                                     id={mealPlan.mealPlan.id}
+                                                    name={mealPlan.mealPlan.name}
                                                     author={mealPlan.author}
                                                     breakfast={mealPlan.mealPlan.breakfast}
                                                     lunch={mealPlan.mealPlan.lunch}
