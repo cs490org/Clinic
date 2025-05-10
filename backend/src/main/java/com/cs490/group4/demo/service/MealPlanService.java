@@ -28,7 +28,7 @@ public class MealPlanService {
     public List<MealPlanResponseDTO> findAll() {
         return mealPlanOwnerRepository.findAll().stream().map((mealPlanOwner)->{
             MealPlanResponseDTO mealPlanResponseDTO = new MealPlanResponseDTO();
-            mealPlanResponseDTO.setAuthor(mealPlanOwner.getUser().getFirstName() + " " + mealPlanOwner.getUser().getLastName());
+            mealPlanResponseDTO.setAuthor(mealPlanOwner.getUser());
             mealPlanResponseDTO.setMealPlan(mealPlanOwner.getMealPlan());
             return mealPlanResponseDTO;
         }).collect(Collectors.toList());
@@ -73,16 +73,19 @@ public class MealPlanService {
     public void deleteMealPlan(Integer mealPlanId) {
         // delete recipes in the meal plan
         MealPlan mealPlan = mealPlanRepository.findById(mealPlanId).orElseThrow(()->new EntityNotFoundException("MealPlan not found when trying to delete"));
-        Recipe breakfast= mealPlan.getBreakfast();
-        Recipe lunch= mealPlan.getLunch();
-        Recipe dinner= mealPlan.getDinner();
-        recipeService.deleteRecipe(breakfast.getId());
-        recipeService.deleteRecipe(lunch.getId());
-        recipeService.deleteRecipe(dinner.getId());
+//        Recipe breakfast= mealPlan.getBreakfast();
+//        Recipe lunch= mealPlan.getLunch();
+//        Recipe dinner= mealPlan.getDinner();
+//        recipeService.deleteRecipe(breakfast.getId());
+//        recipeService.deleteRecipe(lunch.getId());
+//        recipeService.deleteRecipe(dinner.getId());
 
         // delete assigned meal plans
         List<PatientMealPlan> patientMealPlans = patientMealPlanRepository.findByMealPlanId(mealPlanId);
         patientMealPlanRepository.deleteAll(patientMealPlans);
+
+        // delete meal plan owners
+        mealPlanOwnerRepository.deleteAllByMealPlanId(mealPlanId);
 
         // delete meal plan
         mealPlanRepository.delete(mealPlan);
@@ -90,7 +93,7 @@ public class MealPlanService {
 
     @Data
     class MealPlanResponseDTO{
-        private String author;
+        private User author;
         private MealPlan mealPlan;
     }
 }

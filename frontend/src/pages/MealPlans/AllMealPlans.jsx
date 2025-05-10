@@ -1,4 +1,4 @@
-import {Container, Divider, Grid2, Paper, Stack, Typography} from "@mui/material";
+import {Container, Divider, Grid2, Paper, Stack, Typography, useMediaQuery, useTheme} from "@mui/material";
 import {useQuery} from "@tanstack/react-query";
 import {useContext, useEffect, useState} from "react";
 import {API_URL} from "../../utils/constants.js";
@@ -32,6 +32,8 @@ export default function AllMealPlans(){
     })
 
 
+    const theme = useTheme()
+    const isMdUp = useMediaQuery(theme.breakpoints.up("md"))
     return (
         <>
             <FoodNav></FoodNav>
@@ -49,24 +51,45 @@ export default function AllMealPlans(){
 
                     :
                     (
-                    <Grid2 container spacing={2}>
-                        {
-                        mealPlans?.map((mealPlan,i)=>{
+                        isMdUp ?
+                            <Grid2 container spacing={2}>
+                                {
+                                    mealPlans?.map((mealPlan, i) => {
 
-                            return(
-                                <Grid2 key={i} size={4}>
-                                    <MealPlanCard
-                                        key={i}
-                                        author={mealPlan.author}
-                                        breakfast={mealPlan.mealPlan.breakfast}
-                                        lunch={mealPlan.mealPlan.lunch}
-                                        dinner={mealPlan.mealPlan.dinner}
-                                    />
-                                </Grid2>
-                            )
-                        })
-                        }
-                    </Grid2>
+                                        return (
+                                            <Grid2 key={i} size={4}>
+                                                <MealPlanCard
+                                                    key={i}
+                                                    id={mealPlan.mealPlan.id}
+                                                    author={mealPlan.author}
+                                                    breakfast={mealPlan.mealPlan.breakfast}
+                                                    lunch={mealPlan.mealPlan.lunch}
+                                                    dinner={mealPlan.mealPlan.dinner}
+                                                />
+                                            </Grid2>
+                                        )
+                                    })
+                                }
+                            </Grid2>
+                            :
+                            <Stack container spacing={2}>
+                                {
+                                    mealPlans?.map((mealPlan, i) => {
+
+                                        return (
+                                            <Grid2 key={i} size={4}>
+                                                <MealPlanCard
+                                                    key={i}
+                                                    author={mealPlan.author}
+                                                    breakfast={mealPlan.mealPlan.breakfast}
+                                                    lunch={mealPlan.mealPlan.lunch}
+                                                    dinner={mealPlan.mealPlan.dinner}
+                                                />
+                                            </Grid2>
+                                        )
+                                    })
+                                }
+                            </Stack>
                     )
             }
         </Container>

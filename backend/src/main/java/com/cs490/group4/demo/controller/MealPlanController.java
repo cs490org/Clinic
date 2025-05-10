@@ -30,8 +30,8 @@ public class MealPlanController {
         return ResponseEntity.ok(mealPlanService.createMealPlan(mealPlanCreateRequestDTO));
     }
     @DeleteMapping
-    private ResponseEntity<?> deleteMealPlan(@RequestParam Integer mealPlanId){
-        mealPlanService.deleteMealPlan(mealPlanId);
+    private ResponseEntity<?> deleteMealPlan(@RequestParam(required = true) Integer id){
+        mealPlanService.deleteMealPlan(id);
         return ResponseEntity.ok().build();
     }
 

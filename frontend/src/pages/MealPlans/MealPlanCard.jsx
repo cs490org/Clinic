@@ -7,7 +7,7 @@ import {
     CardHeader,
     CardMedia, Chip, CircularProgress, Collapse, Dialog, DialogActions, DialogContent, DialogTitle,
     Divider, IconButton,
-    Paper,
+    Paper, Popover,
     Stack, TextField,
     Typography
 } from "@mui/material";
@@ -21,9 +21,10 @@ import {queryKeys} from "../../utils/queryKeys.js";
 import dayjs from "dayjs";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import Recipe from "../Recipes/Recipe.jsx";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+export default function MealPlanCard ({id,author, breakfast,lunch,dinner}){
 
-export default function MealPlanCard ({author, breakfast,lunch,dinner}){
-
+    const {user} = useContext(UserContext)
     const RecipePreview = ({ type, id, author, recipeName, createTimestamp, image, description, instructions}) =>{
         const [open, setOpen] = useState(false);
         const handleOpen = () => setOpen(true);
@@ -112,7 +113,6 @@ export default function MealPlanCard ({author, breakfast,lunch,dinner}){
                                                         WebkitLineClamp: 2,
                                                         WebkitBoxOrient: "vertical"
                                                     }}
-
                                         >
 
 
@@ -188,12 +188,61 @@ export default function MealPlanCard ({author, breakfast,lunch,dinner}){
     const lunchCalories = lunchIngredients?.reduce((acc,element)=>{return acc+element.ingredient.calories * element.quantity},0)
     const dinnerCalories = dinnerIngredients?.reduce((acc,element)=>{return acc+element.ingredient.calories * element.quantity},0)
     const totalCalories = breakfastCalories + lunchCalories + dinnerCalories
+
+    const [anchorEl, setAnchorEl] = useState(null)
+    const handleClick = (e) => {
+        setAnchorEl(e.currentTarget)
+    }
+    const handleClose = (e) => {
+        setAnchorEl(null)
+    }
+
+    const open = Boolean(anchorEl)
+    const queryClient = useQueryClient()
     return (
         <Card variant={"outlined"} sx={{width:"100%"}}>
             <CardContent>
                 {/*<Typography sx={{fontWeight:"bold", fontSize:"1.4rem"}}>{author}'s meal plan</Typography>*/}
                 <Stack spacing={1} direction={"column"} justifyContent={"space-between"}>
-                    <Typography sx={{fontWeight:"bold", fontSize:"1.4rem"}}>{author}'s Meal Plan</Typography>
+                    <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
+                        <Typography sx={{fontWeight:"bold", fontSize:"1.3rem"}}>{author.firstName}'s Meal Plan</Typography>
+                        {
+                            author.userId == user.id  &&
+                            <>
+                        <IconButton onClick={handleClick}>
+                            <MoreVertIcon/>
+                        </IconButton>
+                                <Popover
+                                    open={open}
+                                    onClose={handleClose}
+                                    anchorEl={anchorEl}
+                                    anchorOrigin={{
+                                        vertical: "bottom",
+                                        horizontal: "left"
+                                    }}
+                                >
+                                    <Button onClick={()=>{
+                                        const run = async () => {
+                                            const res = await fetch(API_URL + `/mealplans?id=${id}`,
+                                                {
+                                                    method:"DELETE",
+                                                    credentials:"include"
+                                                }
+                                            )
+                                            if(res.ok) {
+                                                toast.success("Deleted meal plan.")
+                                            }else {
+                                                toast.error("There was an error when trying to delete the meal plan.")
+                                                throw new Error()
+                                            }
+                                            queryClient.invalidateQueries(queryKeys.mealplans.all)
+                                        }
+                                        run()
+                                    }}>Delete</Button>
+                                </Popover>
+                        </>
+                        }
+                    </Stack>
                     <Box>
                         <Chip label={totalCalories + " calories"}/>
                     </Box>
