@@ -1,5 +1,6 @@
 package com.cs490.group4.demo.controller;
 
+import com.cs490.group4.demo.dao.Pharmacy;
 import com.cs490.group4.demo.dao.PrescriptionBill;
 import com.cs490.group4.demo.dao.PrescriptionBillRepository;
 import com.cs490.group4.demo.dto.InventoryDTO;
@@ -27,6 +28,12 @@ public class PharmacyController {
             return ResponseEntity.ok(pharmacyService.getPharmacies());
         }
     }
+
+    @GetMapping("/nearby")
+    public List<Pharmacy> getNearbyPharmacies(@RequestParam String zipCode) {
+        return pharmacyService.findNearbyPharmacies(zipCode);
+    }
+
 
     @PostMapping
     private ResponseEntity<?> createPharmacy(@RequestBody PharmacyCreateDTO pharmacyCreateDTO) {

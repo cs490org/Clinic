@@ -9,7 +9,7 @@ export default function CompletePatientSymptoms(){
         <Container>
             <Stack spacing={2} alignItems={"center"}>
                 <Typography variant={"h4"} fontWeight={"bold"} textAlign={"center"}>Your symptoms</Typography>
-                <PatientSymptoms patient_id={roleData.id}/>
+                <PatientSymptoms patient_id={roleData?.id}/>
             </Stack>
         </Container>
     )
