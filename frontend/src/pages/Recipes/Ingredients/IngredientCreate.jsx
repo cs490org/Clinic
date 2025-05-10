@@ -15,6 +15,7 @@ import {UserContext} from "../../../contexts/UserContext.jsx";
 import {API_URL} from "../../../utils/constants.js";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import FoodNav from "../../FoodNav.jsx";
 
 export default function IngredientCreate() {
     const { user } = useContext(UserContext)
@@ -83,6 +84,8 @@ export default function IngredientCreate() {
         }
     }
     return (
+        <>
+            <FoodNav></FoodNav>
         <Box sx={{display:"flex", justifyContent:"center",alignItems:"center"}}>
             <Container >
                 <Paper elevation={3} sx={{ p: 2 }}>
@@ -101,6 +104,7 @@ export default function IngredientCreate() {
                 </Paper>
             </Container>
         </Box>
+            </>
     )
 
 }

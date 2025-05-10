@@ -25,6 +25,14 @@ public class MockDataConfig {
     private final MockRecipe mockRecipe;
     private final MockRecipeComment mockRecipeComment;
     private final MockIngredient mockIngredient;
+    private final MockDailySurvey mockDailySurvey;
+    private final MockWeeklySurvey mockWeeklySurvey;
+    private final MockSymptom mockSymptom;
+    private final MockPrescription mockPrescription;
+    private final MockMealPlan mockMealPlan;
+    private final MockDrug mockDrug;
+    private final MockPatientPharmacy mockPatientPharmacy;
+    private final MockCreditCard mockCreditCard;
 
     private final UserService userService;
     private final DoctorService doctorService;
@@ -32,6 +40,12 @@ public class MockDataConfig {
     private final PharmacyService pharmacyService;
     private final RecipeService recipeService;
     private final IngredientService ingredientService;
+    private final DailySurveyService dailySurveyService;
+    private final WeeklySurveyService weeklySurveyService;
+    private final SymptomService symptomService;
+    private final PrescriptionService prescriptionService;
+    private final DrugService drugService;
+    private final CreditCardService creditCardService;
 
     private final ArrayList<Recipe> recipes = new ArrayList<>();
 
@@ -46,7 +60,7 @@ public class MockDataConfig {
      */
 
     @Bean
-    CommandLineRunner mockDataInitializer(RecipeCommentService recipeCommentService, DailySurveyService dailySurveyService, MockDailySurvey mockDailySurvey, WeeklySurveyService weeklySurveyService, MockWeeklySurvey mockWeeklySurvey, PrescriptionService prescriptionService, MockPrescription mockPrescription, DrugService drugService, MockDrug mockDrug, MockPatientPharmacy mockPatientPharmacy, SymptomService symptomService, MockSymptom mockSymptom) {
+    CommandLineRunner mockDataInitializer(MockDoctorReview mockDoctorReview) {
         return args -> {
             if (doctorService.isEmpty()) {
                 mockDoctor.createMockDoctor(
@@ -78,11 +92,18 @@ public class MockDataConfig {
             if (patientService.isEmpty()) {
                 mockPatient.createMockPatient(
                         "patient@clinic.com",
-                        "Test",
-                        "Patient",
-                        "1234567890",
-                        "somewhere",
+                        "Michael",
+                        "Smith",
+                        "8561992475",
+                        "123 Main Street, Newark, NJ, 07103",
                         "https://storage.googleapis.com/cs490-media/patient.webp");
+                mockPatient.createMockPatient(
+                        "patient2@clinic.com",
+                        "Andrew",
+                        "Williams",
+                        "9185834196",
+                        "518 Somewhere, New Jersey, NJ, 83134",
+                        "https://storage.googleapis.com/cs490-media/patient2.webp");
             }
             if (pharmacyService.isEmpty()) {
                 mockPharmacy.createMockPharmacy(
@@ -99,12 +120,30 @@ public class MockDataConfig {
                         "8675311234",
                         "07104"
                 );
+                mockPharmacy.createMockPharmacy(
+                        "pharmacy2@clinic.com",
+                        "123 Main street",
+                        "Snail-Pharmacy",
+                        "1926135093",
+                        "10002"
+                );
+            }
+
+            if(!doctorService.isEmpty() && !doctorService.reviewsExist()){
+                mockDoctorReview.createMockDoctorReview(1,1,5,"Would recommend","10/10 would recommend");
+                mockDoctorReview.createMockDoctorReview(2,2,5,"Helped achieved my weightloss goals","Through Obi's help, I was able to achieve my weightloss goals");
+                mockDoctorReview.createMockDoctorReview(2, 2, 5, "Excellent guidance and support", "Provided clear steps and consistent support that made my weight loss journey successful.");
+                mockDoctorReview.createMockDoctorReview(2, 2, 4, "Great motivator!", "Thanks to Dr. Obi’s motivation and dietary advice, I saw real progress in just a few months.");
+                mockDoctorReview.createMockDoctorReview(2, 1, 5, "Transformed my lifestyle", "Helped me build sustainable habits that completely transformed how I approach fitness and nutrition.");
             }
 
             if (!patientService.isEmpty() && !pharmacyService.isEmpty()) {
                 mockPatientPharmacy.createPatientPharmacy(1,1);
             }
 
+            if (!patientService.isEmpty() && creditCardService.isEmpty()) {
+                mockCreditCard.createMockCreditCard(1,"Test patient","1234123412341234","03/27","123 somewhere, Newark, NJ, 07103");
+            }
 
 
             if(ingredientService.isEmpty()){
@@ -266,7 +305,7 @@ public class MockDataConfig {
 
                 recipes.add(mockRecipe.createMockRecipe(
                         "Rice and Chicken",
-                        "",
+                        "A simple and hearty dish featuring tender seared chicken served over fluffy white rice.",
                         "Cook 1 cup of rice, sear 2 chicken breasts in olive oil over medium heat for 5–6 minutes per side until cooked through. serve over the rice.",
                         riceAndChickenIngredients,
                         1,
@@ -274,7 +313,7 @@ public class MockDataConfig {
                 ));
                 recipes.add(mockRecipe.createMockRecipe(
                         "Avocado Egg Toast",
-                        "",
+                        "A nutritious breakfast toast topped with creamy avocado and a perfectly cooked egg.",
                         "Toast a slice of bread, mash half an avocado on top, and season with salt. Fry or poach an egg, place it over the avocado, and finish with pepper or chili flakes.",
                         avocadoToastIngredients,
                         1,
@@ -282,7 +321,7 @@ public class MockDataConfig {
                 ));
                 recipes.add(mockRecipe.createMockRecipe(
                         "Lemon Garlic Baked Salmon with Veggies",
-                        "",
+                        "A flavorful salmon bake with roasted sweet potatoes and green beans, infused with lemon and garlic.",
                         "Preheat oven to 400°F. Place salmon on a baking sheet, drizzle with olive oil, lemon juice, minced garlic, salt, and pepper. Bake for 15–20 minutes. Roast sweet potatoes and green beans for about 25 minutes. Serve together.",
                         lemonGarlicBakedSalmon,
                         1,
@@ -306,6 +345,12 @@ public class MockDataConfig {
                             comments[commentIndex]
                     );
                 }
+            }
+
+
+            if(!recipeService.isEmpty() && recipeService.count() >= 3 && !userService.getAllUsers().isEmpty()) {
+                mockMealPlan.createMockMealPlan("Example plan",1,1,2,3);
+                mockMealPlan.createMockMealPlan("Just rice and chicken",1,1,1,1);
             }
 
             if(!patientService.isEmpty() && dailySurveyService.isEmpty()) {

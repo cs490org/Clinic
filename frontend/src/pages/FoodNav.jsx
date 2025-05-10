@@ -13,9 +13,12 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import {APP_BAR_HEIGHT} from "../../utils/constants.js";
+import {APP_BAR_HEIGHT} from "../utils/constants.js";
 import MenuBookIcon from '@mui/icons-material/MenuBook';
-export default function RecipeNav() {
+import AddIcon from '@mui/icons-material/Add';
+import ChecklistIcon from '@mui/icons-material/Checklist';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
+export default function FoodNav() {
 
     // drawer gets in the way on smaller screens
     const [open, setOpen] = useState(window.innerWidth>1200)
@@ -27,7 +30,7 @@ export default function RecipeNav() {
             {!open
                 &&
             <IconButton
-                sx={{position:"fixed", left:23,zIndex:10000}}
+                sx={{position:"fixed", left:23,zIndex:1}}
                 onClick={()=>setOpen(true)}>
                 <ArrowForwardIosIcon></ArrowForwardIosIcon>
             </IconButton>
@@ -49,14 +52,13 @@ export default function RecipeNav() {
         >
             <Box sx={{ p:".8rem",pl:"1.2rem", display:"flex", justifyContent:"space-between", alignItems:"center"}}>
                 <Typography variant="h6" >
-                    Recipes
+                    Food
                 </Typography>
                 <IconButton onClick={() => setOpen(false)}>
                     <ArrowBackIcon></ArrowBackIcon>
                 </IconButton>
             </Box>
 
-            <Divider />
 
             <List>
                 {/*<ListItemButton*/}
@@ -68,11 +70,21 @@ export default function RecipeNav() {
                 {/*    <ListItemText primary="All Recipes" />*/}
                 {/*</ListItemButton>*/}
 
+                <Divider sx={{mb:".8rem"}}></Divider>
+
+                <ListItemButton
+                    onClick={() => navigate('/recipes')}
+                >
+                    <ListItemIcon>
+                        <RestaurantIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="View Recipes" />
+                </ListItemButton>
                 <ListItemButton
                     onClick={() => navigate('/recipes/create')}
                 >
                     <ListItemIcon>
-                        <MenuBookIcon/>
+                        <AddIcon/>
                     </ListItemIcon>
                     <ListItemText primary="Create Recipe" />
                 </ListItemButton>
@@ -81,13 +93,34 @@ export default function RecipeNav() {
                     onClick={() => navigate('/ingredients/create')}
                 >
                     <ListItemIcon>
-                        <AddCircleIcon />
+                        <AddIcon/>
                     </ListItemIcon>
                     <ListItemText primary="Create ingredient" />
                 </ListItemButton>
+
+
+
+                <Divider sx={{my:".8rem"}}></Divider>
+
+                <ListItemButton
+                    onClick={() => navigate('/mealplans')}
+                >
+                    <ListItemIcon>
+                        <ChecklistIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="View Meal Plans" />
+                </ListItemButton>
+                <ListItemButton
+                    onClick={() => navigate('/mealplans/create')}
+                >
+                    <ListItemIcon>
+                        <AddIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="Create a Meal Plan" />
+                </ListItemButton>
+                <Divider sx={{my:".8rem"}}></Divider>
             </List>
 
-            <Divider />
         </Drawer>
 
             </>

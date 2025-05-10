@@ -17,9 +17,10 @@ public class MealPlan {
 
     private String imageUri;
 
-    @ManyToOne
-    @JoinColumn(name = "patient_id", referencedColumnName = "id")
-    private Patient patient;
+//    @ManyToOne
+//    @JoinColumn(name = "patient_id", referencedColumnName = "id")
+//    private Patient patient;
+    private String name;
 
     @ManyToOne
     @JoinColumn(referencedColumnName = "id")

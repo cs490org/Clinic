@@ -30,6 +30,8 @@ import PatientSurvey from "./PatientSurvey.jsx";
 import { useNavigate } from 'react-router-dom';
 import PendingAppointments from "./PendingAppointments.jsx";
 import PatientQuickActions from "./PatientQuickActions.jsx";
+import PatientEditPreferredPharmacy from "./PatientEditPreferredPharmacy.jsx";
+import PatientChosenDoctor from "./PatientChosenDoctor.jsx";
 const PatientDashboard = () => {
     const { user, roleData } = useContext(UserContext);
     const [openBooking, setOpenBooking] = useState(false);
@@ -38,17 +40,6 @@ const PatientDashboard = () => {
     const [symptoms, setSymptoms] = useState('');
     const navigate = useNavigate();
 
-    const { data: chosenDoctor, isLoading: chosenDoctorIsLoading } = useQuery({
-        queryKey: ["chosen_doctor"],
-        queryFn: async () => {
-            console.log(user)
-            const res = await fetch(API_URL + `/patient/doctor?userId=${user?.id}`, {
-                credentials: 'include'
-            });
-            if (!res.ok) throw new Error('Failed to fetch pharmacies');
-            return res.json();
-        }
-    });
 
 
     const handleBookClick = (doctor) => {
@@ -61,70 +52,25 @@ const PatientDashboard = () => {
     const Widgets = () => {
         return (
             <>
-                <Grid2 size={4} sx={{height:"100%",display:"flex",flexDirection:"column"}}>
+                <Grid2 size={4} sx={{display:"flex",flexDirection:"column"}}>
                     <PatientQuickActions/>
                 </Grid2 >
                 <Grid2 size={4}>
-                    <Paper sx={{ height: "100%", p: "1rem" }}>
-                        <Typography sx={{ fontWeight: "bold", fontSize: "1.5rem" }}>
-                            Chosen doctor
-                        </Typography>
-
-                        {chosenDoctor ? (
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
-                                <Avatar
-                                    src={chosenDoctor.doctor.user.imgUri}
-                                    alt={`${chosenDoctor.doctor.firstName} ${chosenDoctor.doctor.lastName}`}
-                                    sx={{ width: 64, height: 64 }}
-                                />
-                                <Box>
-                                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                                        Dr. {chosenDoctor.doctor.firstName} {chosenDoctor.doctor.lastName}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        {chosenDoctor.doctor.specialty}
-                                    </Typography>
-                                    <Button
-                                        variant="outlined"
-                                        color="error"
-                                        size="small"
-                                        onClick={() => {
-                                            axios.delete(`${API_URL}/patient/doctor?patientId=${roleData.id}`, { withCredentials: true })
-                                                .then(() => {
-                                                    toast.success('Doctor removed successfully');
-                                                    window.location.reload();
-                                                })
-                                                .catch(() => {
-                                                    toast.error('Failed to remove doctor');
-                                                });
-                                        }}
-                                        sx={{ mt: 1 }}
-                                    >
-                                        Fire Doctor
-                                    </Button>
-                                </Box>
-                            </Box>
-                        )
-                            :
-                            (
-                                <Typography>
-                                    You currently do not have a chosen doctor.<br></br>To choose one, make an appointment.
-                                </Typography>
-                            )
-                        }
-                    </Paper>
+                    <PatientChosenDoctor/>
                 </Grid2>
-
-                <Grid2 size={4} sx={{height:"100%"}}>
+                <Grid2 size={4} >
                     <PendingAppointments/>
                 </Grid2 >
-                <Grid2 size={4} sx={{height:"100%"}}>
+                <Grid2 size={4} >
                     <MealPlansWidget/>
                 </Grid2>
-                <Grid2 size={8} sx={{height:"100%"}}>
+                <Grid2 size={8} >
                     <AllDoctors onBookClick={handleBookClick} />
                 </Grid2>
-                <Grid2 size={12} sx={{height:"100%"}}>
+                <Grid2 size={4} >
+                    <PatientEditPreferredPharmacy/>
+                </Grid2>
+                <Grid2 size={8} >
                     <PatientSurvey />
                 </Grid2>
             </>

@@ -13,6 +13,6 @@ public class MockPatientPharmacy {
     }
 
     public PatientPharmacy createPatientPharmacy(Integer patientId, Integer pharmacyId) {
-        return patientPharmacyService.createPatientPharmacy(patientId, pharmacyId);
+        return patientPharmacyService.setPreferredPharmacy(patientId, pharmacyId);
     }
 }
