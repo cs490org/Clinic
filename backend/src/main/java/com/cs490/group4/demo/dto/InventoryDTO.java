@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class InventoryDTO {
 
     private Integer pharmacyId, drugId, quantity;
+    private Boolean dispensed;
 
 }
