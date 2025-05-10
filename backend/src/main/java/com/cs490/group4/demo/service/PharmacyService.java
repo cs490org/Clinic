@@ -86,4 +86,14 @@ public class PharmacyService {
                 .build());
     }
 
+    public List<PrescriptionBill> getBillsByPatientId(Integer patientId){
+        return prescriptionBillRepository.findAllByPatientId(patientId);
+    }
+
+    public PrescriptionBill payBill(Integer billId) {
+        PrescriptionBill prescriptionBill = prescriptionBillRepository.findById(billId).orElseThrow();
+        prescriptionBill.setPaid(true);
+        return prescriptionBillRepository.save(prescriptionBill);
+    }
+
 }

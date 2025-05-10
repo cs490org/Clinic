@@ -1,6 +1,7 @@
 package com.cs490.group4.demo.controller;
 
 import com.cs490.group4.demo.dao.PrescriptionBill;
+import com.cs490.group4.demo.dao.PrescriptionBillRepository;
 import com.cs490.group4.demo.dto.InventoryDTO;
 import com.cs490.group4.demo.dto.PharmacyCreateDTO;
 import com.cs490.group4.demo.dto.PrescriptionBillDTO;
@@ -44,14 +45,18 @@ public class PharmacyController {
     }
 
     @PostMapping("/bill")
-    private ResponseEntity<PrescriptionBill> createBill(PrescriptionBillDTO dto){
+    private ResponseEntity<PrescriptionBill> createBill(@RequestBody PrescriptionBillDTO dto){
         return ResponseEntity.ok(pharmacyService.createPrescriptionBill(dto));
     }
 
     @GetMapping("/bills")
-    private ResponseEntity<List<PrescriptionBill>> getBillsForPatient(Integer patientId){
-        //TODO: fill this out
-        return null;
+    private ResponseEntity<List<PrescriptionBill>> getBillsForPatient(@RequestParam Integer patientId){
+        return ResponseEntity.ok(pharmacyService.getBillsByPatientId(patientId));
+    }
+
+    @PatchMapping("/bill")
+    private ResponseEntity<PrescriptionBill> payBill(@RequestParam Integer billId) {
+        return ResponseEntity.ok(pharmacyService.payBill(billId));
     }
 
 }

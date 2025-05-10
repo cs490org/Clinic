@@ -7,4 +7,7 @@ import java.util.List;
 
 public interface PrescriptionBillRepository extends JpaRepository<PrescriptionBill, Integer> {
 
+    @Query("from PrescriptionBill a where a.prescription.patient.id = :patientId")
+    List<PrescriptionBill> findAllByPatientId(Integer patientId);
+
 }
