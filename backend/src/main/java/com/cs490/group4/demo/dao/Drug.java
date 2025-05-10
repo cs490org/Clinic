@@ -24,6 +24,7 @@ public class Drug {
     private String name, description, dosage;
 
     private BigDecimal price;
+    private String image; 
 
     private LocalDateTime createTimestamp, updateTimestamp;
 
