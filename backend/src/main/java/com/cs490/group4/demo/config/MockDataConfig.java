@@ -111,6 +111,13 @@ public class MockDataConfig {
                         "8675311234",
                         "07104"
                 );
+                mockPharmacy.createMockPharmacy(
+                        "pharmacy2@clinic.com",
+                        "123 Main street",
+                        "Snail-Pharmacy",
+                        "1926135093",
+                        "10002"
+                );
             }
 
             if (!patientService.isEmpty() && !pharmacyService.isEmpty()) {
