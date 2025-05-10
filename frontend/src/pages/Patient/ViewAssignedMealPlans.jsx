@@ -41,6 +41,9 @@ export default function ViewAssignedMealPlans(){
                 <Typography variant={"body2"}>
                     Here are your assigned meal plans.
                 </Typography>
+                <Typography variant={"body2"}>
+                    For modifications, please consult your assigned doctor.
+                </Typography>
                 <Divider sx={{my:"1rem"}}/>
                 {
                     !isLoading && mealPlans.length === 0 ?
