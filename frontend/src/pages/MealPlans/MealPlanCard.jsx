@@ -103,7 +103,19 @@ export default function MealPlanCard ({author, breakfast,lunch,dinner}){
                                         <Typography sx={{ fontWeight: "bold", fontSize: "1rem" }}>
                                             {recipeName}
                                         </Typography>
-                                        <Typography variant={"body2"} sx={{ color: "text.secondary" }}>
+                                        <Typography variant={"body2"}
+                                                    sx={{
+                                                        color: "text.secondary",
+                                                        overflow: "hidden",
+                                                        textOverflow: "ellipsis",
+                                                        display: "-webkit-box",
+                                                        WebkitLineClamp: 2,
+                                                        WebkitBoxOrient: "vertical"
+                                                    }}
+
+                                        >
+
+
                                             {description}
                                         </Typography>
 
@@ -177,14 +189,15 @@ export default function MealPlanCard ({author, breakfast,lunch,dinner}){
     const dinnerCalories = dinnerIngredients?.reduce((acc,element)=>{return acc+element.ingredient.calories * element.quantity},0)
     const totalCalories = breakfastCalories + lunchCalories + dinnerCalories
     return (
-        <Card variant={"outlined"} sx={{flex:1,minWidth:"325px"}}>
+        <Card variant={"outlined"} sx={{width:"100%"}}>
             <CardContent>
                 {/*<Typography sx={{fontWeight:"bold", fontSize:"1.4rem"}}>{author}'s meal plan</Typography>*/}
-                <Chip label={totalCalories + " calories"}/>
-                <Typography sx={{fontWeight:"bold", fontSize:"1.4rem"}}>{
-
-
-                }</Typography>
+                <Stack spacing={1} direction={"column"} justifyContent={"space-between"}>
+                    <Typography sx={{fontWeight:"bold", fontSize:"1.4rem"}}>{author}'s Meal Plan</Typography>
+                    <Box>
+                        <Chip label={totalCalories + " calories"}/>
+                    </Box>
+                </Stack>
             </CardContent>
             <RecipePreview
                 type={"Breakfast"}

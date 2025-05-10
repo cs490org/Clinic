@@ -49,11 +49,12 @@ export default function AllMealPlans(){
 
                     :
                     (
-                    <Box sx={{display:"flex", gap:"1.5rem", flexWrap:"wrap"}}>
+                    <Grid2 container spacing={2}>
                         {
                         mealPlans?.map((mealPlan,i)=>{
 
                             return(
+                                <Grid2 key={i} size={4}>
                                     <MealPlanCard
                                         key={i}
                                         author={mealPlan.author}
@@ -61,10 +62,11 @@ export default function AllMealPlans(){
                                         lunch={mealPlan.mealPlan.lunch}
                                         dinner={mealPlan.mealPlan.dinner}
                                     />
+                                </Grid2>
                             )
                         })
                         }
-                    </Box>
+                    </Grid2>
                     )
             }
         </Container>

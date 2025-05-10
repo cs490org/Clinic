@@ -19,7 +19,7 @@ import FoodNav from "../FoodNav.jsx";
 
 export default function CreateMealPlan(){
 
-    const [selectedPatientId, setSelectedPatientId] = useState("");
+    const {user} = useContext(UserContext)
     const [breakfastId, setBreakfastId] = useState("");
     const [lunchId, setLunchId] = useState("");
     const [dinnerId, setDinnerId] = useState("");
@@ -37,18 +37,17 @@ export default function CreateMealPlan(){
     });
 
     const submit = async () => {
-        if (!selectedPatientId || !breakfastId || !lunchId || !dinnerId) {
+        if (!breakfastId || !lunchId || !dinnerId) {
             toast.error("All fields are required.");
             return;
         }
 
         const payload = {
-            patientId: selectedPatientId,
+            authorId:user.id,
             breakfastId,
             lunchId,
             dinnerId
         };
-        console.log(payload)
 
         try {
             const res = await fetch(API_URL + `/mealplans`, {
@@ -64,8 +63,8 @@ export default function CreateMealPlan(){
                 throw new Error("Failed to create meal plan");
             }
 
-            toast.success("Meal plan assigned successfully!");
-            navigate(-1)
+            toast.success("Meal plan created successfully!");
+            navigate("/mealplans")
 
 
         } catch (err) {
