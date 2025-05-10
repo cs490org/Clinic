@@ -35,6 +35,7 @@ import CompletePatientSymptoms from "./pages/Patient/CompletePatientSymptoms.jsx
 import PatientPharmacy from "./pages/Patient/Pharmacy/PatientPharmacy.jsx";
 import AllMealPlans from "./pages/MealPlans/AllMealPlans.jsx";
 import CreateMealPlan from "./pages/MealPlans/CreateMealPlan.jsx";
+import PatientInputCreditCard from "./pages/Patient/PatientInputCreditCard.jsx";
 
 const queryClient = new QueryClient()
 const router = createBrowserRouter([
@@ -106,6 +107,13 @@ const router = createBrowserRouter([
         element:
             <Auth allowedRoles={["PATIENT"]}>
                 <CompletePatientProfile />
+            </Auth>
+    },
+    {
+        path: '/patient/add_payment',
+        element:
+            <Auth allowedRoles={["PATIENT"]}>
+                <PatientInputCreditCard/>
             </Auth>
     },
     {

@@ -7,6 +7,8 @@ import com.cs490.group4.demo.dao.PatientRepository;
 import com.cs490.group4.demo.dto.CreditCardRequestDTO;
 import com.cs490.group4.demo.dto.CreditCardResponseDTO;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +37,7 @@ public class CreditCardService {
     }
 
 //    public CreditCard save(Patient patient, String plainCardNumber, String expirationDate) {
+    @Transactional
     public CreditCard save(CreditCardRequestDTO dto) {
         Patient patient = patientRepository.findById(dto.getPatientId()).orElseThrow(() -> new EntityNotFoundException("Patient not found"));
         String plainCardNumber = dto.getCardNumber();
@@ -44,6 +47,8 @@ public class CreditCardService {
         String last4 = plainCardNumber.substring(plainCardNumber.length() - 4);
 
         CreditCard card = CreditCard.builder()
+                .billingAddress(dto.getBillingAddress())
+                .cardHolderName(dto.getCardHolderName())
                 .patient(patient)
                 .encryptedCardNumber(encryptedCardNumber)
                 .last4Digits(last4)
@@ -53,8 +58,15 @@ public class CreditCardService {
         return creditCardRepository.save(card);
     }
 
+    public boolean isEmpty(){
+        return creditCardRepository.findAll().isEmpty();
+    }
+
+
     // mock encryption
     private String encrypt(String data) {
         return Base64.getEncoder().encodeToString(data.getBytes());
     }
+
+
 }

@@ -22,6 +22,7 @@ import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../utils/queryKeys";
 import { toast } from 'sonner';
 import PatientSymptoms from "./PatientSymptoms.jsx";
+import PatientInputCreditCard from "./PatientInputCreditCard.jsx";
 
 const CompletePatientProfile = () => {
     const navigate = useNavigate();
@@ -123,7 +124,8 @@ const CompletePatientProfile = () => {
             if (res.ok) {
                 toast.success('Profile completed successfully!');
                 // navigate('/patient/dashboard');
-                navigate('/patient/symptoms');
+                // navigate('/patient/symptoms');
+                navigate('/patient/add_payment');
 
                 // ensure we get role info
                 window.location.reload()

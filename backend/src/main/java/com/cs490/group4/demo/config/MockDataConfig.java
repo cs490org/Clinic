@@ -32,6 +32,7 @@ public class MockDataConfig {
     private final MockMealPlan mockMealPlan;
     private final MockDrug mockDrug;
     private final MockPatientPharmacy mockPatientPharmacy;
+    private final MockCreditCard mockCreditCard;
 
     private final UserService userService;
     private final DoctorService doctorService;
@@ -44,6 +45,7 @@ public class MockDataConfig {
     private final SymptomService symptomService;
     private final PrescriptionService prescriptionService;
     private final DrugService drugService;
+    private final CreditCardService creditCardService;
 
     private final ArrayList<Recipe> recipes = new ArrayList<>();
 
@@ -117,6 +119,9 @@ public class MockDataConfig {
                 mockPatientPharmacy.createPatientPharmacy(1,1);
             }
 
+            if (!patientService.isEmpty() && creditCardService.isEmpty()) {
+                mockCreditCard.createMockCreditCard(1,"Test patient","1234123412341234","03/27","123 somewhere, Newark, NJ, 07103");
+            }
 
 
             if(ingredientService.isEmpty()){

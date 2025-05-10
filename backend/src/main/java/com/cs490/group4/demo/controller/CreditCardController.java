@@ -3,6 +3,7 @@ package com.cs490.group4.demo.controller;
 import com.cs490.group4.demo.dto.CreditCardRequestDTO;
 import com.cs490.group4.demo.dto.CreditCardResponseDTO;
 import com.cs490.group4.demo.service.CreditCardService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
