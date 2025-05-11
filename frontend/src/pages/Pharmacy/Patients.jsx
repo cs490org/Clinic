@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from 'react';
+import { API_URL } from '../../utils/constants.js';
+import { UserContext } from '../../contexts/UserContext.jsx';
 import {
   Container, Typography, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, Button
@@ -8,29 +10,40 @@ import axios from "axios";
 export default function Patients() {
   const [patients, setPatients] = useState([]);
   const [prescriptions, setPrescriptions] = useState([]);
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Fetch pharmacy by user ID
+        const pharmacyRes = await fetch(`${API_URL}/pharmacies?userId=${user.id}`, {
+          credentials: 'include'
+        });
+        const pharmacyData = await pharmacyRes.json();
+        const pharmacyId = Array.isArray(pharmacyData) ? pharmacyData[0]?.id : pharmacyData?.id;
+        if (!pharmacyId) return;
+  
+        // Fetch patients and prescriptions filtered by pharmacy
         const [patRes, presRes] = await Promise.all([
-          axios.get('http://localhost:8080/patients', { withCredentials: true }),
-          axios.get('http://localhost:8080/prescriptions', { withCredentials: true }),
+          axios.get(`${API_URL}/patient/pharmacy?pharmacyId=${pharmacyId}`, { withCredentials: true }),
+          axios.get(`${API_URL}/pharmacies/rx?pharmacyId=${pharmacyId}`, { withCredentials: true }),
         ]);
-
-        const allPatients = patRes.data || [];
+  
+        const patientArray = Array.isArray(patRes.data) ? patRes.data : [patRes.data];
         const allPrescriptions = presRes.data || [];
-
-        const enriched = allPatients.map(p => {
+  
+        const enriched = patientArray.map(entry => {
+          const p = entry.patient;
           const pills = allPrescriptions
             .filter(pr => pr.patientId === p.id)
             .map(pr => pr.drug?.name || pr.pillName || 'N/A');
           return { ...p, drugs: pills };
         });
-
+  
         setPatients(enriched);
         setPrescriptions(allPrescriptions);
       } catch (err) {
-        console.error("Error fetching patients or prescriptions:", err);
+        console.error("Error fetching dynamic patient data:", err);
       }
     };
     fetchData();
