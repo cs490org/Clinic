@@ -1,9 +1,9 @@
-import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, {useContext} from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import axios from 'axios';
-
+import { UserContext } from '../../../contexts/UserContext';
 import NavBar from '../../../NavBar';
 import { API_URL } from '../../../utils/constants';
 import { queryKeys } from '../../../utils/queryKeys';
@@ -25,8 +25,8 @@ import {
 
 export default function ViewPatientHealth() {
   const navigate = useNavigate();
-  const { id } = useParams();
-  const numericId = parseInt(id);
+  const {roleData} = useContext(UserContext);
+  const numericId = roleData.id
 
   const {
     data: allPatients,
@@ -100,7 +100,8 @@ export default function ViewPatientHealth() {
     queryKey: [queryKeys.dailySurveys, numericId],
     queryFn: () =>
       axios
-        .get(`${API_URL}/daily-surveys/patient/${numericId}`, {
+        .get(`${API_URL}/daily-surveys/`, {
+          params: {patientId :numericId},
           withCredentials: true,
         })
         .then((res) => res.data),
