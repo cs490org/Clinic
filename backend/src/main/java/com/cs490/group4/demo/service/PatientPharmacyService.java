@@ -5,6 +5,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
 public class PatientPharmacyService {
@@ -35,6 +36,11 @@ public class PatientPharmacyService {
         patientPharmacy.setPatient(patient);
         patientPharmacy.setPharmacy(pharmacy);
         return patientPharmacyRepository.save(patientPharmacy);
+    }
+
+    @Transactional
+    public PatientPharmacy patientsByPharmacyId (Integer pharmacyId){
+        return patientPharmacyRepository.getByPharmacyId(pharmacyId);
     }
 
 }

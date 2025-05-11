@@ -10,6 +10,7 @@ import {
 } from 'recharts';
 import { UserContext } from '../../contexts/UserContext.jsx';
 import axios from 'axios';
+import {API_URL} from "../../utils/constants.js";
 
 const COLORS = ['#8884d8', '#83a6ed', '#8dd1e1', '#82ca9d', '#ffc658'];
 
@@ -23,14 +24,25 @@ const PharmacyDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const pharmacyRes = await fetch(`${API_URL}/pharmacies?userId=${user.id}`, {
+          credentials: 'include'
+        });
+        const pharmacyData = await pharmacyRes.json();
+        const pharmacyId = Array.isArray(pharmacyData) ? pharmacyData[0]?.id : pharmacyData?.id;
+        if (!pharmacyId) return;
+
         const [presRes, patRes, pharmRes] = await Promise.all([
-          axios.get('http://localhost:8080/prescriptions', { withCredentials: true }),
-          axios.get('http://localhost:8080/patients', { withCredentials: true }),
-          axios.get('http://localhost:8080/pharmacies/drugs?pharmacyId=2', { withCredentials: true })
+          axios.get(`${API_URL}/pharmacies/rx?pharmacyId=${pharmacyId}`, { withCredentials: true }),
+          axios.get(`${API_URL}/patient/pharmacy?pharmacyId=${pharmacyId}`, { withCredentials: true }),
+          axios.get(`${API_URL}/pharmacies/drugs?pharmacyId=${pharmacyId}`, { withCredentials: true })
         ]);
 
+        console.log(presRes);
+        console.log(patRes);
+
         setPrescriptions(presRes.data || []);
-        setPatients(patRes.data || []);
+        //setPatients(patRes.data || []);
+        setPatients([]);
         setDrugInventory(pharmRes.data || []);
 
         const grouped = (pharmRes.data || []).reduce((acc, item) => {
