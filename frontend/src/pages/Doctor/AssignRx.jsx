@@ -64,13 +64,13 @@ export default function AssignPrescription() {
     const { data: drugs, isLoading: loadingDrugs } = useQuery({
         queryKey: ["drugs", pharmacyId],
         queryFn: async () => {
-            if (!pharmacyId) return [];
-            // const res = await fetch(`${API_URL}/pharmacies/drugs?pharmacyId=${pharmacyId}`, {
-            //     credentials: 'include'
-            // });
-            const res = await fetch(`${API_URL}/drugs`, {
+            if (!pharmacyId) return []; //this one is good because it only gets the drugs which pharmacy has in stock
+                const res = await fetch(`${API_URL}/pharmacies/drugs?pharmacyId=${pharmacyId}`, {
+                    credentials: 'include'
+                });
+            /*const res = await fetch(`${API_URL}/drugs`, {  // gets ALL drugs breaking the constraint on pharmacy end
                 credentials: 'include'
-            });
+            });*/
             if (!res.ok) throw new Error("Failed to fetch drugs");
             return res.json();
         },
@@ -153,9 +153,9 @@ export default function AssignPrescription() {
                         variant="standard"
                         disabled={!pharmacyId}
                     >
-                        {drugs?.map((drug) => (
-                            <MenuItem key={drug.id} value={drug.id}>
-                                {drug.name}
+                        {drugs?.map((wrapper) => ( //wrapper cuz thats the only way it can access right data from response it gets
+                            <MenuItem key={wrapper.drug.id} value={wrapper.drug.id}>
+                                {wrapper.drug.name}
                             </MenuItem>
                         ))}
                     </Select>

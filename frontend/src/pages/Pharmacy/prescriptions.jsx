@@ -1,8 +1,26 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
-  Container, Grid, Card, CardContent, Typography, Box, Button, CardMedia,
-  Dialog, DialogActions, DialogContent, DialogTitle, TextField, Slide, List, ListItem, ListItemText
+  Container,
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  Button,
+  CardMedia,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Slide,
+  List,
+  ListItem,
+  ListItemText,
+  FormControl,
+  InputLabel, Select, MenuItem
 } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import { API_URL } from '../../utils/constants';
 import { UserContext } from '../../contexts/UserContext';
 
@@ -25,7 +43,10 @@ const Prescriptions = () => {
   const [newQuantity, setNewQuantity] = useState('');
   const [openHistory, setOpenHistory] = useState(false);
   const [historyData, setHistoryData] = useState([]);
-
+  const [openAddDialog, setOpenAddDialog] = useState(false);
+  const [selectedDrugId, setSelectedDrugId] = useState("");
+  const [unassignedDrugs, setUnassignedDrugs] = useState([]);
+  const [newDrug, setNewDrug] = useState([]);
   const fetchPrescriptions = async () => {
     setLoading(true);
     try {
@@ -42,6 +63,7 @@ const Prescriptions = () => {
 
       const drugData = await drugsRes.json();
       setPrescriptions(drugData);
+
     } catch (err) {
       console.error("Error loading prescriptions:", err);
     } finally {
@@ -88,7 +110,7 @@ const Prescriptions = () => {
         })
       });
 
-      await fetchPrescriptions(); // Refresh list
+      await fetchPrescriptions();
       handleCloseDialog();
     } catch (err) {
       console.error('Failed to update inventory:', err);
@@ -111,7 +133,7 @@ const Prescriptions = () => {
 
       await fetch(`${API_URL}/dispenselog/log`, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
           pharmacyId: pill.pharmacy.id,
@@ -120,7 +142,7 @@ const Prescriptions = () => {
         })
       });
 
-      await fetchPrescriptions(); // Refresh after dispense
+      await fetchPrescriptions();
     } catch (err) {
       console.error('Failed to mark as dispensed:', err);
     }
@@ -130,7 +152,7 @@ const Prescriptions = () => {
     setSelectedPill(pill);
 
     try {
-      const res = await fetch(`${API_URL}/dispenselog/dispense-history?pharmacyId=${pill.pharmacy.id}&drugId=${pill.drug.id}`, { //fix API rest call
+      const res = await fetch(`${API_URL}/dispenselog/dispense-history?pharmacyId=${pill.pharmacy.id}&drugId=${pill.drug.id}`, {
         credentials: 'include'
       });
 
@@ -146,12 +168,158 @@ const Prescriptions = () => {
     }
   };
 
+  const handleOpenAddDrug = async () => {
+    setOpenAddDialog(true);
+    setNewDrug({ name: '', description: '', dosage: '', price: '', image: '', quantity: '' });
+
+    try {
+      const pharmacyRes = await fetch(`${API_URL}/pharmacies?userId=${user.id}`, {
+        credentials: 'include'
+      });
+      const pharmacyData = await pharmacyRes.json();
+      const pharmacyId = Array.isArray(pharmacyData) ? pharmacyData[0]?.id : pharmacyData?.id;
+
+      const res = await fetch(`${API_URL}/pharmacies/unassigned?pharmacyId=${pharmacyId}`, {
+        credentials: 'include'
+      });
+      const data = await res.json();
+      setUnassignedDrugs(data);
+    } catch (err) {
+      console.error("Error fetching unassigned drugs:", err);
+    }
+  };
+
+  const handleAddDrug = async () => {
+    const { quantity } = newDrug;
+    if (!selectedDrugId || !quantity) {
+      alert('Please select a drug and specify quantity.');
+      return;
+    }
+
+    try {
+      const pharmacyRes = await fetch(`${API_URL}/pharmacies?userId=${user.id}`, {
+        credentials: 'include'
+      });
+      const pharmacyData = await pharmacyRes.json();
+      const pharmacyId = Array.isArray(pharmacyData) ? pharmacyData[0]?.id : pharmacyData?.id;
+
+      await fetch(`${API_URL}/pharmacies/assign-drug`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          pharmacyId,
+          drugId: parseInt(selectedDrugId),
+          quantity: quantity,
+          dispensed: false
+        })
+      });
+
+      setOpenAddDialog(false);
+      await fetchPrescriptions();
+    } catch (err) {
+      console.error("Error adding new drug:", err);
+      alert("Failed to add drug.");
+    }
+  };
+
   if (loading) {
     return <Container sx={{ mt: 4 }}><Typography>Loading prescriptions...</Typography></Container>;
   }
 
   if (!prescriptions.length) {
-    return <Container sx={{ mt: 4 }}><Typography>No prescriptions found for this pharmacy.</Typography></Container>;
+    return (
+        <Container sx={{ mt: 4 }}>
+      <Typography>No prescriptions found for this pharmacy.</Typography>
+          <Box
+              sx={{
+                position: 'fixed',
+                bottom: 32,
+                right: 32,
+                zIndex: 999,
+              }}
+          >
+            <Button
+                variant="contained"
+                color="primary"
+                sx={{
+                  borderRadius: '50%',
+                  minWidth: 64,
+                  width: 64,
+                  height: 64,
+                  boxShadow: 6,
+                  fontSize: 32,
+                  p: 0,
+                }}
+                onClick={handleOpenAddDrug}
+            >
+              <AddIcon fontSize="inherit" />
+            </Button>
+          </Box>
+
+          <Dialog
+              open={openAddDialog}
+              onClose={() => setOpenAddDialog(false)}
+              TransitionComponent={Transition}
+          >
+            <DialogTitle>Add New Drug</DialogTitle>
+            <DialogContent sx={{ pt: 1 }}>
+              <FormControl fullWidth margin="dense" variant="filled">
+                <InputLabel id="drug-select-label">Select Drug</InputLabel>
+                <Select
+                    labelId="drug-select-label"
+                    value={selectedDrugId}
+                    onChange={(e) => {
+                      const id = parseInt(e.target.value);
+                      const drug = unassignedDrugs.find((d) => d.id === id);
+                      setSelectedDrugId(id);
+                      if (drug) {
+                        setNewDrug({
+                          name: drug.name,
+                          description: drug.description,
+                          dosage: drug.dosage,
+                          price: drug.price,
+                          image: drug.image,
+                          quantity: "", // default empty quantity
+                        });
+                      }
+                    }}
+                    variant={"filled"}>
+                  {unassignedDrugs.map((drug) => (
+                      <MenuItem key={drug.id} value={drug.id}>
+                        {drug.name} — {drug.dosage}
+                      </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <TextField
+                  margin="dense"
+                  label="Quantity"
+                  type="number"
+                  fullWidth
+                  variant="filled"
+                  value={newDrug.quantity || ""}
+                  onChange={(e) =>
+                      setNewDrug((prev) => ({ ...prev, quantity: e.target.value }))
+                  }
+                  inputProps={{ min: 0 }}
+              />
+            </DialogContent>
+
+            <DialogActions>
+              <Button onClick={() => setOpenAddDialog(false)}>Cancel</Button>
+              <Button
+                  variant="contained"
+                  onClick={handleAddDrug}
+                  disabled={!selectedDrugId || !newDrug.quantity}
+              >
+                Add
+              </Button>
+            </DialogActions>
+          </Dialog>
+    </Container>
+  );
   }
 
   return (
@@ -191,7 +359,7 @@ const Prescriptions = () => {
                     <Button variant="contained" fullWidth sx={{ mb: 1 }} onClick={() => handleDispense(pill)} disabled={pill.dispensed}>
                       Mark as Dispensed
                     </Button>
-                    <Button variant="outlined" fullWidth sx={{ mb: 1 }} onClick={() => handleOpenDialog(pill)} >
+                    <Button variant="outlined" fullWidth sx={{ mb: 1 }} onClick={() => handleOpenDialog(pill)}>
                       Modify Quantity
                     </Button>
                     <Button variant="text" fullWidth onClick={() => openPillHistory(pill)}>
@@ -203,7 +371,34 @@ const Prescriptions = () => {
           ))}
         </Grid>
 
-        {/* Modify Quantity */}
+        {/* Floating Add Button */}
+        <Box
+            sx={{
+              position: 'fixed',
+              bottom: 32,
+              right: 32,
+              zIndex: 999,
+            }}
+        >
+          <Button
+              variant="contained"
+              color="primary"
+              sx={{
+                borderRadius: '50%',
+                minWidth: 64,
+                width: 64,
+                height: 64,
+                boxShadow: 6,
+                fontSize: 32,
+                p: 0,
+              }}
+              onClick={handleOpenAddDrug}
+          >
+            <AddIcon fontSize="inherit" />
+          </Button>
+        </Box>
+
+        {/* Modify Quantity Dialog */}
         <Dialog open={openDialog} onClose={handleCloseDialog} TransitionComponent={Transition}>
           <DialogTitle>Modify Quantity</DialogTitle>
           <DialogContent>
@@ -224,7 +419,7 @@ const Prescriptions = () => {
           </DialogActions>
         </Dialog>
 
-        {/* Pill History */}
+        {/* Dispense History Dialog */}
         <Dialog open={openHistory} onClose={() => setOpenHistory(false)} TransitionComponent={Transition}>
           <DialogTitle>History for {selectedPill?.drug?.name}</DialogTitle>
           <DialogContent>
@@ -238,6 +433,69 @@ const Prescriptions = () => {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setOpenHistory(false)}>Close</Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Add New Drug Dialog */}
+        <Dialog
+            open={openAddDialog}
+            onClose={() => setOpenAddDialog(false)}
+            TransitionComponent={Transition}
+        >
+          <DialogTitle>Add New Drug</DialogTitle>
+          <DialogContent sx={{ pt: 1 }}>
+            <FormControl fullWidth margin="dense" variant="filled">
+              <InputLabel id="drug-select-label">Select Drug</InputLabel>
+              <Select
+                  labelId="drug-select-label"
+                  value={selectedDrugId}
+                  onChange={(e) => {
+                    const id = parseInt(e.target.value);
+                    const drug = unassignedDrugs.find((d) => d.id === id);
+                    setSelectedDrugId(id);
+                    if (drug) {
+                      setNewDrug({
+                        name: drug.name,
+                        description: drug.description,
+                        dosage: drug.dosage,
+                        price: drug.price,
+                        image: drug.image,
+                        quantity: "", // default empty quantity
+                      });
+                    }
+                  }}
+               variant={"filled"}>
+                {unassignedDrugs.map((drug) => (
+                    <MenuItem key={drug.id} value={drug.id}>
+                      {drug.name} — {drug.dosage}
+                    </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <TextField
+                margin="dense"
+                label="Quantity"
+                type="number"
+                fullWidth
+                variant="filled"
+                value={newDrug.quantity || ""}
+                onChange={(e) =>
+                    setNewDrug((prev) => ({ ...prev, quantity: e.target.value }))
+                }
+                inputProps={{ min: 0 }}
+            />
+          </DialogContent>
+
+          <DialogActions>
+            <Button onClick={() => setOpenAddDialog(false)}>Cancel</Button>
+            <Button
+                variant="contained"
+                onClick={handleAddDrug}
+                disabled={!selectedDrugId || !newDrug.quantity}
+            >
+              Add
+            </Button>
           </DialogActions>
         </Dialog>
       </Container>
