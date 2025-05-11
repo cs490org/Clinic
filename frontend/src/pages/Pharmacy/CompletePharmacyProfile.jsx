@@ -1,6 +1,4 @@
-
-import {useContext, useEffect, useState} from "react";
-
+import {useEffect, useState, useContext} from "react";
 import {
     Container,
     Paper,
@@ -14,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { API_URL } from "../../utils/constants.js";
 import { toast } from "sonner";
 import { UserContext } from "../../contexts/UserContext.jsx";
+
 
 const pharmacyOptions = [
     "CVS Pharmacy",

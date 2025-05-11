@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { API_URL } from "../../../utils/constants";
+import {Link} from 'react-router-dom';
 import {
     Paper,
     Table,
@@ -123,7 +124,11 @@ export default function SearchPatients() {
                                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                         .map((patient) => (
                                             <TableRow key={patient.id}>
-                                                <TableCell>{patient.firstName} {patient.lastName}</TableCell>
+                                                <TableCell>
+                                                    <Link to={`/patients/${patient.id}`}> 
+                                                        {patient.firstName} {patient.lastName}
+                                                    </Link>
+                                                </TableCell>
                                                 <TableCell>{patient.email}</TableCell>
                                                 <TableCell>{patient.address}</TableCell>
                                                 <TableCell>{patient.phone}</TableCell>
