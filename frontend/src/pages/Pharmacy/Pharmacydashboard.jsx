@@ -41,8 +41,11 @@ const PharmacyDashboard = () => {
         console.log(patRes);
 
         setPrescriptions(presRes.data || []);
-        //setPatients(patRes.data || []);   //fix the logic before you uncomment this line and delete line below, otherwise website crashes
-        setPatients([]);
+        setPatients((patRes.data || []).map(entry => ({ //flattening data for patient information
+          ...entry.patient,
+          imgUri: entry.patient.user?.imgUri
+        })));
+        console.log(patients);
         setDrugInventory(pharmRes.data || []);
 
         const grouped = (pharmRes.data || []).reduce((acc, item) => {
