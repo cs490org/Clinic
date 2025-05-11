@@ -135,7 +135,7 @@ const Prescriptions = () => {
       });
 
       if (!res.ok) {
-        throw new Error('Failed to fetch dispense history');
+        throw new Error('Failed to fetch dispense history.');
       }
 
       const data = await res.json();
