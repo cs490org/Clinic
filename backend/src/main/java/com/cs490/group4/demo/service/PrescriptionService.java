@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.cs490.group4.demo.constants.RxConstants.NEW_PRESCRIPTION;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PrescriptionService {
@@ -24,10 +25,16 @@ public class PrescriptionService {
     private PatientRepository patientRepository;
     @Autowired
     private DrugRepository drugRepository;
+    @Autowired
+    private PatientPharmacyRepository patientPharmacyRepository;
+    @Autowired
+    private PrescriptionBillRepository prescriptionBillRepository;
 
     public List<Prescription> getPrescriptions(){
         return prescriptionRepository.findAll();
     }
+
+    @Transactional
     public Prescription createPrescription(PrescriptionRequest dto){
         Doctor doctor =  doctorRepository.findById(dto.getDoctorId()).orElseThrow(()-> new EntityNotFoundException("Doctor not found"));
         Patient patient = patientRepository.findById(dto.getPatientId()).orElseThrow(()-> new EntityNotFoundException("Patient not found"));
@@ -42,7 +49,23 @@ public class PrescriptionService {
         prescription.setCreateTimestamp(LocalDateTime.now());
         prescription.setUpdateTimestamp(LocalDateTime.now());
 
-        return prescriptionRepository.save(prescription);
+        Prescription savedPrescription = prescriptionRepository.save(prescription);
+
+        List<PatientPharmacy> pharmacies = patientPharmacyRepository.findByPatientIdOrderByCreateTimestampDesc(patient.getId());
+
+            if (!pharmacies.isEmpty()) {
+                // Create bill only if a pharmacy is found
+                PrescriptionBill bill = PrescriptionBill.builder()
+                    .prescription(savedPrescription)
+                    .amount(drug.getPrice()) // use drug price directly
+                    .paid(false)
+                    .createTimestamp(LocalDateTime.now())
+                    .updateTimestamp(LocalDateTime.now())
+                    .build();
+
+                prescriptionBillRepository.save(bill);
+            }
+        return savedPrescription;
     }
 
     public boolean isEmpty(){
