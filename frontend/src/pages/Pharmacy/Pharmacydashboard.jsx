@@ -41,7 +41,7 @@ const PharmacyDashboard = () => {
         console.log(patRes);
 
         setPrescriptions(presRes.data || []);
-        //setPatients(patRes.data || []);   //fix the logic before you uncomment this line, otherwise website crashes
+        //setPatients(patRes.data || []);   //fix the logic before you uncomment this line and delete line below, otherwise website crashes
         setPatients([]);
         setDrugInventory(pharmRes.data || []);
 
@@ -186,14 +186,14 @@ const PharmacyDashboard = () => {
         {patients.map((p, i) => (
           <Grid item xs={12} sm={6} md={4} key={i}>
             <Paper sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }} elevation={3}>
-              <Avatar src={p.imgUri} sx={{ width: 64, height: 64, bgcolor: 'primary.main' }}>
+              <Avatar src={p.patient.user.imgUri} sx={{ width: 64, height: 64, bgcolor: 'primary.main' }}>
                 {p.firstName[0]}
               </Avatar>
               <Box>
-                <Typography fontWeight="bold">{p.firstName} {p.lastName}</Typography>
-                <Typography variant="body2">📧 {p.email}</Typography>
-                <Typography variant="body2">📞 {p.phone}</Typography>
-                <Typography variant="body2">📍 {p.address}</Typography>
+                <Typography fontWeight="bold">{p.patient.firstName} {p.patient.lastName}</Typography>
+                <Typography variant="body2">📧 {p.patient.email}</Typography>
+                <Typography variant="body2">📞 {p.patient.phone}</Typography>
+                <Typography variant="body2">📍 {p.patient.address}</Typography>
               </Box>
             </Paper>
           </Grid>
