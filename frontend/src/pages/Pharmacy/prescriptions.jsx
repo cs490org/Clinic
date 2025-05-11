@@ -109,20 +109,41 @@ const Prescriptions = () => {
         })
       });
 
+      await fetch(`${API_URL}/dispense-logs/log`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        credentials: 'include',
+        body: JSON.stringify({
+          pharmacyId: pill.pharmacy.id,
+          drugId: pill.drug.id,
+          quantity: pill.inventory
+        })
+      });
+
       await fetchPrescriptions(); // Refresh after dispense
     } catch (err) {
       console.error('Failed to mark as dispensed:', err);
     }
   };
 
-  const openPillHistory = (pill) => {
-    const mock = [
-      { quantity: 2, date: "2025-05-09" },
-      { quantity: 1, date: "2025-05-07" },
-    ];
+  const openPillHistory = async (pill) => {
     setSelectedPill(pill);
-    setHistoryData(mock);
-    setOpenHistory(true);
+
+    try {
+      const res = await fetch(`${API_URL}/dispenselog/dispense-history?pharmacyId=${pill.pharmacy.id}&drugId=${pill.drug.id}`, { //fix API rest call
+        credentials: 'include'
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to fetch dispense history');
+      }
+
+      const data = await res.json();
+      setHistoryData(data);
+      setOpenHistory(true);
+    } catch (err) {
+      console.error("Error fetching dispense history:", err);
+    }
   };
 
   if (loading) {
