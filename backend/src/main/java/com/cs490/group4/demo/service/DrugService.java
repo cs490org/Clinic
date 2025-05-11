@@ -35,6 +35,10 @@ public class DrugService {
         return drugRepository.save(drug);
     }
 
+    public List<Drug> getUnassignedDrugs(Integer pharmacyId) {
+        return drugRepository.findDrugsNotInPharmacy(pharmacyId);
+    }
+
     public boolean isEmpty(){
         return drugRepository.count() == 0;
     }
