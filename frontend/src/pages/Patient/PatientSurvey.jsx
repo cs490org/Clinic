@@ -3,8 +3,8 @@ import {
     AccordionDetails, AccordionSummary,
     Button,
     CircularProgress,
-    Container,
-    Paper,
+    Container, Divider, MenuItem,
+    Paper, Select,
     Stack, TextField,
     Typography
 } from "@mui/material";
@@ -12,7 +12,7 @@ import { LineChart } from "@mui/x-charts/LineChart";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../../utils/queryKeys.js";
 import { API_URL } from "../../utils/constants.js";
-import { useContext, useState } from "react";
+import {useContext, useEffect, useState} from "react";
 import { UserContext } from "../../contexts/UserContext.jsx";
 import dayjs from "dayjs";
 import Box from "@mui/material/Box";
@@ -59,9 +59,21 @@ export default function PatientSurvey() {
 
     const [showDailySurveyForm, setShowDailySurveyForm] = useState(false)
     const [showWeeklySurveyForm, setShowWeeklySurveyForm] = useState(false)
-    const [surveyCalories, setSurveyCalories] = useState(false)
-    const [surveyMood, setSurveyMood] = useState(false)
-    const [surveyWeight, setSurveyWeight] = useState(false)
+    const [surveyCalories, setSurveyCalories] = useState()
+    const [surveyMood, setSurveyMood] = useState()
+    const [surveyWeight, setSurveyWeight] = useState()
+
+    const [assignedPlans, setAssignedPlans] = useState([]);
+    const [selectedPlanId, setSelectedPlanId] = useState("");
+    useEffect(() => {
+        fetch(`${API_URL}/mealplans/patient/${roleData.id}`, {
+            credentials: "include"
+        })
+            .then(res => res.json())
+            .then(setAssignedPlans)
+            .catch(() => toast.error("Failed to load assigned meal plans"));
+    }, []);
+
 
     if (!daily_surveys || !weekly_surveys) return <CircularProgress />;
 
@@ -144,6 +156,7 @@ export default function PatientSurvey() {
         }
     }
 
+
     const daily_dates = daily_surveys.map((survey) => dayjs(survey.surveyDate))
     const daily_calories = daily_surveys.map((survey) => survey.caloriesEaten)
     const daily_mood = daily_surveys.map((survey) => survey.mood)
@@ -172,16 +185,61 @@ export default function PatientSurvey() {
                     </Box>
                     {
                         showDailySurveyForm && !didDailySurvey &&
-                        <Stack sx={{ mt: "1rem" }} spacing={1} direction={"column"}>
-                            <TextField onChange={(e) => setSurveyCalories(e.target.value)} label="Calories" ></TextField>
-                            <TextField onChange={(e) => setSurveyMood(e.target.value)} type="number" label="Mood (1-10)" ></TextField>
+                        <Stack sx={{ mt: "1rem" }} spacing={2} direction={"column"}>
+                            <Box sx={{width:"100%"}}>
+                                {
+                                    assignedPlans.length > 0 &&
+                                <>
+                                    <Stack spacing={1}>
+                                        <Box>
+                                            <Select
+                                                fullWidth
+                                                value={selectedPlanId}
+                                                onChange={(e) => setSelectedPlanId(e.target.value)}
+                                                displayEmpty
+                                            >
+                                                <MenuItem value="" disabled>Select meal plan to autofill</MenuItem>
+                                                {console.log(assignedPlans)}
+                                                {assignedPlans.map((plan) => (
+                                                    <MenuItem key={plan.mealPlan.id} value={plan.mealPlan.id}>
+                                                        {plan.name || `Meal Plan - ${plan.mealPlan.name}`}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                            <Button
+                                                fullWidth
+                                                variant="outlined"
+                                                disabled={!selectedPlanId}
+                                                onClick={async () => {
+                                                    try {
+                                                        const res = await fetch(`${API_URL}/mealplans/${selectedPlanId}/calories`, {
+                                                            credentials: "include"
+                                                        });
+                                                        const data = await res.json();
+                                                        setSurveyCalories(data.calories);
+                                                        toast.success(`Autofilled ${data.calories} kcals from Meal Plan.`);
+                                                    } catch (err) {
+                                                        toast.error("Failed to autofill calories");
+                                                    }
+                                                }}
+                                            >
+                                                Autofill Calories
+                                            </Button>
+                                        </Box>
+                                        <TextField fullWidth type="number" value={surveyCalories} onChange={(e) => setSurveyCalories(e.target.value)} label="Calories" InputLabelProps={{ shrink: true }} ></TextField>
+                                    </Stack>
+                                </>
+                                }
+                            </Box>
+
+                            <TextField value={surveyMood} onChange={(e) => setSurveyMood(e.target.value)} type="number" label="Mood (1-10)" ></TextField>
                             <Button variant={"contained"} onClick={() => submitDailySurvey()}>Submit</Button>
                         </Stack>
                     }
                     {
                         showWeeklySurveyForm&& !didWeeklySurvey &&
                         <Stack sx={{ mt: "1rem" }} spacing={1} direction={"column"}>
-                            <TextField onChange={(e) => setSurveyWeight(e.target.value)} label="Weight (lbs)" ></TextField>
+                            <TextField value={surveyWeight} onChange={(e) => setSurveyWeight(e.target.value)} label="Weight (lbs)" ></TextField>
                             <Button variant={"contained"} onClick={() => submitWeeklySurvey()}>Submit</Button>
                         </Stack>
                     }
