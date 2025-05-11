@@ -6,6 +6,7 @@ import com.cs490.group4.demo.dto.DispenseHistoryDTO;
 import com.cs490.group4.demo.dao.DispenseLog;
 import com.cs490.group4.demo.dao.DispenseLogRepository;
 import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +21,7 @@ public class DispenseLogService {
                 .pharmacyId(pharmacyId)
                 .drugId(drugId)
                 .quantity(quantity)
+                .dispensedAt(LocalDateTime.now()) // ← Add this
                 .build();
         return dispenseLogRepository.save(dispenseLog);
     }

@@ -1,0 +1,17 @@
+package com.cs490.group4.demo.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class DispenseLogRequest {
+    private Integer pharmacyId;
+    private Integer drugId;
+    private Integer quantity;
+}
