@@ -189,7 +189,6 @@ export default function PatientSurvey() {
                             <Box sx={{width:"100%"}}>
                                 {
                                     assignedPlans.length > 0 &&
-                                <>
                                     <Stack spacing={1}>
                                         <Box>
                                             <Select
@@ -226,10 +225,9 @@ export default function PatientSurvey() {
                                                 Autofill Calories
                                             </Button>
                                         </Box>
-                                        <TextField fullWidth type="number" value={surveyCalories} onChange={(e) => setSurveyCalories(e.target.value)} label="Calories" InputLabelProps={{ shrink: true }} ></TextField>
                                     </Stack>
-                                </>
                                 }
+                                <TextField fullWidth type="number" value={surveyCalories} onChange={(e) => setSurveyCalories(e.target.value)} label="Calories" InputLabelProps={{ shrink: true }} ></TextField>
                             </Box>
 
                             <TextField value={surveyMood} onChange={(e) => setSurveyMood(e.target.value)} type="number" label="Mood (1-10)" ></TextField>
