@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { API_URL } from '../../utils/constants.js';
-import { UserContext } from '../../contexts/UserContext.jsx';
 import {
   Container, Typography, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, Button
 } from "@mui/material";
+import { API_URL } from '../../utils/constants.js';
+import { UserContext } from '../../contexts/UserContext.jsx';
 import axios from "axios";
 
 export default function Patients() {
@@ -15,44 +15,47 @@ export default function Patients() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch pharmacy by user ID
         const pharmacyRes = await fetch(`${API_URL}/pharmacies?userId=${user.id}`, {
           credentials: 'include'
         });
         const pharmacyData = await pharmacyRes.json();
         const pharmacyId = Array.isArray(pharmacyData) ? pharmacyData[0]?.id : pharmacyData?.id;
         if (!pharmacyId) return;
-  
-        // Fetch patients and prescriptions filtered by pharmacy
+
         const [patRes, presRes] = await Promise.all([
           axios.get(`${API_URL}/patient/pharmacy?pharmacyId=${pharmacyId}`, { withCredentials: true }),
           axios.get(`${API_URL}/pharmacies/rx?pharmacyId=${pharmacyId}`, { withCredentials: true }),
         ]);
-  
+
         const patientArray = Array.isArray(patRes.data) ? patRes.data : [patRes.data];
         const allPrescriptions = presRes.data || [];
-  
+
         const enriched = patientArray.map(entry => {
           const p = entry.patient;
-          const pills = allPrescriptions
-            .filter(pr => pr.patientId === p.id)
-            .map(pr => pr.drug?.name || pr.pillName || 'N/A');
-          return { ...p, drugs: pills };
+          const drugs = allPrescriptions
+  .filter(pr => pr.patient?.id === p.id)
+  .map(pr => {
+    const drug = pr.drug || {};
+    const name = drug.name || pr.pillName || 'N/A';
+    return name;
+  });
+
+
+          return { ...p, drugs };
         });
-  
+
         setPatients(enriched);
         setPrescriptions(allPrescriptions);
       } catch (err) {
         console.error("Error fetching dynamic patient data:", err);
       }
     };
+
     fetchData();
   }, []);
 
   const handleContact = (patient) => {
-    console.log(`📨 Send message to: ${patient.firstName} ${patient.lastName} (${patient.email})`);
-    // Here, integrate with RabbitMQ or backend endpoint
-    // Example: axios.post('/api/contact', { patientId: patient.id, message: "..." })
+    console.log(`📨 Contacting ${patient.firstName} (${patient.email})`);
   };
 
   return (
@@ -81,13 +84,9 @@ export default function Patients() {
                   <TableCell>{p.email}</TableCell>
                   <TableCell>{p.address}</TableCell>
                   <TableCell>{p.phone}</TableCell>
-                  <TableCell>{p.drugs.join(", ")}</TableCell>
+                  <TableCell>{p.drugs.join(', ') || '—'}</TableCell>
                   <TableCell>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => handleContact(p)}
-                    >
+                    <Button variant="contained" color="primary" onClick={() => handleContact(p)}>
                       💬 Talk
                     </Button>
                   </TableCell>
