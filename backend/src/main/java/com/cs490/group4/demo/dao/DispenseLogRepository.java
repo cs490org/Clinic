@@ -7,5 +7,5 @@ import java.util.List;
 
 @Repository
 public interface DispenseLogRepository extends JpaRepository<DispenseLog, Integer> {
-    List<DispenseLog> findByPharmacyIdAndDrugIdOrderByDispensedAtDesc(Integer pharmacyId, Integer drugId);
+    List<DispenseLog> findByPharmacyIdAndDrugId(Integer pharmacyId, Integer drugId);
 }
