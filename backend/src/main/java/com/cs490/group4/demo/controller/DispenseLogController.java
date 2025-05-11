@@ -1,6 +1,7 @@
 package com.cs490.group4.demo.controller;
 
 import com.cs490.group4.demo.dto.DispenseHistoryDTO;
+import com.cs490.group4.demo.dto.DispenseLogRequest;
 import com.cs490.group4.demo.dao.DispenseLog;
 import com.cs490.group4.demo.service.DispenseLogService;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,12 @@ public class DispenseLogController {
     }
 
     @PostMapping("/log")
-    public ResponseEntity<DispenseLog> logDispense(@RequestParam Integer pharmacyId, @RequestParam Integer drugId, @RequestParam Integer quantity) {
-        DispenseLog dispenseLog = dispenseLogService.saveDispenseLog(pharmacyId, drugId, quantity);
-        System.out.println("I am in the controller");
+    public ResponseEntity<DispenseLog> logDispense(@RequestBody DispenseLogRequest request) {
+        DispenseLog dispenseLog = dispenseLogService.saveDispenseLog(
+            request.getPharmacyId(),
+            request.getDrugId(),
+            request.getQuantity()
+        );
         return ResponseEntity.ok(dispenseLog);
     }
 

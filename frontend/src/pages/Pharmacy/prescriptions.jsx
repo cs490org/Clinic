@@ -109,7 +109,7 @@ const Prescriptions = () => {
         })
       });
 
-      await fetch(`${API_URL}/dispense-logs/log`, {
+      await fetch(`${API_URL}/dispenselog/log`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         credentials: 'include',
@@ -231,7 +231,7 @@ const Prescriptions = () => {
             <List>
               {historyData.map((entry, i) => (
                   <ListItem key={i}>
-                    <ListItemText primary={`${entry.quantity} pills`} secondary={`Date: ${entry.date}`} />
+                    <ListItemText primary={`${entry.quantity} pills`} secondary={`Date: ${entry.dispensedAt}`} />
                   </ListItem>
               ))}
             </List>
