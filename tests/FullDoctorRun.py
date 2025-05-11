@@ -6,7 +6,6 @@ import time
 
 '''
 Need to implement creation of meal plans and stuff but navigation is fully implemented
-Doctor and patient chat needs to be made
 '''
 
 # Initialize driver with options
@@ -36,8 +35,8 @@ try:
     
     email_input = wait.until(EC.presence_of_element_located((By.NAME, "email")))
     password_input = driver.find_element(By.NAME, "password")
-    email_input.send_keys("DoLa1@gmail.com")
-    password_input.send_keys("Password1")
+    email_input.send_keys("valentineobi@clinic.com")
+    password_input.send_keys("password123")
     wait_and_click('//button[@type="submit"]')
     
     wait.until(EC.url_contains("dashboard"))
@@ -99,10 +98,10 @@ try:
     time.sleep(2)
     
     # Click Recipes 
-    Recipes_button = '//div[contains(@class, "MuiDrawer-paper")]//div[contains(@class, "MuiListItemButton-root")][.//span[contains(text(), "Recipes")]]'
+    Recipes_button = '//div[contains(@class, "MuiDrawer-paper")]//div[contains(@class, "MuiListItemButton-root")][.//span[contains(text(), "Food")]]'
     if wait_and_click(Recipes_button, use_js=True):
         wait.until(EC.url_contains("/recipes"))
-        print("Navigated to Recipes page")
+        print("Navigated to Food page")
         time.sleep(1)
         wait_and_click(menu_icon, use_js=True)
         time.sleep(1.5)
@@ -119,7 +118,7 @@ try:
     # Click Assign Meal Plans 
     mealPlan_button = '//div[contains(@class, "MuiDrawer-paper")]//div[contains(@class, "MuiListItemButton-root")][.//span[contains(text(), "Assign a Meal Plan")]]'
     if wait_and_click(mealPlan_button, use_js=True):
-        wait.until(EC.url_contains("/mealplans/create"))
+        wait.until(EC.url_contains("/mealplans/assign"))
         print("Navigated to Assign a Meal Plan page")
         time.sleep(1)
         wait_and_click(menu_icon, use_js=True)
@@ -137,11 +136,29 @@ try:
     # Click Patient Registry 
     patient_registry = '//div[contains(@class, "MuiDrawer-paper")]//div[contains(@class, "MuiListItemButton-root")][.//span[contains(text(), "Patient Registry")]]'
     if wait_and_click(patient_registry, use_js=True):
+        # 1) wait until the URL is /patients
         wait.until(EC.url_contains("/patients"))
-        print("Navigated to Patient Registry page")
-        time.sleep(1)
-        driver.back()
-    wait.until(EC.url_contains("dashboard"))
+        print("On Patient Registry page")
+
+        # 2) locate the first <a> in the first table row’s first cell
+        first_patient_link = wait.until(EC.element_to_be_clickable(
+            (By.XPATH, "//table//tbody//tr[1]//td[1]//a")
+        ))
+        first_patient_link.click()
+        print("Clicked first patient name")
+
+        # 3) verify navigation to /patients/{id}
+        wait.until(EC.url_matches(r".*/patients/\d+$"))
+        print("Landed on patient detail page")
+
+        # 4) go back if you need to return
+        time.sleep(2)
+        wait_and_click(menu_icon, use_js=True)
+        time.sleep(1.5)
+        dashboard_button = '//div[contains(@class, "MuiDrawer-paper")]//div[contains(@class, "MuiListItemButton-root")][.//span[contains(text(), "Doctor Dashboard")]]'
+        if wait_and_click(dashboard_button, use_js=True):
+            wait.until(EC.url_contains("/doctor/dashboard"))
+            print("Returned to Doctor Dashboard via drawer")
     time.sleep(1)
 
     #Dark/light mode
