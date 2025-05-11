@@ -36,13 +36,12 @@ try:
     patient_wait = WebDriverWait(patient_driver, 10)
 
     wait_and_click(patient_driver, '//button[contains(text(), "Sign In")]', use_js=True)
-    patient_wait.until(EC.presence_of_element_located((By.NAME, "email"))).send_keys("patient1746827926@Lim.com")
+    patient_wait.until(EC.presence_of_element_located((By.NAME, "email"))).send_keys("patient1746827926@Lim.com") #Replace with another patient
     patient_driver.find_element(By.NAME, "password").send_keys("Password1")
     wait_and_click(patient_driver, '//button[@type="submit"]', use_js=True)
     patient_wait.until(EC.url_contains("/dashboard"))
     print("Patient logged in")
 
-    wait_and_click(patient_driver, '//button[@aria-label="Go to page 4"]', use_js=True)
     time.sleep(2)
     book_buttons = patient_wait.until(EC.presence_of_all_elements_located((By.XPATH, '//button[normalize-space(text())="Book Appointment"]')))
     patient_driver.execute_script("arguments[0].click();", book_buttons[1])
@@ -59,8 +58,8 @@ try:
     doctor_wait = WebDriverWait(doctor_driver, 10)
 
     wait_and_click(doctor_driver, '//button[contains(text(), "Sign In")]', use_js=True)
-    doctor_wait.until(EC.presence_of_element_located((By.NAME, "email"))).send_keys("Guy@gmail.com")
-    doctor_driver.find_element(By.NAME, "password").send_keys("Password1")
+    doctor_wait.until(EC.presence_of_element_located((By.NAME, "email"))).send_keys("valentineobi@clinic.com")
+    doctor_driver.find_element(By.NAME, "password").send_keys("password123")
     wait_and_click(doctor_driver, '//button[@type="submit"]', use_js=True)
     doctor_wait.until(EC.url_contains("/dashboard"))
     print("Doctor logged in")
