@@ -128,16 +128,15 @@ const PharmacyDashboard = () => {
           <Table>
             <TableHead sx={{ backgroundColor: '#212121' }}>
               <TableRow>
-                <TableCell sx={{ color: '#fff' }}><strong>Customer</strong></TableCell>
+                <TableCell sx={{ color: '#fff' }}><strong>Patient</strong></TableCell>
                 <TableCell sx={{ color: '#fff' }}><strong>Email</strong></TableCell>
-                <TableCell sx={{ color: '#fff' }}><strong>Prescribed Drugs</strong></TableCell>
+                <TableCell sx={{ color: '#fff' }}><strong>Prescriptions</strong></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {patients.length > 0 ? (
                   patients.map((patient, i) => {
                     const patientPrescriptions = prescriptions.filter(p => p.patientId === patient.id);
-                    const pills = patientPrescriptions.map(p => p.drug?.name || p.pillName || 'N/A').join(', ');
                     return (
                         <TableRow key={i}>
                           <TableCell>
@@ -145,11 +144,17 @@ const PharmacyDashboard = () => {
                               {patient.firstName} {patient.lastName}
                             </Typography>
                           </TableCell>
+                          <TableCell>{patient.email}</TableCell>
                           <TableCell>
-                            <Typography variant="body2">📧 {patient.email}</Typography>
-                          </TableCell>
-                          <TableCell>
-                            {pills || '—'}
+                            {patientPrescriptions.length > 0 ? (
+                                patientPrescriptions.map((rx, idx) => (
+                                    <Typography variant="body2" key={idx}>
+                                      💊 {rx.drug?.name || rx.pillName || 'Unnamed Drug'} — {rx.dosage || 'N/A'}
+                                    </Typography>
+                                ))
+                            ) : (
+                                <Typography variant="body2" color="text.secondary">No prescriptions</Typography>
+                            )}
                           </TableCell>
                         </TableRow>
                     );
