@@ -11,7 +11,7 @@ import {
     ListItemText,
     Divider,
     ListItemAvatar,
-    Avatar,
+    Avatar, useTheme,
 } from '@mui/material';
 import { format } from 'date-fns';
 import { API_URL } from '../../utils/constants';
@@ -126,6 +126,8 @@ export default function MessageRoomPage() {
     console.log(user)
     console.log(messages)
 
+    const theme = useTheme()
+
     return (
         <Container maxWidth="md" sx={{ height: '90vh', py: 4 }}>
             <Paper elevation={3} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -173,10 +175,12 @@ export default function MessageRoomPage() {
                                         secondary={format(new Date(message.sentTimestamp), 'MMM d, yyyy h:mm a')}
                                         sx={{
                                             '& .MuiListItemText-primary': {
-                                                color: message.fromUserId.userId === user?.id ? 'white' : 'text.primary',
+                                                // color: message.fromUserId.userId === user?.id ? 'white' : 'text.primary',
+                                                color: message.fromUserId.userId === user?.id ? 'white' : 'black',
                                             },
                                             '& .MuiListItemText-secondary': {
-                                                color: message.fromUserId.userId === user?.id ? 'rgba(255, 255, 255, 0.7)' : 'text.secondary',
+                                                // color: message.fromUserId.userId === user?.id ? 'rgba(255, 255, 255, 0.7)' : 'text.secondary',
+                                                color: message.fromUserId.userId === user?.id ? 'rgba(255, 255, 255, 0.7)' : 'black',
                                             },
                                         }}
                                     />

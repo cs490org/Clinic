@@ -32,6 +32,7 @@ public class MockDataConfig {
     private final MockMealPlan mockMealPlan;
     private final MockDrug mockDrug;
     private final MockPatientPharmacy mockPatientPharmacy;
+    private final MockCreditCard mockCreditCard;
 
     private final UserService userService;
     private final DoctorService doctorService;
@@ -44,6 +45,7 @@ public class MockDataConfig {
     private final SymptomService symptomService;
     private final PrescriptionService prescriptionService;
     private final DrugService drugService;
+    private final CreditCardService creditCardService;
 
     private final ArrayList<Recipe> recipes = new ArrayList<>();
 
@@ -58,7 +60,7 @@ public class MockDataConfig {
      */
 
     @Bean
-    CommandLineRunner mockDataInitializer() {
+    CommandLineRunner mockDataInitializer(MockDoctorReview mockDoctorReview) {
         return args -> {
             if (doctorService.isEmpty()) {
                 mockDoctor.createMockDoctor(
@@ -98,6 +100,20 @@ public class MockDataConfig {
                 mockPatient.createMockPatient("james.garcia@clinic.com", "James", "Garcia", "9735551008", "753 Chestnut Ave", "https://storage.googleapis.com/cs490-media/patient8.webp");
                 mockPatient.createMockPatient("isabella.martinez@clinic.com", "Isabella", "Martinez", "9735551009", "852 Poplar Court", "https://storage.googleapis.com/cs490-media/patient9.webp");
                 mockPatient.createMockPatient("benjamin.rodriguez@clinic.com", "Benjamin", "Rodriguez", "9735551010", "951 Hickory Way", "https://storage.googleapis.com/cs490-media/patient10.webp");
+                mockPatient.createMockPatient(
+                        "patient@clinic.com",
+                        "Michael",
+                        "Smith",
+                        "8561992475",
+                        "123 Main Street, Newark, NJ, 07103",
+                        "https://storage.googleapis.com/cs490-media/patient.webp");
+                mockPatient.createMockPatient(
+                        "patient2@clinic.com",
+                        "Andrew",
+                        "Williams",
+                        "9185834196",
+                        "518 Somewhere, New Jersey, NJ, 83134",
+                        "https://storage.googleapis.com/cs490-media/patient2.webp");
             }
             
             if (pharmacyService.isEmpty()) {
@@ -115,12 +131,30 @@ public class MockDataConfig {
                         "8675311234",
                         "07104"
                 );
+                mockPharmacy.createMockPharmacy(
+                        "pharmacy2@clinic.com",
+                        "123 Main street",
+                        "Snail-Pharmacy",
+                        "1926135093",
+                        "10002"
+                );
+            }
+
+            if(!doctorService.isEmpty() && !doctorService.reviewsExist()){
+                mockDoctorReview.createMockDoctorReview(1,1,5,"Would recommend","10/10 would recommend");
+                mockDoctorReview.createMockDoctorReview(2,2,5,"Helped achieved my weightloss goals","Through Obi's help, I was able to achieve my weightloss goals");
+                mockDoctorReview.createMockDoctorReview(2, 2, 5, "Excellent guidance and support", "Provided clear steps and consistent support that made my weight loss journey successful.");
+                mockDoctorReview.createMockDoctorReview(2, 2, 4, "Great motivator!", "Thanks to Dr. Obi’s motivation and dietary advice, I saw real progress in just a few months.");
+                mockDoctorReview.createMockDoctorReview(2, 1, 5, "Transformed my lifestyle", "Helped me build sustainable habits that completely transformed how I approach fitness and nutrition.");
             }
 
             if (!patientService.isEmpty() && !pharmacyService.isEmpty()) {
                 mockPatientPharmacy.createPatientPharmacy(1,1);
             }
 
+            if (!patientService.isEmpty() && creditCardService.isEmpty()) {
+                mockCreditCard.createMockCreditCard(1,"Test patient","1234123412341234","03/27","123 somewhere, Newark, NJ, 07103");
+            }
 
 
             if(ingredientService.isEmpty()){

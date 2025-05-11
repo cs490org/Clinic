@@ -28,6 +28,18 @@ public class PharmacyService {
         return pharmacyRepository.findAll();
     }
 
+    public List<Pharmacy> findNearbyPharmacies(String zipCode) {
+
+        int baseZip = Integer.parseInt(zipCode);
+        int range = 5;
+
+        int minZip = baseZip - range;
+        int maxZip = baseZip + range;
+
+        return pharmacyRepository.findByZipCodeBetween(String.format("%05d", minZip), String.format("%05d", maxZip));
+    }
+
+
     public Pharmacy getPharmacyByUserId(Integer userId) {
         Pharmacy pharmacy = pharmacyRepository.findByUserId(userId);
         if (pharmacy == null) {

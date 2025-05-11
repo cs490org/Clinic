@@ -1,37 +1,34 @@
 import {Box, Typography, Avatar, Grid, Container, Stack, Paper} from "@mui/material";
+import {useEffect, useRef, useState} from "react";
+import {API_URL} from "../../../utils/constants.js";
 
-const TestimonialCard = ({initial, achievement, testimonial}) => (
-    <Paper sx={{p: 2}}>
+const TestimonialCard = ({initial, title, review}) => (
+    <Paper sx={{p: 2, minWidth:"333px"}}>
         <Box display="flex" alignItems="center" mb={2}>
             <Avatar sx={{bgcolor: 'grey.800', mr: 2}}>{initial}</Avatar>
             <Box>
                 <Typography fontWeight="medium">Anonymous User</Typography>
-                <Typography variant="body2" color="text.secondary">{achievement}</Typography>
+                <Typography variant="body2" color="text.secondary">{title}</Typography>
             </Box>
         </Box>
-        <Typography color="text.secondary">{testimonial}</Typography>
+        <Typography color="text.secondary">{review}</Typography>
     </Paper>
 );
 
-const testimonials = [
-    {
-        initial: "J",
-        achievement: "Lost 30 pounds in 6 months",
-        testimonial: "The personalized care and top tier doctors helped me stay accountable. My doctor was always available to give advice and adjust my plan as needed."
-    },
-    {
-        initial: "J",
-        achievement: "Managed diabetes effectively",
-        testimonial: "The integration with pharmacy made getting my medication and managing it much easier. My health metrics have significantly improved over time."
-    },
-    {
-        initial: "C",
-        achievement: "Improved eating habits",
-        testimonial: "The personalized meal plans helped me lose weight and develop healthier eating habits. Using the discussion board helped with creating new recipes."
-    }
-];
 
 const SuccessStories = () => {
+    const [reviews,setReviews ] = useState([]);
+
+    useEffect(() => {
+        const fetchReviews= async () => {
+            const response = await fetch(`${API_URL}/doctors/reviews`);
+            const data = await response.json();
+            setReviews([...data]);
+        };
+
+        fetchReviews();
+    }, []);
+
     return (
         <Box
             sx={{
@@ -48,7 +45,7 @@ const SuccessStories = () => {
                     fontWeight="bold"
                     mb={3}
                 >
-                    Success Stories
+                    Reviews
                 </Typography>
 
                 <Typography
@@ -61,9 +58,18 @@ const SuccessStories = () => {
                     Hear from our patients who have achieved their health and weight loss goals.
                 </Typography>
 
-                <Stack direction="row" spacing={4} justifyContent="center">
-                    {testimonials.map((testimonial, index) => (
-                        <TestimonialCard key={index} {...testimonial} />
+
+                {/*<Stack direction={"row"}>*/}
+                <Stack
+                    direction="row"
+                    spacing={2}
+                    sx={{
+                        overflowX: 'scroll',
+                        flexWrap: 'nowrap',
+                    }}
+                >
+                    {reviews.map((review, index) => (
+                        <TestimonialCard key={index} initial={""} title={review.title} review={review.review} />
                     ))}
                 </Stack>
             </Container>
@@ -71,4 +77,4 @@ const SuccessStories = () => {
     );
 };
 
-export default SuccessStories; 
+export default SuccessStories;

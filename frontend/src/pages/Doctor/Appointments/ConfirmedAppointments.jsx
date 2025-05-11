@@ -25,6 +25,9 @@ const ConfirmedAppointments = () => {
     });
 
     const ConfirmedAppointmentCard = ({ name, time, id,patientId }) => {
+        const appointmentDate = new Date(time);
+        const currentDate = new Date();
+        const canEnter = appointmentDate <= currentDate;
         return (
             <Paper sx={{ p: 2 }}>
                 <Stack direction={"row"} justifyContent={"space-between"}>
@@ -37,7 +40,7 @@ const ConfirmedAppointments = () => {
                             <Typography>{dayjs(time).format("h:mm A")}</Typography>
                         </Box>
                         {/*<Button variant={"contained"} onClick={() => navigate(`/appointment/${id}`)}>Enter</Button>*/}
-                        <Button variant={"contained"} onClick={() => navigate(`/appointment/${id}/${patientId}`)}>Enter</Button>
+                        <Button disabled={!canEnter} variant={"contained"} onClick={() => navigate(`/appointment/${id}/${patientId}`)}>Enter</Button>
                     </Box>
                 </Stack>
             </Paper>
@@ -45,7 +48,7 @@ const ConfirmedAppointments = () => {
     }
     return (
 
-        <Paper variant="outlined" sx={{ p: 2, flex: 1 }}>
+        <Paper variant="outlined" sx={{ height:"100%",p: 2, flex: 1 }}>
             <Typography variant="h5" fontWeight={"bold"}>Upcoming Appointments</Typography>
             {isLoading ?
                 <Box display="flex" justifyContent="center" p={4}>

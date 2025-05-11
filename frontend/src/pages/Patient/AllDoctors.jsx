@@ -12,7 +12,7 @@ import {
     Typography,
     Button,
     Pagination,
-    Stack,
+    Stack, TextField,
 } from '@mui/material';
 import { API_URL } from '../../utils/constants';
 import axios from 'axios';
@@ -22,6 +22,8 @@ const AllDoctors = ({ onBookClick }) => {
     const [doctors, setDoctors] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [searchName, setSearchName] = useState('');
+    const [searchSpecialty, setSearchSpecialty] = useState('');
     const [page, setPage] = useState(1);
     const doctorsPerPage = 2;
 
@@ -46,7 +48,16 @@ const AllDoctors = ({ onBookClick }) => {
         setPage(value);
     };
 
-    const paginatedDoctors = doctors.slice(
+
+    const filteredDoctors = doctors.filter((doctor) => {
+        const fullName = `${doctor.firstName} ${doctor.lastName}`.toLowerCase();
+        return (
+            fullName.includes(searchName.toLowerCase()) &&
+            doctor.specialty.toLowerCase().includes(searchSpecialty.toLowerCase())
+        );
+    });
+
+    const paginatedDoctors = filteredDoctors.slice(
         (page - 1) * doctorsPerPage,
         page * doctorsPerPage
     );
@@ -72,6 +83,30 @@ const AllDoctors = ({ onBookClick }) => {
             <Typography sx={{ fontWeight: "bold",fontSize:"1.4rem" }} variant="h5" gutterBottom>
                 Doctor registry
             </Typography>
+
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 2 }}>
+                <TextField
+                    label="Search by Name"
+                    variant="outlined"
+                    size="small"
+                    value={searchName}
+                    onChange={(e) => {
+                        setSearchName(e.target.value);
+                        setPage(1);
+                    }}
+                />
+                <TextField
+                    label="Search by Specialty"
+                    variant="outlined"
+                    size="small"
+                    value={searchSpecialty}
+                    onChange={(e) => {
+                        setSearchSpecialty(e.target.value);
+                        setPage(1);
+                    }}
+                />
+            </Stack>
+
             <Table>
                 <TableHead>
                     <TableRow>
@@ -112,7 +147,7 @@ const AllDoctors = ({ onBookClick }) => {
             </Table>
             <Stack spacing={2} alignItems="center" sx={{ mt: 2 }}>
                 <Pagination
-                    count={Math.ceil(doctors.length / doctorsPerPage)}
+                    count={Math.ceil(filteredDoctors.length / doctorsPerPage)}
                     page={page}
                     onChange={handlePageChange}
                     color="primary"

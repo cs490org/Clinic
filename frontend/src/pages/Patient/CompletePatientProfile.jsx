@@ -22,6 +22,8 @@ import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../utils/queryKeys";
 import { toast } from 'sonner';
 import PatientSymptoms from "./PatientSymptoms.jsx";
+import PatientInputCreditCard from "./PatientInputCreditCard.jsx";
+import PharmacySelect from "./PharmacySelect.jsx";
 
 const CompletePatientProfile = () => {
     const navigate = useNavigate();
@@ -38,6 +40,7 @@ const CompletePatientProfile = () => {
         run()
     }, []);
 
+    const [pharmacyZipCode, setPharmacyZipCode] = useState()
     const [formData, setFormData] = useState({
         phone: '',
         street: '',
@@ -123,7 +126,8 @@ const CompletePatientProfile = () => {
             if (res.ok) {
                 toast.success('Profile completed successfully!');
                 // navigate('/patient/dashboard');
-                navigate('/patient/symptoms');
+                // navigate('/patient/symptoms');
+                navigate('/patient/add_payment');
 
                 // ensure we get role info
                 window.location.reload()
@@ -200,27 +204,26 @@ const CompletePatientProfile = () => {
                                 error={!!errors.zipCode}
                                 helperText={errors.zipCode}
                             />
+                            <Divider></Divider>
+                            <Box sx={{width:"100%", fontSize:"1.4rem"}}>
+                                <Typography>Select Pharmacy</Typography>
+                            </Box>
+                            <TextField
+                                required
+                                fullWidth
+                                label="ZIP Code"
+                                name="pharmacyZipCode"
+                                value={pharmacyZipCode}
+                                onChange={(e)=>setPharmacyZipCode(e.target.value)}
+                                error={!!errors.pharmacyZipCode}
+                                helperText={errors.pharmacyZipCode}
+                            />
 
-
-                            <FormControl fullWidth required>
-                                <InputLabel>Preferred Pharmacy</InputLabel>
-                                {isLoadingPharmacies ? (
-                                    <Skeleton />
-                                ) : (
-                                    <Select
-                                        name="pharmacyId"
-                                        value={formData.pharmacyId}
-                                        onChange={handleChange}
-                                        label="Preferred Pharmacy"
-                                    >
-                                        {pharmacies?.map((pharmacy) => (
-                                            <MenuItem key={pharmacy.id} value={pharmacy.id}>
-                                                {pharmacy.name} - {pharmacy.address} - {pharmacy.zipCode}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                )}
-                            </FormControl>
+                            <PharmacySelect
+                                zip={pharmacyZipCode}
+                                value={formData.pharmacyId}
+                                onChange={(e) => setFormData({ ...formData, pharmacyId: e.target.value })}
+                            />
 
                             <Paper sx={{ p: 2 }}>
                                 <Typography variant="h6" gutterBottom color="primary">

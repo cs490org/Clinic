@@ -7,7 +7,7 @@ import {
     Paper,
     Select,
     Skeleton,
-    Stack, Typography
+    Stack, TextField, Typography
 } from "@mui/material";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {queryKeys} from "../../utils/queryKeys.js";
@@ -15,25 +15,21 @@ import {API_URL} from "../../utils/constants.js";
 import {useContext, useEffect, useState} from "react";
 import {UserContext} from "../../contexts/UserContext.jsx";
 import {toast} from "sonner";
+import PharmacySelect from "./PharmacySelect.jsx";
 
 export default function PatientEditPreferredPharmacy(){
     const {roleData} = useContext(UserContext)
-    const { data: pharmacies, isLoading: isLoadingPharmacies } = useQuery({
-        queryKey: queryKeys.pharmacies.all,
-        queryFn: async () => {
-            const res = await fetch(API_URL + '/pharmacies', {
-                credentials: 'include'
-            });
-            if (!res.ok) throw new Error('Failed to fetch pharmacies');
-            return res.json();
-        },
-    });
+
+
+    const [zipInput, setZipInput] = useState("");
+    const [selectedPharmacyId, setSelectedPharmacyId] = useState(null);
+
 
     const {data: patientPreferredPharmacy, isLoading:isLoadingPatientPharmacy} = useQuery(
         {
             queryKey: queryKeys.pharmacies.patient,
             queryFn: async () => {
-                const res = await fetch(API_URL + `/patient/${roleData.id}/pharmacy`, {
+                const res = await fetch(API_URL + `/patient/${roleData?.id}/pharmacy`, {
                     credentials: 'include'
                 });
                 if (!res.ok) throw new Error('Failed to fetch patients\' preferred pharmacy');
@@ -42,39 +38,38 @@ export default function PatientEditPreferredPharmacy(){
 
         }
     )
-    const [selectedPharmacyId, setSelectedPharmacyId] = useState(null)
     useEffect(() => {
         if (patientPreferredPharmacy?.id) {
-            setSelectedPharmacyId(patientPreferredPharmacy.id)
+            setSelectedPharmacyId(patientPreferredPharmacy?.id)
         }
     }, [patientPreferredPharmacy]);
 
-    const handleChange = (e) => {
-        setSelectedPharmacyId(e.target.value)
-    };
     const queryClient = useQueryClient()
    return (
            <Paper sx={{p:2, }}>
                <FormControl fullWidth required>
-                   {isLoadingPharmacies ? (
-                       <Skeleton />
-                   ) : (
                        <Stack spacing={1}>
                            <Typography sx={{fontWeight:"bold",fontSize:"1.4rem"}}>Preferred pharmacy - {patientPreferredPharmacy?.name}</Typography>
-                           <Select
+
+                           <TextField
+                               fullWidth
+                               label="Enter ZIP Code to search nearby pharmacies"
+                               value={zipInput}
+                               onChange={(e) => setZipInput(e.target.value)}
+                               inputProps={{ maxLength: 5 }}
+                                />
+
+                           <PharmacySelect
+                               zip={zipInput}
                                value={selectedPharmacyId}
-                               onChange={handleChange}
-                           >
-                               {pharmacies?.map((pharmacy) => (
-                                   <MenuItem key={pharmacy.id} value={pharmacy.id}>
-                                       {pharmacy.name} - {pharmacy.address} - {pharmacy.zipCode}
-                                   </MenuItem>
-                               ))}
-                           </Select>
+                               onChange={(e) => setSelectedPharmacyId(e.target.value)}
+                           />
+
+
                            <Button onClick={()=>{
                                const run = async () => {
                                    try {
-                                       const res = await fetch(API_URL + `/patient/${roleData.id}/pharmacy/${selectedPharmacyId}`,
+                                       const res = await fetch(API_URL + `/patient/${roleData?.id}/pharmacy/${selectedPharmacyId}`,
                                            {
                                                method: "PUT",
                                                credentials: "include"
@@ -93,9 +88,8 @@ export default function PatientEditPreferredPharmacy(){
                                run()
 
 
-                           }} disabled={patientPreferredPharmacy.id === selectedPharmacyId} variant={"contained"}>Change preferred pharmacy</Button>
+                           }} disabled={patientPreferredPharmacy?.id === selectedPharmacyId} variant={"contained"}>Change preferred pharmacy</Button>
                        </Stack>
-                   )}
                </FormControl>
            </Paper>
    )

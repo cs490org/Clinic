@@ -79,15 +79,16 @@ export default function CreateMealPlan(){
         <>
         <FoodNav />
         <Container>
-            <Typography sx={{fontWeight:"bold",fontSize:"1.4rem"}}>Create a meal plan</Typography>
+            <Typography sx={{fontWeight:"bold",fontSize:"1.4rem",mb:"2rem"}}>Create a meal plan</Typography>
 
-            <Typography sx={{ mt: 4 }}>Choose recipes</Typography>
 
             {recipesIsLoading ? (
                 <CircularProgress />
             ) : (
                 <Stack spacing={2}>
+                    <Typography sx={{ mt: 4 }}>Enter Meal Plan name</Typography>
                     <TextField onChange={(e)=>setMealPlanName(e.target.value)} label="Name" variant="outlined" />
+                    <Typography sx={{ mt: 4 }}>Choose recipes</Typography>
                     <FormControl fullWidth >
                         <InputLabel id="breakfast-select-label">Breakfast</InputLabel>
                         <Select

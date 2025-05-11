@@ -68,6 +68,11 @@ public class DoctorController {
     private ResponseEntity<?> getDoctorReviews(@PathVariable Integer id) {
         return ResponseEntity.ok(doctorService.getDoctorReviews(id));
     }
+
+    @GetMapping("/reviews")
+    private ResponseEntity<?> getAllDoctorReviews() {
+        return ResponseEntity.ok(doctorService.getAllDoctorReviews());
+    }
 }
 
 @Data
