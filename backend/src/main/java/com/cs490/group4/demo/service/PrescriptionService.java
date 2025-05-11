@@ -34,6 +34,10 @@ public class PrescriptionService {
         return prescriptionRepository.findAll();
     }
 
+    public List<Prescription> getPrescriptionsByPharmacy(Integer pharmacyId){
+            return prescriptionRepository.findAllRxByPharmacyId(pharmacyId);
+    }
+
     @Transactional
     public Prescription createPrescription(PrescriptionRequest dto){
         Doctor doctor =  doctorRepository.findById(dto.getDoctorId()).orElseThrow(()-> new EntityNotFoundException("Doctor not found"));

@@ -2,12 +2,14 @@ package com.cs490.group4.demo.controller;
 
 import com.cs490.group4.demo.dao.Pharmacy;
 import com.cs490.group4.demo.dao.Drug;
+import com.cs490.group4.demo.dao.Prescription;
 import com.cs490.group4.demo.dao.PrescriptionBill;
 import com.cs490.group4.demo.dao.PrescriptionBillRepository;
 import com.cs490.group4.demo.dto.InventoryDTO;
 import com.cs490.group4.demo.dto.PharmacyCreateDTO;
 import com.cs490.group4.demo.dto.PrescriptionBillDTO;
 import com.cs490.group4.demo.service.PharmacyService;
+import com.cs490.group4.demo.service.PrescriptionService;
 import com.cs490.group4.demo.service.DrugService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,8 @@ public class PharmacyController {
     private final PharmacyService pharmacyService;
 
     private final DrugService drugService;
+
+    private final PrescriptionService prescriptionService;
 
 
 
@@ -86,6 +90,11 @@ public class PharmacyController {
     public ResponseEntity<?> assignDrugToPharmacy(@RequestBody InventoryDTO dto) {
         pharmacyService.updateDrugInventory(dto);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/rx")  //to display new drugs not in pharmacy inventory already
+        private ResponseEntity<List<Prescription>> getPrescriptionsByPharmacy(@RequestParam Integer pharmacyId) {
+            return ResponseEntity.ok(prescriptionService.getPrescriptionsByPharmacy(pharmacyId));
     }
 
 }
