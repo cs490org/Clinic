@@ -41,7 +41,7 @@ const PharmacyDashboard = () => {
         console.log(patRes);
 
         setPrescriptions(presRes.data || []);
-        //setPatients(patRes.data || []);
+        //setPatients(patRes.data || []);   //fix the logic before you uncomment this line, otherwise website crashes
         setPatients([]);
         setDrugInventory(pharmRes.data || []);
 
