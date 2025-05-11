@@ -104,6 +104,10 @@ public class PharmacyService {
         return prescriptionBillRepository.findAllByPatientId(patientId);
     }
 
+    public List<PrescriptionBill> getBillsByPharmacy(Integer pharmacyId){
+        return prescriptionBillRepository.findAllByPharmacyId(pharmacyId);
+    }
+
     public PrescriptionBill payBill(Integer billId) {
         PrescriptionBill prescriptionBill = prescriptionBillRepository.findById(billId).orElseThrow();
         prescriptionBill.setPaid(true);

@@ -32,15 +32,17 @@ const Bills = () => {
                     return;
                 }
 
-                const billsRes = await fetch(`${API_URL}/pharmacies/bills?pharmacyId=${pharmacyId}`, {
+                const billsRes = await fetch(`${API_URL}/pharmacies/allbills?pharmacyId=${pharmacyId}`, {
                     credentials: "include"
                 });
+
 
                 const text = await billsRes.text();
                 if (!text) {
                     setBills([]);
                     return;
                 }
+                console.log(text);
 
                 const billsData = JSON.parse(text);
                 setBills(billsData);

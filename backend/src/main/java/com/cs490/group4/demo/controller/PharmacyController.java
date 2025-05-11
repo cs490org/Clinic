@@ -61,6 +61,11 @@ public class PharmacyController {
         return ResponseEntity.ok(pharmacyService.getBillsByPatientId(patientId));
     }
 
+    @GetMapping("/allbills")
+        private ResponseEntity<List<PrescriptionBill>> getAllBillsByPharmacy(@RequestParam Integer pharmacyId){
+            return ResponseEntity.ok(pharmacyService.getBillsByPharmacy(pharmacyId));
+    }
+
     @PatchMapping("/bill")
     private ResponseEntity<PrescriptionBill> payBill(@RequestParam Integer billId) {
         return ResponseEntity.ok(pharmacyService.payBill(billId));
