@@ -1,9 +1,7 @@
 package com.cs490.group4.demo.service;
 
 import com.cs490.group4.demo.dao.*;
-import com.cs490.group4.demo.dto.MealPlanAssignRequestDTO;
-import com.cs490.group4.demo.dto.MealPlanCreateRequestDTO;
-import com.cs490.group4.demo.dto.MealPlanResponseDTO;
+import com.cs490.group4.demo.dto.*;
 import com.cs490.group4.demo.security.User;
 import com.cs490.group4.demo.security.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -25,6 +23,8 @@ public class MealPlanService {
     private final PatientMealPlanRepository patientMealPlanRepository;
     private final UserRepository userRepository;
     private final MealPlanOwnerRepository mealPlanOwnerRepository;
+    private final RecipeIngredientRepository recipeIngredientRepository;
+    private final RecipeIngredientService recipeIngredientService;
 
     public List<MealPlanResponseDTO> findAll() {
         return mealPlanOwnerRepository.findAll().stream().map((mealPlanOwner)->{
@@ -91,6 +91,38 @@ public class MealPlanService {
 
         // delete meal plan
         mealPlanRepository.delete(mealPlan);
+    }
+
+    @Transactional
+    public MealPlanCaloriesDTO getCalories(Integer mealPlanId) {
+        MealPlan mealPlan = mealPlanRepository.findById(mealPlanId).orElseThrow(()->new EntityNotFoundException("MealPlan not found when trying to get calories"));
+        Recipe breakfast = mealPlan.getBreakfast();
+        Recipe lunch = mealPlan.getLunch();
+        Recipe dinner = mealPlan.getDinner();
+
+        List<IngredientResponseDTO> breakfastIngredients = recipeIngredientService.getIngredientDTOsFromRecipeId(breakfast.getId());
+        int breakfastCalories = 0;
+        for(IngredientResponseDTO ingredient : breakfastIngredients) {
+            breakfastCalories += ingredient.getIngredient().getCalories() * ingredient.getQuantity();
+        }
+
+        List<IngredientResponseDTO> lunchIngredients = recipeIngredientService.getIngredientDTOsFromRecipeId(lunch.getId());
+        int lunchCalories = 0;
+        for(IngredientResponseDTO ingredient : lunchIngredients) {
+            lunchCalories += ingredient.getIngredient().getCalories() * ingredient.getQuantity();
+        }
+
+        List<IngredientResponseDTO> dinnerIngredients = recipeIngredientService.getIngredientDTOsFromRecipeId(dinner.getId());
+        int dinnerCalories = 0;
+        for(IngredientResponseDTO ingredient : dinnerIngredients) {
+            dinnerCalories += ingredient.getIngredient().getCalories() * ingredient.getQuantity();
+        }
+
+        MealPlanCaloriesDTO caloriesDTO = new MealPlanCaloriesDTO();
+        caloriesDTO.setCalories(breakfastCalories + lunchCalories + dinnerCalories);
+        caloriesDTO.setMealPlanId(mealPlanId);
+        return caloriesDTO;
+
     }
 
 }

@@ -7,7 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -33,6 +36,10 @@ public class Appointment {
     @JoinColumn(name = "appointment_status_code_id", referencedColumnName = "id")
     private AppointmentStatusCode appointmentStatusCode;
 
+    private Timestamp appointmentTimestamp;
 
-    private Timestamp appointmentTimestamp, createTimestamp, updateTimestamp;
+    @CreationTimestamp
+    private LocalDateTime createDateTime;
+    @UpdateTimestamp
+    private LocalDateTime updateDateTime;
 }

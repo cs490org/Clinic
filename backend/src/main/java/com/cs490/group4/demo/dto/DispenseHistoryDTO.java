@@ -4,14 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class InventoryDTO {
+public class DispenseHistoryDTO {
+    private Integer quantity;
+    private LocalDateTime dispensedAt;
 
-    private Integer pharmacyId, drugId, quantity;
-    private Boolean dispensed;
-
+    // Getters and Setters
 }

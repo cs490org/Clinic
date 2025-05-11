@@ -8,18 +8,22 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Component
 @RequiredArgsConstructor
 @DependsOn("dataInitializer")
 public class MockDrug {
+
     private final DrugService drugService;
-    public Drug createMockDrug(String name, String description, String dosage, BigDecimal price) {
+
+    public Drug createMockDrug(String name, String description, String dosage, BigDecimal price, String image) {
         DrugDTO dto = new DrugDTO();
         dto.setName(name);
         dto.setDescription(description);
         dto.setDosage(dosage);
         dto.setPrice(price);
+        dto.setImage(image);
         return drugService.createDrug(dto);
     }
 }

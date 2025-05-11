@@ -147,7 +147,7 @@ console.log(appointment);
                     <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => navigate(`/mealplans/create?patientId=${appointment[0].patient?.id}`)}
+                        onClick={() => navigate(`/mealplans/assign?patientId=${appointment[0].patient?.id}`)}
                     >
                         Assign Meal Plan
                     </Button>

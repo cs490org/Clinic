@@ -3,6 +3,7 @@ package com.cs490.group4.demo.controller;
 import com.cs490.group4.demo.dao.MealPlan;
 import com.cs490.group4.demo.dao.PatientMealPlan;
 import com.cs490.group4.demo.dto.MealPlanAssignRequestDTO;
+import com.cs490.group4.demo.dto.MealPlanCaloriesDTO;
 import com.cs490.group4.demo.dto.MealPlanCreateRequestDTO;
 import com.cs490.group4.demo.dto.MealPlanResponseDTO;
 import com.cs490.group4.demo.service.MealPlanService;
@@ -37,7 +38,10 @@ public class MealPlanController {
         return ResponseEntity.ok().build();
     }
 
-
+    @GetMapping("/{id}/calories")
+    private ResponseEntity<MealPlanCaloriesDTO> getMealPlanCalories(@PathVariable Integer id){
+        return ResponseEntity.ok(mealPlanService.getCalories(id));
+    }
 
     @GetMapping("/patient/{id}")
     private ResponseEntity<List<MealPlanResponseDTO>> getPatientAssignedMealPlans(@PathVariable Integer id){
@@ -47,7 +51,5 @@ public class MealPlanController {
     private ResponseEntity<PatientMealPlan> assignMealPlan(@RequestBody MealPlanAssignRequestDTO mealPlanAssignRequestDTO){
         return ResponseEntity.ok(mealPlanService.assignMealPlan(mealPlanAssignRequestDTO));
     }
-
-
 
 }

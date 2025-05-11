@@ -48,12 +48,12 @@ const PendingAppointments = () => {
 
     const PendingAppointmentCard = ({ appointmentId, name, time, symptoms }) => {
         return (
-            <Paper sx={{ p: 2, minWidth: "300px" }}>
+            <Paper sx={{ p: 2 }}>
                 <Stack>
                     <Stack spacing={1}>
                         <Stack direction={"row"} gap={2}>
                             <Avatar />
-                            <Typography fontSize={"1.6rem"} fontWeight={"medium"}>{name}</Typography>
+                            <Typography fontSize={"1.4rem"} fontWeight={"medium"}>{name}</Typography>
                         </Stack>
 
                         <Divider />

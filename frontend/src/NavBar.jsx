@@ -7,7 +7,6 @@ import {
   Button,
   Typography,
   useTheme,
-  Container,
   IconButton,
   Drawer,
   List,
@@ -27,9 +26,10 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
 import FlatwareIcon from '@mui/icons-material/Flatware';
-import ReceiptIcon from '@mui/icons-material/Receipt';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
-import { Medication } from "@mui/icons-material";
+import {
+  Medication, ReceiptLong,
+} from "@mui/icons-material";
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 
 
@@ -247,7 +247,7 @@ export default function NavBar() {
                 setDrawerOpen(false);
               }}>
               <ListItemIcon>
-                <ReceiptIcon />
+                <ReceiptLong />
               </ListItemIcon>
               <ListItemText primary={"Bills"} />
             </ListItemButton>
@@ -260,6 +260,7 @@ export default function NavBar() {
                 setDrawerOpen(false);
               }}>
               <ListItemIcon>
+                <DashboardIcon/>
               </ListItemIcon>
               <ListItemText primary={"Dashboard"} />
             </ListItemButton>
@@ -270,7 +271,7 @@ export default function NavBar() {
                 navigate("/pharmacist/patients");
                 setDrawerOpen(false);
               }}>
-              <ListItemIcon><PersonIcon /></ListItemIcon>
+              <ListItemIcon><PersonIcon/></ListItemIcon>
               <ListItemText primary={"Patients"} />
             </ListItemButton>
           )}
@@ -282,6 +283,7 @@ export default function NavBar() {
                 setDrawerOpen(false);
               }}>
               <ListItemIcon>
+                <Medication />
               </ListItemIcon>
               <ListItemText primary={"Prescriptions"} />
             </ListItemButton>

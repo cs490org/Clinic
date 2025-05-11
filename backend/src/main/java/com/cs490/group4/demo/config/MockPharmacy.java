@@ -38,11 +38,12 @@ public class MockPharmacy {
 
     }
 
-    public void createDrugInventoryInPharmacy(Integer pharmacyId, Integer drugId, Integer quantity) {
+    public void createDrugInventoryInPharmacy(Integer pharmacyId, Integer drugId, Integer quantity, boolean dispensed) {
         InventoryDTO inventoryDTO = new InventoryDTO();
         inventoryDTO.setPharmacyId(pharmacyId);
         inventoryDTO.setQuantity(quantity);
         inventoryDTO.setDrugId(drugId);
+        inventoryDTO.setDispensed(dispensed);
 
         pharmacyService.updateDrugInventory(inventoryDTO);
     }

@@ -62,7 +62,7 @@ const DoctorDashboard = () => {
                         />
                     </Box>
                 </Box>
-                { isMdUp ?
+                { isMdUp?
                 <Grid2 container spacing={2}>
                     <Widgets/>
                 </Grid2>
@@ -84,20 +84,20 @@ function Widgets(){
            <Grid2 size={4}>
                <DoctorQuickActions />
            </Grid2>
-           <Grid2 size={4}>
-               <DoctorReviews />
-           </Grid2>
-           <Grid2 size={12}>
+           <Grid2 size={8}>
                <DoctorPatients />
            </Grid2>
-           <Grid2 size={4}>
+           <Grid2 size={6}>
                <ConfirmedAppointments />
            </Grid2>
-           <Grid2 size={4}>
+           <Grid2 size={6}>
                <PendingAppointments />
            </Grid2>
            <Grid2 size={4}>
                <CancelledAppointments/>
+           </Grid2>
+           <Grid2 size={4}>
+               <DoctorReviews />
            </Grid2>
        </>
     )
