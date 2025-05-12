@@ -38,6 +38,7 @@ import CreateMealPlan from "./pages/MealPlans/CreateMealPlan.jsx";
 import PatientInputCreditCard from "./pages/Patient/PatientInputCreditCard.jsx";
 import PatientPaymentPortal from "./pages/Patient/PaymentPortal.jsx";
 import PatientBills from "./pages/Patient/PatientBills.jsx";
+import PatientMetrics from "./pages/Patient/PatientMetrics.jsx";
 
 const queryClient = new QueryClient()
 const router = createBrowserRouter([
@@ -116,6 +117,13 @@ const router = createBrowserRouter([
         element:
             <Auth allowedRoles={["PATIENT"]}>
                 <PatientInputCreditCard/>
+            </Auth>
+    },
+    {
+        path: '/patient/metrics',
+        element:
+            <Auth allowedRoles={["PATIENT"]}>
+                <PatientMetrics/>
             </Auth>
     },
     {

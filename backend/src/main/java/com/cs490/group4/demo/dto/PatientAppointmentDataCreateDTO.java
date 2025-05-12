@@ -15,5 +15,5 @@ public class PatientAppointmentDataCreateDTO {
     private String bloodPressure;
 
     private Float height;
-    private Float weight;
+//    private Float weight; already in daily survey
 }

@@ -16,6 +16,7 @@ import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { UserContext } from '../../contexts/UserContext';
 import PatientSymptoms from "../Patient/PatientSymptoms.jsx";
+import PatientAppointmentGraphs from "../Patient/PatientAppointmentGraphs.jsx";
 
 const DoctorPatients = () => {
 
@@ -42,6 +43,17 @@ const DoctorPatients = () => {
             return res.json();
         }
     });
+    const [graphOpen, setGraphOpen] = useState(false);
+    const [graphPatient, setGraphPatient] = useState(null);
+
+    const handleGraphOpen = (patient) => {
+        setGraphPatient(patient);
+        setGraphOpen(true);
+    };
+    const handleGraphClose = () => {
+        setGraphOpen(false);
+        setGraphPatient(null);
+    };
 
     if (isLoading) {
         return (
@@ -59,6 +71,7 @@ const DoctorPatients = () => {
         );
     }
 
+
     return (
         <>
         <TableContainer component={Paper} sx={{ p: "1rem", height: '100%' }}>
@@ -72,6 +85,7 @@ const DoctorPatients = () => {
                         <TableCell><strong>Email</strong></TableCell>
                         <TableCell><strong>Phone</strong></TableCell>
                         <TableCell><strong>View Symptoms</strong></TableCell>
+                        <TableCell><strong>View Graphs</strong></TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -81,6 +95,11 @@ const DoctorPatients = () => {
                             <TableCell>{patient.email}</TableCell>
                             <TableCell>{patient.phone}</TableCell>
                             <TableCell><Button onClick={()=>{handleOpen(patient)}} variant={"contained"}>View symptoms</Button></TableCell>
+                            <TableCell>
+                                <Button onClick={() => handleGraphOpen(patient)} variant="contained">
+                                    View Graphs
+                                </Button>
+                            </TableCell>
                         </TableRow>
                     ))}
                     {(!patients || patients.length === 0) && (
@@ -114,6 +133,31 @@ const DoctorPatients = () => {
                     }}
                 >
                     <PatientSymptoms patient_id={selectedPatient?.id} view_only={true}/>
+                </Box>
+            </Modal>
+            <Modal
+                open={graphOpen}
+                onClose={handleGraphClose}
+            >
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        bgcolor: 'background.paper',
+                        boxShadow: 24,
+                        p: 2,
+                        width: '90vw',
+                        maxHeight: '90vh',
+                        overflowY: 'auto',
+                        borderRadius: 1,
+                    }}
+                >
+                    <Typography variant="h6" sx={{ mb: 2 }}>
+                        {graphPatient?.firstName} {graphPatient?.lastName}'s Health Graphs
+                    </Typography>
+                    <PatientAppointmentGraphs patientId={graphPatient?.id} />
                 </Box>
             </Modal>
             </>

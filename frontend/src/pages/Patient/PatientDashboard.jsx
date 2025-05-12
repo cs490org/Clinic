@@ -33,6 +33,7 @@ import PatientQuickActions from "./PatientQuickActions.jsx";
 import PatientEditPreferredPharmacy from "./PatientEditPreferredPharmacy.jsx";
 import PatientChosenDoctor from "./PatientChosenDoctor.jsx";
 import {queryKeys} from "../../utils/queryKeys.js";
+import PatientAppointmentGraphs from "./PatientAppointmentGraphs.jsx";
 const PatientDashboard = () => {
     const { user, roleData } = useContext(UserContext);
     const [openBooking, setOpenBooking] = useState(false);
@@ -68,11 +69,14 @@ const PatientDashboard = () => {
                 <Grid2 size={8} >
                     <AllDoctors onBookClick={handleBookClick} />
                 </Grid2>
+                <Grid2 size={6} >
+                    <PatientAppointmentGraphs patientId={roleData.id}/>
+                </Grid2>
+                <Grid2 size={6} >
+                    <PatientSurvey />
+                </Grid2>
                 <Grid2 size={4} >
                     <PatientEditPreferredPharmacy/>
-                </Grid2>
-                <Grid2 size={8} >
-                    <PatientSurvey />
                 </Grid2>
             </>
         )

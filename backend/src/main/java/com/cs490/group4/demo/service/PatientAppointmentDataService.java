@@ -19,9 +19,8 @@ public class PatientAppointmentDataService {
     private final PatientAppointmentDataRepository patientAppointmentDataRepository;
     private final PatientRepository patientRepository;
 
-
     public List<PatientAppointmentData> getPatientAppointmentData(Integer patientId) {
-        return patientAppointmentDataRepository.findAll();
+        return patientAppointmentDataRepository.findByPatient_Id(patientId);
     }
     public Optional<PatientAppointmentData> getByPatientAndAppointment(Integer patientId, Integer appointmentId) {
 //        return patientAppointmentDataRepository.findByPatientIdAndAppointmentId(patientId, appointmentId);
@@ -35,11 +34,10 @@ public class PatientAppointmentDataService {
         patientAppointmentData.setAppointmentId(dto.getAppointmentId());
         patientAppointmentData.setPatient(patient);
         patientAppointmentData.setDate(dto.getDate());
-        patientAppointmentData.setWeight(dto.getWeight());
+//        patientAppointmentData.setWeight(dto.getWeight());
         patientAppointmentData.setBloodPressure(dto.getBloodPressure());
         patientAppointmentData.setWaterIntake(dto.getWaterIntake());
         patientAppointmentData.setHeight(dto.getHeight());
-        patientAppointmentData.setWeight(dto.getWeight());
 
         return patientAppointmentDataRepository.save(patientAppointmentData);
     }

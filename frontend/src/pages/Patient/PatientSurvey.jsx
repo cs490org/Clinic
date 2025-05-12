@@ -148,6 +148,7 @@ export default function PatientSurvey() {
         )
 
         if (response.ok) {
+            // window.location.reload()
             queryClient.invalidateQueries({ queryKey: queryKeys.weekly_surveys.all })
             toast.success("Did weekly survey!")
             showWeeklySurveyForm(false)
