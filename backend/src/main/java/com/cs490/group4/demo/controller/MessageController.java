@@ -1,6 +1,7 @@
 package com.cs490.group4.demo.controller;
 
 import com.cs490.group4.demo.dao.Message;
+import com.cs490.group4.demo.dto.ConversationDTO;
 import com.cs490.group4.demo.dto.MessageDTO;
 import com.cs490.group4.demo.security.User;
 import com.cs490.group4.demo.service.MessageService;
@@ -40,5 +41,11 @@ public class MessageController {
     public ResponseEntity<List<Message>> getMessagesByAppointment(@PathVariable Integer appointmentId) {
         List<Message> messages = messageService.getMessagesByAppointment(appointmentId);
         return ResponseEntity.ok(messages);
+    }
+
+    @GetMapping("/conversations")
+    public ResponseEntity<List<ConversationDTO>> getConversations(@RequestParam Integer userId) {
+        List<ConversationDTO> conversations = messageService.getConversationsByUserId(userId);
+        return ResponseEntity.ok(conversations);
     }
 } 

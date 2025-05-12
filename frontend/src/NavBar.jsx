@@ -28,7 +28,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import FlatwareIcon from '@mui/icons-material/Flatware';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import {
-  Medication, Payment, ReceiptLong,
+  Medication, Message, Payment, ReceiptLong,
 } from "@mui/icons-material";
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 
@@ -147,6 +147,16 @@ export default function NavBar() {
             </ListItemButton>
           )}
 
+          <ListItemButton onClick={() => {
+            navigate("/conversations");
+            setDrawerOpen(false);
+          }}>
+            <ListItemIcon>
+              <Message />
+            </ListItemIcon>
+            <ListItemText primary="Appointment Chat History" />
+          </ListItemButton>
+
           {user?.role === "DOCTOR" && (
             <ListItemButton onClick={() => {
               navigate("/doctor/assignrx");
@@ -160,15 +170,15 @@ export default function NavBar() {
           )}
 
           {user?.role === "PATIENT" && (
-              <ListItemButton onClick={() => {
-                navigate("/patient/symptoms");
-                setDrawerOpen(false);
-              }}>
-                <ListItemIcon>
-                  <LocalHospitalIcon/>
-                </ListItemIcon>
-                <ListItemText primary="My Symptoms" />
-              </ListItemButton>
+            <ListItemButton onClick={() => {
+              navigate("/patient/symptoms");
+              setDrawerOpen(false);
+            }}>
+              <ListItemIcon>
+                <LocalHospitalIcon />
+              </ListItemIcon>
+              <ListItemText primary="My Symptoms" />
+            </ListItemButton>
           )}
           {(user?.role === "PATIENT" || user?.role === "DOCTOR") &&
             <ListItemButton
@@ -219,15 +229,15 @@ export default function NavBar() {
           )}
 
           {user?.role === "PATIENT" && (
-              <ListItemButton onClick={() => {
-                navigate("/patient/bills");
-                setDrawerOpen(false);
-              }}>
-                <ListItemIcon>
-                  <Payment />
-                </ListItemIcon>
-                <ListItemText primary="Payment Portal" />
-              </ListItemButton>
+            <ListItemButton onClick={() => {
+              navigate("/patient/bills");
+              setDrawerOpen(false);
+            }}>
+              <ListItemIcon>
+                <Payment />
+              </ListItemIcon>
+              <ListItemText primary="Payment Portal" />
+            </ListItemButton>
           )}
 
           {user?.role === "DOCTOR" && (
@@ -273,7 +283,7 @@ export default function NavBar() {
                 setDrawerOpen(false);
               }}>
               <ListItemIcon>
-                <DashboardIcon/>
+                <DashboardIcon />
               </ListItemIcon>
               <ListItemText primary={"Dashboard"} />
             </ListItemButton>
@@ -284,7 +294,7 @@ export default function NavBar() {
                 navigate("/pharmacist/patients");
                 setDrawerOpen(false);
               }}>
-              <ListItemIcon><PersonIcon/></ListItemIcon>
+              <ListItemIcon><PersonIcon /></ListItemIcon>
               <ListItemText primary={"Patients"} />
             </ListItemButton>
           )}

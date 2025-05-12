@@ -32,9 +32,6 @@ export default function MessageRoomPage() {
     const [showForm, setShowForm] = useState(false);
     const [hasSubmittedData, setHasSubmittedData] = useState(false);
 
-
-    const messagesEndRef = useRef(null);
-
     const { user ,roleData} = useContext(UserContext);
 
     const { toUserId } = useParams();
