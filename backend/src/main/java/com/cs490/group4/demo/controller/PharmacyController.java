@@ -81,7 +81,7 @@ public class PharmacyController {
         return ResponseEntity.ok(pharmacyService.payBill(billId));
     }
 
-    @GetMapping("/unassigned")  //to display new drugs not in pharmacy inventory already
+    @GetMapping("/unassigned")  //to fetch new drugs not in pharmacy inventory already
     private ResponseEntity<List<Drug>> getUnassignedDrugs(@RequestParam Integer pharmacyId) {
         return ResponseEntity.ok(drugService.getUnassignedDrugs(pharmacyId));
     }
@@ -92,7 +92,7 @@ public class PharmacyController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/rx")  //to display new drugs not in pharmacy inventory already
+    @GetMapping("/rx")  //to fetch all prescriptions for pharmacy
         private ResponseEntity<List<Prescription>> getPrescriptionsByPharmacy(@RequestParam Integer pharmacyId) {
             return ResponseEntity.ok(prescriptionService.getPrescriptionsByPharmacy(pharmacyId));
     }

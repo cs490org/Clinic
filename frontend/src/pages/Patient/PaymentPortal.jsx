@@ -1,4 +1,6 @@
-import { useState, useContext, useEffect } from 'react';
+// src/pages/Patient/PaymentPortal.jsx
+
+import { useContext, useEffect, useState } from 'react';
 import {
     Paper,
     Typography,
@@ -9,23 +11,27 @@ import {
     RadioGroup,
     FormControlLabel,
     Radio,
-    TextField,
     Button,
+    Stack,
 } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../../utils/constants';
 import { UserContext } from '../../contexts/UserContext.jsx';
 
-export default function PatientPaymentPortal() {
+export default function PatientPaymentPortal({ billId, billAmount, onPaymentSuccess }) {
     const { roleData } = useContext(UserContext);
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
 
-    const [amount, setAmount] = useState('');
+    // Don't render if no bill selected
+    if (billId == null || billAmount == null) return null;
+
     const [selectedCardId, setSelectedCardId] = useState(null);
 
-    // 1️⃣ Fetch saved cards, only after we have a patientId
+    // Fetch saved cards
     const { data: cards = [], isLoading, isError } = useQuery({
         queryKey: ['creditCards', roleData.id],
         queryFn: () =>
@@ -36,97 +42,98 @@ export default function PatientPaymentPortal() {
                 })
                 .then(res => res.data),
         enabled: !!roleData.id,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 300_000,
     });
 
-    // 2️⃣ Default‐select the first card when they load
+    // Auto-select first card
     useEffect(() => {
         if (cards.length > 0 && selectedCardId === null) {
             setSelectedCardId(cards[0].id);
         }
     }, [cards, selectedCardId]);
 
-    // 3️⃣ Mutation to perform the payment
-    const makePayment = useMutation({
+    // Mark bill paid
+    const markPaid = useMutation({
         mutationFn: () =>
-            axios.post(
-                `${API_URL}/payments`,
+            axios.patch(
+                `${API_URL}/pharmacies/bill`,
+                null,
                 {
-                    patientId: roleData.id,
-                    amount: parseFloat(amount),
-                    cardId: selectedCardId,
-                },
-                { withCredentials: true }
+                    params: { billId },
+                    withCredentials: true,
+                }
             ),
         onSuccess: () => {
-            toast.success('Payment successful!');
-            setAmount('');
+            toast.success('Bill paid successfully!');
+            queryClient.invalidateQueries({ queryKey: ['bills', roleData.id] });
+            onPaymentSuccess?.();
             setSelectedCardId(null);
-            queryClient.invalidateQueries({ queryKey: ['payments', roleData.id] });
         },
-        onError: () => toast.error('Payment failed'),
+        onError: () => toast.error('Failed to mark bill paid'),
     });
 
-    const handleSubmit = () => {
-        if (!amount || selectedCardId === null) {
-            toast.error('Enter an amount and select a card');
+    const handlePay = () => {
+        if (selectedCardId === null) {
+            toast.error('Please select a card');
             return;
         }
-        makePayment.mutate();
+        markPaid.mutate();
     };
 
     return (
         <Paper elevation={3} sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
             <Typography variant="h6" gutterBottom>
-                Make a Payment
+                Pay ${billAmount.toFixed(2)}
             </Typography>
             <Divider sx={{ mb: 2 }} />
 
             {isLoading ? (
                 <CircularProgress />
             ) : isError ? (
-                <Typography color="error">Failed to load cards.</Typography>
+                <Typography color="error" sx={{ mb: 2 }}>
+                    Failed to load cards.
+                </Typography>
             ) : (
-                <FormControl component="fieldset" sx={{ mb: 2 }}>
-                    <FormLabel component="legend">Select a Card</FormLabel>
-                    <RadioGroup
-                        value={selectedCardId?.toString() || ''}
-                        onChange={e => setSelectedCardId(Number(e.target.value))}
-                    >
-                        {cards.length > 0 ? (
-                            cards.map(card => (
-                                <FormControlLabel
-                                    key={card.id}
-                                    value={card.id.toString()}
-                                    control={<Radio />}
-                                    label={`•••• •••• •••• ${card.last4Digits}  exp ${card.expirationDate}`}
-                                />
-                            ))
-                        ) : (
-                            <Typography>No saved cards. Please add one in your profile.</Typography>
-                        )}
-                    </RadioGroup>
-                </FormControl>
-            )}
+                <Stack spacing={1} sx={{ mb: 2 }}>
+                    <FormControl component="fieldset">
+                        <FormLabel component="legend">Select a Card</FormLabel>
+                        <RadioGroup
+                            value={selectedCardId?.toString() || ''}
+                            onChange={e => setSelectedCardId(Number(e.target.value))}
+                        >
+                            {cards.length > 0 ? (
+                                cards.map(card => (
+                                    <FormControlLabel
+                                        key={card.id}
+                                        value={card.id.toString()}
+                                        control={<Radio />}
+                                        label={`•••• •••• •••• ${card.last4Digits} exp ${card.expirationDate}`}
+                                    />
+                                ))
+                            ) : (
+                                <Typography>No saved cards.</Typography>
+                            )}
+                        </RadioGroup>
+                    </FormControl>
 
-            <TextField
-                label="Amount ($)"
-                value={amount}
-                onChange={e => setAmount(e.target.value)}
-                fullWidth
-                type="number"
-                inputProps={{ min: 0 }}
-                sx={{ mb: 2 }}
-            />
+                    <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => navigate('/patient/add_payment')}
+                    >
+                        + Add New Card
+                    </Button>
+                </Stack>
+            )}
 
             <Button
                 variant="contained"
                 color="primary"
                 fullWidth
-                onClick={handleSubmit}
-                disabled={makePayment.isLoading || isLoading || cards.length === 0}
+                onClick={handlePay}
+                disabled={markPaid.isLoading || isLoading || cards.length === 0}
             >
-                {makePayment.isLoading ? <CircularProgress size={24} /> : 'Pay Now'}
+                {markPaid.isLoading ? <CircularProgress size={24} /> : `Pay $${billAmount.toFixed(2)}`}
             </Button>
         </Paper>
     );

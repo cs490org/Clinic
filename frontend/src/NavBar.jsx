@@ -220,7 +220,7 @@ export default function NavBar() {
 
           {user?.role === "PATIENT" && (
               <ListItemButton onClick={() => {
-                navigate("/patient/paymentportal");
+                navigate("/patient/bills");
                 setDrawerOpen(false);
               }}>
                 <ListItemIcon>

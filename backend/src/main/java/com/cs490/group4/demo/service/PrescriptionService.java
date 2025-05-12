@@ -39,6 +39,15 @@ public class PrescriptionService {
     }
 
     @Transactional
+        public Prescription updateStatus(Integer id, String statusCode) {
+            Prescription p = prescriptionRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Prescription not found"));
+            p.setRxStatusCode(RxStatusCode.valueOf(statusCode));
+            p.setUpdateTimestamp(LocalDateTime.now());
+            return prescriptionRepository.save(p);
+    }
+
+    @Transactional
     public Prescription createPrescription(PrescriptionRequest dto){
         Doctor doctor =  doctorRepository.findById(dto.getDoctorId()).orElseThrow(()-> new EntityNotFoundException("Doctor not found"));
         Patient patient = patientRepository.findById(dto.getPatientId()).orElseThrow(()-> new EntityNotFoundException("Patient not found"));
