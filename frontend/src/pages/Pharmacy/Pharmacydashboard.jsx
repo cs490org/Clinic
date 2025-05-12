@@ -10,7 +10,7 @@ import {
 } from 'recharts';
 import { UserContext } from '../../contexts/UserContext.jsx';
 import axios from 'axios';
-import { API_URL } from '../../utils/constants.js';
+import { API_URL, PHARMACY_API_URL } from '../../utils/constants.js';
 
 const COLORS = ['#8884d8', '#83a6ed', '#8dd1e1', '#82ca9d', '#ffc658'];
 
@@ -32,9 +32,9 @@ const PharmacyDashboard = () => {
         if (!pharmacyId) return;
 
         const [presRes, patRes, pharmRes] = await Promise.all([
-          axios.get(`${API_URL}/pharmacies/rx?pharmacyId=${pharmacyId}`, { withCredentials: true }),
+          axios.get(`${PHARMACY_API_URL}/pharmacies/rx?pharmacyId=${pharmacyId}`, { withCredentials: true }),
           axios.get(`${API_URL}/patient/pharmacy?pharmacyId=${pharmacyId}`, { withCredentials: true }),
-          axios.get(`${API_URL}/pharmacies/drugs?pharmacyId=${pharmacyId}`, { withCredentials: true })
+          axios.get(`${PHARMACY_API_URL}/pharmacies/drugs?pharmacyId=${pharmacyId}`, { withCredentials: true })
         ]);
 
         setPrescriptions(presRes.data || []);

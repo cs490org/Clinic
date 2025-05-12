@@ -65,7 +65,7 @@ export default function AssignPrescription() {
         queryKey: ["drugs", pharmacyId],
         queryFn: async () => {
             if (!pharmacyId) return []; //this one is good because it only gets the drugs which pharmacy has in stock
-                const res = await fetch(`${API_URL}/pharmacies/drugs?pharmacyId=${pharmacyId}`, {
+                const res = await fetch(`${APHARMACY_API_URL}/pharmacies/drugs?pharmacyId=${pharmacyId}`, {
                     credentials: 'include'
                 });
             /*const res = await fetch(`${API_URL}/drugs`, {  // gets ALL drugs breaking the constraint on pharmacy end
