@@ -3,17 +3,17 @@ import {
     Container,
     Typography,
     Paper,
-    CircularProgress,
-    Box,
     Dialog,
     DialogTitle,
     DialogContent,
     DialogActions,
     Button,
-    TextField, Grid2, useMediaQuery, useTheme, Stack,
-    Avatar,
+    TextField,
+    Grid,
+    useMediaQuery,
+    useTheme,
+    Stack,
     Divider,
-    Tooltip,
 } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -23,16 +23,17 @@ import { API_URL } from '../../utils/constants';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { UserContext } from '../../contexts/UserContext';
-import {useQuery, useQueryClient} from "@tanstack/react-query";
-import MealPlansWidget from "./MealPlansWidget.jsx";
+import { useQueryClient } from '@tanstack/react-query';
+import MealPlansWidget from './MealPlansWidget.jsx';
 import AllDoctors from './AllDoctors';
-import PatientSurvey from "./PatientSurvey.jsx";
+import PatientSurvey from './PatientSurvey.jsx';
 import { useNavigate } from 'react-router-dom';
-import PendingAppointments from "./PendingAppointments.jsx";
-import PatientQuickActions from "./PatientQuickActions.jsx";
-import PatientEditPreferredPharmacy from "./PatientEditPreferredPharmacy.jsx";
-import PatientChosenDoctor from "./PatientChosenDoctor.jsx";
-import {queryKeys} from "../../utils/queryKeys.js";
+import PendingAppointments from './PendingAppointments.jsx';
+import PatientQuickActions from './PatientQuickActions.jsx';
+import PatientEditPreferredPharmacy from './PatientEditPreferredPharmacy.jsx';
+import PatientChosenDoctor from './PatientChosenDoctor.jsx';
+import { queryKeys } from '../../utils/queryKeys.js';
+
 const PatientDashboard = () => {
     const { user, roleData } = useContext(UserContext);
     const [openBooking, setOpenBooking] = useState(false);
@@ -40,8 +41,7 @@ const PatientDashboard = () => {
     const [selectedDateTime, setSelectedDateTime] = useState(dayjs());
     const [symptoms, setSymptoms] = useState('');
     const navigate = useNavigate();
-
-
+    const queryClient = useQueryClient();
 
     const handleBookClick = (doctor) => {
         setSelectedDoctor(doctor);
@@ -49,53 +49,41 @@ const PatientDashboard = () => {
     };
 
     const theme = useTheme();
-    const isMdUp= useMediaQuery(theme.breakpoints.up("md"))
-    const Widgets = () => {
-        return (
-            <>
-                <Grid2 size={4} sx={{display:"flex",flexDirection:"column"}}>
-                    <PatientQuickActions/>
-                </Grid2 >
-                <Grid2 size={4}>
-                    <PatientChosenDoctor/>
-                </Grid2>
-                <Grid2 size={4} >
-                    <PendingAppointments/>
-                </Grid2 >
-                <Grid2 size={4} >
-                    <MealPlansWidget/>
-                </Grid2>
-                <Grid2 size={8} >
-                    <AllDoctors onBookClick={handleBookClick} />
-                </Grid2>
-                <Grid2 size={4} >
-                    <PatientEditPreferredPharmacy/>
-                </Grid2>
-                <Grid2 size={8} >
-                    <PatientSurvey />
-                </Grid2>
-            </>
-        )
-    }
+    const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
+
+    const Widgets = () => (
+        <>
+            <Grid item xs={12} md={4}><PatientQuickActions /></Grid>
+            <Grid item xs={12} md={4}><PatientChosenDoctor /></Grid>
+            <Grid item xs={12} md={4}><PendingAppointments onAppointmentChange={() => queryClient.invalidateQueries(queryKeys.appointments.all)} /></Grid>
+            <Grid item xs={12} md={4}><MealPlansWidget /></Grid>
+            <Grid item xs={12} md={8}><AllDoctors onBookClick={handleBookClick} /></Grid>
+            <Grid item xs={12} md={4}><PatientEditPreferredPharmacy /></Grid>
+            <Grid item xs={12} md={8}><PatientSurvey /></Grid>
+        </>
+    );
+
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4, px: 4 }}>
-            <Typography sx={{fontSize:"1.6rem", fontWeight: "bold" }} gutterBottom>
+            <Typography sx={{ fontSize: '1.6rem', fontWeight: 'bold' }} gutterBottom>
                 Patient Dashboard
             </Typography>
-            <Divider sx={{mb:"2rem"}}></Divider>
-            {
-                isMdUp?
-                    <Grid2 wrap={"wrap"} container spacing={1}>
-                        <Widgets />
-                    </Grid2>
-                    :
-                    <Stack wrap={"wrap"} container spacing={3}>
-                        <Widgets />
-                    </Stack>
-            }
-
-            <BookAppointmentDialog openBooking={openBooking} setOpenBooking={setOpenBooking} roleData={roleData} selectedDoctor={selectedDoctor} />
-
+            <Divider sx={{ mb: '2rem' }} />
+            {isMdUp ? (
+                <Grid container spacing={2}>
+                    <Widgets />
+                </Grid>
+            ) : (
+                <Stack spacing={3}>
+                    <Widgets />
+                </Stack>
+            )}
+            <BookAppointmentDialog
+                openBooking={openBooking}
+                setOpenBooking={setOpenBooking}
+                roleData={roleData}
+                selectedDoctor={selectedDoctor}
+            />
         </Container>
     );
 };
@@ -105,42 +93,35 @@ export default PatientDashboard;
 function BookAppointmentDialog({ openBooking, setOpenBooking, roleData, selectedDoctor }) {
     const [selectedDateTime, setSelectedDateTime] = useState(dayjs());
     const [symptoms, setSymptoms] = useState('');
+    const queryClient = useQueryClient();
 
     const handleCloseBooking = () => {
         setOpenBooking(false);
-        setSelectedDoctor(null);
         setSelectedDateTime(dayjs());
         setSymptoms('');
+        queryClient.invalidateQueries(queryKeys.appointments.all); 
     };
 
-    const queryClient = useQueryClient()
     const handleBookAppointment = async () => {
+        handleCloseBooking();
         const request = {
             appointment: {
-                doctor: {
-                    id: selectedDoctor.id
-                },
-                patient: {
-                    id: roleData.id
-                },
+                doctor: { id: selectedDoctor.id },
+                patient: { id: roleData.id },
                 appointmentTimestamp: selectedDateTime.toISOString()
             },
             symptoms: symptoms.trim()
         };
 
         try {
-            const response = await axios.post(`${API_URL}/appointments`, request, { withCredentials: true });
-            await axios.put(`${API_URL}/patient/doctor?patientId=${roleData.id}&doctorId=${selectedDoctor.id}`
-                , { withCredentials: true });
+            await axios.post(`${API_URL}/appointments`, request, { withCredentials: true });
+            await axios.put(`${API_URL}/patient/doctor?patientId=${roleData.id}&doctorId=${selectedDoctor.id}`, null, { withCredentials: true });
             toast.success('Appointment created successfully!');
-            queryClient.invalidateQueries(queryKeys.appointments.all)
-            // window.location.reload()
+            await queryClient.invalidateQueries(queryKeys.appointments.all);
         } catch (error) {
             console.error('Error creating appointment:', error);
             toast.error('Failed to create appointment');
         }
-
-        handleCloseBooking();
     };
 
     return (
@@ -177,5 +158,5 @@ function BookAppointmentDialog({ openBooking, setOpenBooking, roleData, selected
                 </Button>
             </DialogActions>
         </Dialog>
-    )
+    );
 }

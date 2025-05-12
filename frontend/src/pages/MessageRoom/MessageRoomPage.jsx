@@ -11,11 +11,12 @@ import {
     ListItemText,
     Divider,
     ListItemAvatar,
-    Avatar, useTheme,
+    Avatar,
+    useTheme
 } from '@mui/material';
 import { format } from 'date-fns';
 import { API_URL } from '../../utils/constants';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { UserContext } from '../../contexts/UserContext';
 import axios from 'axios';
 import { toast } from 'sonner';
@@ -23,16 +24,12 @@ import { toast } from 'sonner';
 export default function MessageRoomPage() {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
-    // const [toUserId, setToUserId] = useState(2); // This should be passed as a prop or from route params
-    // const [searchParams] = useSearchParams()
-    // const toUserId = searchParams.get("toUserId")
-
     const { toUserId } = useParams();
-
-    const messagesEndRef = useRef(null);
-    const { id } = useParams();
+    const { id } = useParams(); // appointment ID
     const { user } = useContext(UserContext);
     const navigate = useNavigate();
+    const messagesEndRef = useRef(null);
+    const theme = useTheme();
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -45,17 +42,14 @@ export default function MessageRoomPage() {
             });
             if (!response.ok) throw new Error('Failed to fetch appointment status');
             const appointment = await response.json();
-            
-            // If appointment is completed (status code 4) and user is patient, navigate to complete page
+
             if (appointment[0].appointmentStatusCode?.id === 4 && user?.role === 'PATIENT') {
                 navigate(`/appointment/${id}/complete`);
             }
 
-
-            // if it cancelled, leave
-            if (appointment[0].appointmentStatusCode?.id === 3){
+            if (appointment[0].appointmentStatusCode?.id === 3) {
                 navigate(-1);
-                toast("The patient has cancelled the appointment.")
+                toast("The patient has cancelled the appointment.");
             }
         } catch (error) {
             console.error('Error checking appointment status:', error);
@@ -65,9 +59,10 @@ export default function MessageRoomPage() {
     useEffect(() => {
         fetchMessages();
         checkAppointmentStatus();
+
         const messageInterval = setInterval(fetchMessages, 5000);
         const statusInterval = setInterval(checkAppointmentStatus, 5000);
-        
+
         return () => {
             clearInterval(messageInterval);
             clearInterval(statusInterval);
@@ -83,9 +78,7 @@ export default function MessageRoomPage() {
             const response = await fetch(`${API_URL}/messages/appointment/${id}`, {
                 credentials: 'include',
             });
-            if (!response.ok) {
-                throw new Error('Failed to fetch messages');
-            }
+            if (!response.ok) throw new Error('Failed to fetch messages');
             const data = await response.json();
             setMessages([...data.reverse()]);
         } catch (error) {
@@ -104,7 +97,6 @@ export default function MessageRoomPage() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    // fromUserId, Being set based on AuthenticationPrincipal
                     toUserId,
                     message: newMessage,
                     appointmentId: id,
@@ -112,9 +104,7 @@ export default function MessageRoomPage() {
                 credentials: 'include',
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to send message');
-            }
+            if (!response.ok) throw new Error('Failed to send message');
 
             setNewMessage('');
             fetchMessages();
@@ -123,28 +113,50 @@ export default function MessageRoomPage() {
         }
     };
 
-    console.log(user)
-    console.log(messages)
-
-    const theme = useTheme()
-
     return (
         <Container maxWidth="md" sx={{ height: '90vh', py: 4 }}>
             <Paper elevation={3} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <Typography variant="h5" sx={{ p: 2, borderBottom: 1, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography
+                    variant="h5"
+                    sx={{
+                        p: 2,
+                        borderBottom: 1,
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                    }}
+                >
                     Chat Room
 
-                    {user?.role === "DOCTOR" ? <Button variant="contained" color="error" onClick={() => {
-                        axios.post(`${API_URL}/appointments/${id}/complete`, { withCredentials: true })
-                            .then(() => {
-                                navigate(`/appointment/${id}/complete`);
-                            })
-                    }}>
-                        End Appointment
-                    </Button> :
-                        <Button variant="contained" color="error" onClick={() => navigate(-1)}>
+                    {user?.role === "DOCTOR" ? (
+                        <Button
+                            variant="contained"
+                            color="error"
+                            onClick={async () => {
+                                try {
+                                    await axios.post(`${API_URL}/appointments/${id}/complete`, null, {
+                                        withCredentials: true
+                                    });
+                                    toast.success("Appointment ended successfully");
+                                    navigate('/doctor/dashboard');
+                                } catch (error) {
+                                    console.error("Failed to complete appointment:", error);
+                                    toast.error("Failed to end appointment");
+                                }
+                            }}
+                        >
+                            End Appointment
+                        </Button>
+                    ) : (
+                        <Button
+                            variant="contained"
+                            color="error"
+                            onClick={() => navigate(-1)}
+                        >
                             Leave Appointment
-                        </Button>}
+                        </Button>
+                    )}
                 </Typography>
 
                 <List sx={{ flexGrow: 1, overflow: 'auto', p: 2 }}>
@@ -156,9 +168,11 @@ export default function MessageRoomPage() {
                                     mb: 1
                                 }}
                             >
-                                {message.fromUserId.userId !== user?.id && <ListItemAvatar>
-                                    <Avatar src={message.fromUserId.imgUri} />
-                                </ListItemAvatar>}
+                                {message.fromUserId.userId !== user?.id && (
+                                    <ListItemAvatar>
+                                        <Avatar src={message.fromUserId.imgUri} />
+                                    </ListItemAvatar>
+                                )}
                                 <Paper
                                     elevation={1}
                                     sx={{
@@ -175,11 +189,9 @@ export default function MessageRoomPage() {
                                         secondary={format(new Date(message.sentTimestamp), 'MMM d, yyyy h:mm a')}
                                         sx={{
                                             '& .MuiListItemText-primary': {
-                                                // color: message.fromUserId.userId === user?.id ? 'white' : 'text.primary',
                                                 color: message.fromUserId.userId === user?.id ? 'white' : 'black',
                                             },
                                             '& .MuiListItemText-secondary': {
-                                                // color: message.fromUserId.userId === user?.id ? 'rgba(255, 255, 255, 0.7)' : 'text.secondary',
                                                 color: message.fromUserId.userId === user?.id ? 'rgba(255, 255, 255, 0.7)' : 'black',
                                             },
                                         }}
