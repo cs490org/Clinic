@@ -20,6 +20,13 @@ export default function PatientQuickActions() {
                 <Button
                     variant="contained"
                     fullWidth
+                    onClick={() => navigate('/patient/metrics')}
+                >
+                    View my health
+                </Button>
+                <Button
+                    variant="contained"
+                    fullWidth
                     onClick={() => navigate('/recipes')}
                 >
                     View recipes

@@ -20,13 +20,26 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { UserContext } from '../../contexts/UserContext';
 import axios from 'axios';
 import { toast } from 'sonner';
+import PatientAddAppointmentData from "../Patient/PatientAddAppointmentData.jsx";
+import {useQuery} from "@tanstack/react-query";
 
 export default function MessageRoomPage() {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
+
+
+    // patient submitting their metrics for the appointment
+    const [showForm, setShowForm] = useState(false);
+    const [hasSubmittedData, setHasSubmittedData] = useState(false);
+
+
+    const messagesEndRef = useRef(null);
+
+    const { user ,roleData} = useContext(UserContext);
+
     const { toUserId } = useParams();
     const { id } = useParams(); // appointment ID
-    const { user } = useContext(UserContext);
+
     const navigate = useNavigate();
     const messagesEndRef = useRef(null);
     const theme = useTheme();
@@ -73,6 +86,30 @@ export default function MessageRoomPage() {
         scrollToBottom();
     }, [messages]);
 
+    const checkIfAppointmentDataSubmitted = async () => {
+        try {
+            const url =`${API_URL}/patient/${roleData.id}/appointment-data/${id}`
+            console.log(url)
+            const res = await axios.get(url, {
+                withCredentials: true
+            });
+            if (res.data) {
+                setHasSubmittedData(true);
+            } else {
+                setShowForm(true); // no data submitted → show modal
+            }
+        } catch (err) {
+            console.error('Error checking appointment data:', err);
+            setShowForm(true); // show anyway if check fails
+        }
+    };
+
+    useEffect(() => {
+        if (user?.role === 'PATIENT') {
+            checkIfAppointmentDataSubmitted();
+        }
+    }, [user, id]);
+
     const fetchMessages = async () => {
         try {
             const response = await fetch(`${API_URL}/messages/appointment/${id}`, {
@@ -114,6 +151,7 @@ export default function MessageRoomPage() {
     };
 
     return (
+        <>
         <Container maxWidth="md" sx={{ height: '90vh', py: 4 }}>
             <Paper elevation={3} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <Typography
@@ -225,5 +263,20 @@ export default function MessageRoomPage() {
                 </Box>
             </Paper>
         </Container>
+            {showForm && user?.role === 'PATIENT' && (
+                <PatientAddAppointmentData
+                    open={showForm}
+                    onClose={(success) => {
+                        setShowForm(false);
+                        if (success) {
+                            toast.success("Appointment data submitted.");
+                            setHasSubmittedData(true);
+                        }
+                    }}
+                    appointmentId={id}
+                    patientId={roleData.id}
+                />
+            )}
+            </>
     );
 }

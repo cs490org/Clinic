@@ -28,11 +28,13 @@ import MealPlansWidget from './MealPlansWidget.jsx';
 import AllDoctors from './AllDoctors';
 import PatientSurvey from './PatientSurvey.jsx';
 import { useNavigate } from 'react-router-dom';
-import PendingAppointments from './PendingAppointments.jsx';
-import PatientQuickActions from './PatientQuickActions.jsx';
-import PatientEditPreferredPharmacy from './PatientEditPreferredPharmacy.jsx';
-import PatientChosenDoctor from './PatientChosenDoctor.jsx';
-import { queryKeys } from '../../utils/queryKeys.js';
+
+import PendingAppointments from "./PendingAppointments.jsx";
+import PatientQuickActions from "./PatientQuickActions.jsx";
+import PatientEditPreferredPharmacy from "./PatientEditPreferredPharmacy.jsx";
+import PatientChosenDoctor from "./PatientChosenDoctor.jsx";
+import {queryKeys} from "../../utils/queryKeys.js";
+import AllPatientMetrics from "./AllPatientMetrics.jsx";
 
 const PatientDashboard = () => {
     const { user, roleData } = useContext(UserContext);
@@ -49,19 +51,38 @@ const PatientDashboard = () => {
     };
 
     const theme = useTheme();
-    const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
 
-    const Widgets = () => (
-        <>
-            <Grid item xs={12} md={4}><PatientQuickActions /></Grid>
-            <Grid item xs={12} md={4}><PatientChosenDoctor /></Grid>
-            <Grid item xs={12} md={4}><PendingAppointments onAppointmentChange={() => queryClient.invalidateQueries(queryKeys.appointments.all)} /></Grid>
-            <Grid item xs={12} md={4}><MealPlansWidget /></Grid>
-            <Grid item xs={12} md={8}><AllDoctors onBookClick={handleBookClick} /></Grid>
-            <Grid item xs={12} md={4}><PatientEditPreferredPharmacy /></Grid>
-            <Grid item xs={12} md={8}><PatientSurvey /></Grid>
-        </>
-    );
+    const isMdUp= useMediaQuery(theme.breakpoints.up("md"))
+    const Widgets = () => {
+        return (
+            <>
+                <Grid2 size={4} sx={{display:"flex",flexDirection:"column"}}>
+                    <PatientQuickActions/>
+                </Grid2 >
+                <Grid2 size={4}>
+                    <PatientChosenDoctor/>
+                </Grid2>
+                <Grid2 size={4} >
+                    <PendingAppointments/>
+                </Grid2 >
+                <Grid2 size={4} >
+                    <MealPlansWidget/>
+                </Grid2>
+                <Grid2 size={8} >
+                    <AllDoctors onBookClick={handleBookClick} />
+                </Grid2>
+                <Grid2 size={6} >
+                    <AllPatientMetrics patientId={roleData.id}/>
+                </Grid2>
+                <Grid2 size={6} >
+                    <PatientSurvey />
+                </Grid2>
+                <Grid2 size={4} >
+                    <PatientEditPreferredPharmacy/>
+                </Grid2>
+            </>
+        )
+    }
 
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4, px: 4 }}>
