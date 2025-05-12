@@ -1,6 +1,5 @@
 // src/pages/Patient/PaymentPortal.jsx
-
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
     Paper,
     Typography,
@@ -12,7 +11,7 @@ import {
     FormControlLabel,
     Radio,
     Button,
-    Stack,
+    Stack
 } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
@@ -21,63 +20,71 @@ import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../../utils/constants';
 import { UserContext } from '../../contexts/UserContext.jsx';
 
-export default function PatientPaymentPortal({ billId, billAmount, onPaymentSuccess }) {
+export default function PatientPaymentPortal({ billId, billAmount, prescriptionId, onPaymentSuccess }) {
     const { roleData } = useContext(UserContext);
     const queryClient = useQueryClient();
     const navigate = useNavigate();
-
-    // Don't render if no bill selected
-    if (billId == null || billAmount == null) return null;
+    if (!billId || !prescriptionId) return null;
 
     const [selectedCardId, setSelectedCardId] = useState(null);
 
-    // Fetch saved cards
     const { data: cards = [], isLoading, isError } = useQuery({
         queryKey: ['creditCards', roleData.id],
         queryFn: () =>
-            axios
-                .get(`${API_URL}/credit-cards`, {
-                    params: { patientId: roleData.id },
-                    withCredentials: true,
-                })
-                .then(res => res.data),
+            axios.get(`${API_URL}/credit-cards`, {
+                params: { patientId: roleData.id },
+                withCredentials: true
+            }).then(res => res.data),
         enabled: !!roleData.id,
-        staleTime: 300_000,
     });
 
-    // Auto-select first card
     useEffect(() => {
         if (cards.length > 0 && selectedCardId === null) {
             setSelectedCardId(cards[0].id);
         }
     }, [cards, selectedCardId]);
 
-    // Mark bill paid
-    const markPaid = useMutation({
-        mutationFn: () =>
-            axios.patch(
+    // Disable if selected card is expired
+    const selectedCard = cards.find(c => c.id === selectedCardId);
+    const isExpired = (() => {
+        if (!selectedCard?.expirationDate) return false;
+        const [m, y] = selectedCard.expirationDate.split('/');
+        const expMonth = parseInt(m, 10);
+        const expYear = 2000 + parseInt(y, 10);
+        const now = new Date();
+        const nowMonth = now.getMonth() + 1;
+        const nowYear = now.getFullYear();
+        return expYear < nowYear || (expYear === nowYear && expMonth < nowMonth);
+    })();
+
+    const payAndReady = useMutation({
+        mutationFn: async () => {
+            await axios.patch(
                 `${API_URL}/pharmacies/bill`,
                 null,
-                {
-                    params: { billId },
-                    withCredentials: true,
-                }
-            ),
+                { params: { billId }, withCredentials: true }
+            );
+            return axios.patch(
+                `${API_URL}/${prescriptionId}/status`,
+                null,
+                { params: { status: 'READY_FOR_PICKUP' }, withCredentials: true }
+            );
+        },
         onSuccess: () => {
-            toast.success('Bill paid successfully!');
-            queryClient.invalidateQueries({ queryKey: ['bills', roleData.id] });
-            onPaymentSuccess?.();
+            toast.success('Payment recorded and prescription is ready for pickup');
+            queryClient.invalidateQueries(['bills', roleData.id]);
+            onPaymentSuccess();
             setSelectedCardId(null);
         },
-        onError: () => toast.error('Failed to mark bill paid'),
+        onError: () => toast.error('Payment or status update failed'),
     });
 
     const handlePay = () => {
-        if (selectedCardId === null) {
-            toast.error('Please select a card');
+        if (!selectedCardId) {
+            toast.error('Select a card');
             return;
         }
-        markPaid.mutate();
+        payAndReady.mutate();
     };
 
     return (
@@ -86,7 +93,6 @@ export default function PatientPaymentPortal({ billId, billAmount, onPaymentSucc
                 Pay ${billAmount.toFixed(2)}
             </Typography>
             <Divider sx={{ mb: 2 }} />
-
             {isLoading ? (
                 <CircularProgress />
             ) : isError ? (
@@ -101,39 +107,29 @@ export default function PatientPaymentPortal({ billId, billAmount, onPaymentSucc
                             value={selectedCardId?.toString() || ''}
                             onChange={e => setSelectedCardId(Number(e.target.value))}
                         >
-                            {cards.length > 0 ? (
-                                cards.map(card => (
-                                    <FormControlLabel
-                                        key={card.id}
-                                        value={card.id.toString()}
-                                        control={<Radio />}
-                                        label={`•••• •••• •••• ${card.last4Digits} exp ${card.expirationDate}`}
-                                    />
-                                ))
-                            ) : (
-                                <Typography>No saved cards.</Typography>
-                            )}
+                            {cards.map(card => (
+                                <FormControlLabel
+                                    key={card.id}
+                                    value={card.id.toString()}
+                                    control={<Radio />}
+                                    label={`•••• •••• •••• ${card.last4Digits} exp ${card.expirationDate}`}
+                                />
+                            ))}
                         </RadioGroup>
                     </FormControl>
-
-                    <Button
-                        variant="outlined"
-                        size="small"
-                        onClick={() => navigate('/patient/add_payment')}
-                    >
+                    <Button variant="outlined" size="small" onClick={() => navigate('/patient/add_payment')}>
                         + Add New Card
                     </Button>
                 </Stack>
             )}
-
             <Button
                 variant="contained"
                 color="primary"
                 fullWidth
                 onClick={handlePay}
-                disabled={markPaid.isLoading || isLoading || cards.length === 0}
+                disabled={isLoading || cards.length === 0 || payAndReady.isLoading || isExpired}
             >
-                {markPaid.isLoading ? <CircularProgress size={24} /> : `Pay $${billAmount.toFixed(2)}`}
+                {payAndReady.isLoading ? <CircularProgress size={24} /> : `Pay $${billAmount.toFixed(2)}`}
             </Button>
         </Paper>
     );
