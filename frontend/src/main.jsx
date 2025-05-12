@@ -39,6 +39,7 @@ import PatientInputCreditCard from "./pages/Patient/PatientInputCreditCard.jsx";
 import PatientPaymentPortal from "./pages/Patient/PaymentPortal.jsx";
 import PatientBills from "./pages/Patient/PatientBills.jsx";
 import PatientMetrics from "./pages/Patient/PatientMetrics.jsx";
+import Conversations from './pages/MessageRoom/Conversations.jsx';
 
 const queryClient = new QueryClient()
 const router = createBrowserRouter([
@@ -229,6 +230,13 @@ const router = createBrowserRouter([
         element:
             <Auth allowedRoles={["PATIENT", "DOCTOR"]}>
                 <AppointmentCompletePage />
+            </Auth>
+    },
+    {
+        path: "/conversations",
+        element:
+            <Auth allowedRoles={["PATIENT", "DOCTOR", "PHARMACIST"]}>
+                <Conversations />
             </Auth>
     },
     {
