@@ -1,7 +1,7 @@
 import {Container, Divider, Typography} from "@mui/material";
 import {useContext} from "react";
 import {UserContext} from "../../contexts/UserContext.jsx";
-import PatientAppointmentGraphs from "./PatientAppointmentGraphs.jsx";
+import AllPatientMetrics from "./AllPatientMetrics.jsx";
 
 export default function PatientMetrics(){
     const {roleData } = useContext(UserContext)
@@ -10,7 +10,7 @@ export default function PatientMetrics(){
         <Container>
             <Typography sx={{fontWeight:"bold",fontSize:"1.4rem"}}> Your metrics </Typography>
             <Divider sx={{mb:"2rem"}}></Divider>
-            <PatientAppointmentGraphs patientId={roleData.id}></PatientAppointmentGraphs>
+            <AllPatientMetrics patientId={roleData.id}></AllPatientMetrics>
         </Container>
     )
 }

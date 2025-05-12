@@ -16,7 +16,7 @@ import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { UserContext } from '../../contexts/UserContext';
 import PatientSymptoms from "../Patient/PatientSymptoms.jsx";
-import PatientAppointmentGraphs from "../Patient/PatientAppointmentGraphs.jsx";
+import AllPatientMetrics from "../Patient/AllPatientMetrics.jsx";
 
 const DoctorPatients = () => {
 
@@ -157,7 +157,7 @@ const DoctorPatients = () => {
                     <Typography variant="h6" sx={{ mb: 2 }}>
                         {graphPatient?.firstName} {graphPatient?.lastName}'s Health Graphs
                     </Typography>
-                    <PatientAppointmentGraphs patientId={graphPatient?.id} />
+                    <AllPatientMetrics patientId={graphPatient?.id} />
                 </Box>
             </Modal>
             </>

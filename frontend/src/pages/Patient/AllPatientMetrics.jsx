@@ -15,7 +15,7 @@ import dayjs from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '../../utils/queryKeys.js';
 
-export default function PatientAppointmentGraphs({ patientId }) {
+export default function AllPatientMetrics({ patientId }) {
     const [appointmentData, setAppointmentData] = useState([]);
     const [loading, setLoading] = useState(true);
 
