@@ -107,9 +107,44 @@ export default function PatientPaymentPortal({ billId, billAmount, prescriptionI
     });
     const [cardErrors, setCardErrors] = useState({});
 
-    const handleCardChange = e => {
-        setCardForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const validators = {
+        cardHolderName: v => {
+            const re = /^[A-Z][a-zA-Z]{1,}\s[A-Z][a-zA-Z]{1,}$/;
+            return re.test(v.trim()) ? '' : 'First and last name, ex. Jon Doe';
+        },
+        cardNumber: v =>
+            /^\d{13,19}$/.test(v.replace(/\s+/g, '')) ? '' : 'Invalid card number',
+        expirationDate: v =>
+            /^(0[1-9]|1[0-2])\/\d{2}$/.test(v) ? '' : '2 digits month and 2 digits year',
+        street: v => {
+            const re = /^\d+\s[A-Z][a-zA-Z]{1,}(?:\s[A-Z][a-zA-Z]{1,})*$/;
+            return re.test(v.trim()) ? '' : 'street number and name, ex. 123 Main Ave';
+        },
+        city: v => {
+            const re = /^[A-Z][a-zA-Z]{2,}(?:[ -][A-Za-z]{2,})*$/;
+            return re.test(v.trim()) ? '' : 'please input city';
+        },
+        state: v =>
+            /^[A-Z]{2}$/.test(v.trim()) ? '' : '2-letter code, all caps',
+        zip: v =>
+            /^\d{5}$/.test(v) ? '' : '5 digits',
     };
+
+    const handleCardChange = e => {
+        const { name, value } = e.target;
+        setCardForm(f => ({ ...f, [name]: value }));
+        setCardErrors(err => ({
+            ...err,
+            [name]: validators[name](value),
+        }));
+    };
+
+    const isCardFormValid =
+        Object.keys(validators).every(field =>
+            validators[field](cardForm[field]) === ''
+        );
+
+
 
     const handleCardSubmit = async e => {
         e.preventDefault();
@@ -291,7 +326,13 @@ export default function PatientPaymentPortal({ billId, billAmount, prescriptionI
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setAddOpen(false)}>Cancel</Button>
-                    <Button onClick={handleCardSubmit} variant="contained">Save Card</Button>
+                    <Button
+                        onClick={handleCardSubmit}
+                        variant="contained"
+                        disabled={!isCardFormValid}
+                    >
+                        Save Card
+                    </Button>
                 </DialogActions>
             </Dialog>
         </>
