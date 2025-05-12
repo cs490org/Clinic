@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponseDTO {
-    private Integer id, creditBalance;
-    private String firstName, lastName, email, imgUri, connectedAccountId;
+    private Integer id;
+    private String firstName, lastName, email, imgUri;
     private Role role;
-    private boolean mfaEnabled;
 }
