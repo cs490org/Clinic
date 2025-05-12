@@ -21,7 +21,7 @@ import {
   InputLabel, Select, MenuItem
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { API_URL } from '../../utils/constants';
+import { API_URL, PHARMACY_API_URL } from '../../utils/constants';
 import { UserContext } from '../../contexts/UserContext';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -57,7 +57,7 @@ const Prescriptions = () => {
       const pharmacyId = Array.isArray(pharmacyData) ? pharmacyData[0]?.id : pharmacyData?.id;
       if (!pharmacyId) return;
 
-      const drugsRes = await fetch(`${API_URL}/pharmacies/drugs?pharmacyId=${pharmacyId}`, {
+      const drugsRes = await fetch(`${PHARMACY_API_URL}/pharmacies/drugs?pharmacyId=${pharmacyId}`, {
         credentials: 'include'
       });
 
@@ -98,7 +98,7 @@ const Prescriptions = () => {
     }
 
     try {
-      await fetch(`${API_URL}/pharmacies/drugs/inventory`, {
+      await fetch(`${PHARMACY_API_URL}/pharmacies/drugs/inventory`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -119,7 +119,7 @@ const Prescriptions = () => {
 
   const handleDispense = async (pill) => {
     try {
-      await fetch(`${API_URL}/pharmacies/drugs/inventory`, {
+      await fetch(`${PHARMACY_API_URL}/pharmacies/drugs/inventory`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

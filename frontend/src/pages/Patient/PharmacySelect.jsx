@@ -64,7 +64,7 @@
 
 import { useState, useEffect } from 'react';
 import { FormControl, Skeleton, Typography, Stack, Paper } from "@mui/material";
-import { API_URL } from "../../utils/constants";
+import { API_URL, PHARMACY_API_URL } from "../../utils/constants";
 import { toast } from "sonner";
 
 export default function PharmacySelect({ zip, value, onChange }) {
@@ -79,7 +79,7 @@ export default function PharmacySelect({ zip, value, onChange }) {
             }
             setLoading(true);
             try {
-                const res = await fetch(`${API_URL}/pharmacies/nearby?zipCode=${zip}`, {
+                const res = await fetch(`${PHARMACY_API_URL}/pharmacies/nearby?zipCode=${zip}`, {
                     credentials: 'include',
                 });
                 const data = await res.json();
