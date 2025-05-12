@@ -30,14 +30,11 @@ public class PatientPharmacyController {
            com.cs490.group4.demo.security.User user = link.getPatient().getUser();
            return new UserResponseDTO(
                    user.getUserId(),
-                   user.getCreditBalance(),
                    user.getFirstName(),
                    user.getLastName(),
                    user.getEmail(),
                    user.getImgUri(),
-                   user.getConnectedAccountId(),
-                   user.getRole(),
-                   user.isMfaEnabled()
+                   user.getRole()
            );
        }).toList();
    
