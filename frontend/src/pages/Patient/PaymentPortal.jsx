@@ -23,14 +23,12 @@ import {
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../../utils/constants';
 import { UserContext } from '../../contexts/UserContext.jsx';
 
 export default function PatientPaymentPortal({ billId, billAmount, prescriptionId, onPaymentSuccess }) {
     const { roleData } = useContext(UserContext);
     const queryClient = useQueryClient();
-    const navigate = useNavigate();
     if (!billId || !prescriptionId) return null;
 
     const [selectedCardId, setSelectedCardId] = useState(null);
@@ -53,6 +51,18 @@ export default function PatientPaymentPortal({ billId, billAmount, prescriptionI
             setSelectedCardId(cards[0].id);
         }
     }, [cards, selectedCardId]);
+
+    const selectedCard = cards.find(c => c.id === selectedCardId);
+    const isExpired = (() => {
+        if (!selectedCard?.expirationDate) return false;
+        const [m, y] = selectedCard.expirationDate.split('/');
+        const expMonth = parseInt(m, 10);
+        const expYear = 2000 + parseInt(y, 10);
+        const now = new Date();
+        const nowMonth = now.getMonth() + 1;
+        const nowYear = now.getFullYear();
+        return expYear < nowYear || (expYear === nowYear && expMonth < nowMonth);
+    })();
 
     const payAndReady = useMutation({
         mutationFn: async () => {
@@ -177,6 +187,11 @@ export default function PatientPaymentPortal({ billId, billAmount, prescriptionI
                                     />
                                 ))}
                             </RadioGroup>
+                            {selectedCard && isExpired && (
+                                <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+                                    ⚠️ This card is expired. Please select another or add a new one.
+                                </Typography>
+                            )}
                         </FormControl>
                         <Button variant="outlined" size="small" onClick={() => setAddOpen(true)}>
                             + Add New Card
@@ -188,9 +203,16 @@ export default function PatientPaymentPortal({ billId, billAmount, prescriptionI
                     color="primary"
                     fullWidth
                     onClick={handlePay}
-                    disabled={payAndReady.isLoading || isLoading || cards.length === 0}
+                    disabled={
+                        payAndReady.isLoading ||
+                        isLoading ||
+                        cards.length === 0 ||
+                        isExpired
+                    }
                 >
-                    {payAndReady.isLoading ? <CircularProgress size={24} /> : `Pay $${billAmount.toFixed(2)}`}
+                    {payAndReady.isLoading
+                        ? <CircularProgress size={24} />
+                        : `Pay $${billAmount.toFixed(2)}`}
                 </Button>
             </Paper>
 
