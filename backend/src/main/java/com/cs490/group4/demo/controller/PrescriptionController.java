@@ -27,4 +27,12 @@ public class PrescriptionController {
         return ResponseEntity.ok(prescriptionService.createPrescription(prescriptionRequest));
     }
 
+    @PatchMapping("/{id}/status")
+        public ResponseEntity<Prescription> updateStatus(
+                @PathVariable Integer id,
+                @RequestParam String status) {
+            Prescription updated = prescriptionService.updateStatus(id, status);
+            return ResponseEntity.ok(updated);
+    }
+
 }
