@@ -28,7 +28,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import FlatwareIcon from '@mui/icons-material/Flatware';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import {
-  Medication, ReceiptLong,
+  Medication, Payment, ReceiptLong,
 } from "@mui/icons-material";
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 
@@ -217,6 +217,19 @@ export default function NavBar() {
               <ListItemText primary="Assigned Meal Plans" />
             </ListItemButton>
           )}
+
+          {user?.role === "PATIENT" && (
+              <ListItemButton onClick={() => {
+                navigate("/patient/bills");
+                setDrawerOpen(false);
+              }}>
+                <ListItemIcon>
+                  <Payment />
+                </ListItemIcon>
+                <ListItemText primary="Payment Portal" />
+              </ListItemButton>
+          )}
+
           {user?.role === "DOCTOR" && (
             <ListItemButton onClick={() => {
               navigate("/mealplans/assign");
