@@ -114,7 +114,7 @@ export default function MessageRoomPage() {
             });
             if (!response.ok) throw new Error('Failed to fetch messages');
             const data = await response.json();
-            setMessages([...data.reverse()]);
+            setMessages([...data]);
         } catch (error) {
             console.error('Error fetching messages:', error);
         }
