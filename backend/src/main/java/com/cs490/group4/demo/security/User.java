@@ -30,6 +30,15 @@ public class User implements UserDetails {
     @Column(columnDefinition = "boolean default false")
     private boolean disabled;
 
+    @Column(columnDefinition = "int default 0")
+    private Integer creditBalance;
+
+    private String connectedAccountId;
+
+    @Column(columnDefinition = "boolean default false")
+    private boolean mfaEnabled;
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

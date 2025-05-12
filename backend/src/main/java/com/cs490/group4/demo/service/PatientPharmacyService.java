@@ -39,8 +39,9 @@ public class PatientPharmacyService {
     }
 
     @Transactional
-    public PatientPharmacy patientsByPharmacyId (Integer pharmacyId){
+    public List<PatientPharmacy> patientsByPharmacyId(Integer pharmacyId) {
         return patientPharmacyRepository.getByPharmacyId(pharmacyId);
     }
+    
 
 }

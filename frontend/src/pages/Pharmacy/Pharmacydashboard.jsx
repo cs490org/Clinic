@@ -41,14 +41,15 @@ const PharmacyDashboard = () => {
 
         const patientArray = Array.isArray(patRes.data) ? patRes.data : [patRes.data];
         const flattenedPatients = patientArray.map(entry => ({
-          id: entry.patient.id,
-          firstName: entry.patient.firstName,
-          lastName: entry.patient.lastName,
-          email: entry.patient.email,
-          phone: entry.patient.phone,
-          address: entry.patient.address,
-          imgUri: entry.patient.user?.imgUri
+          id: entry.id,
+          firstName: entry.firstName,
+          lastName: entry.lastName,
+          email: entry.email,
+          phone: entry.phone,
+          address: entry.address,
+          imgUri: entry.imgUri
         }));
+        
         setPatients(flattenedPatients);
 
         setDrugInventory(pharmRes.data || []);

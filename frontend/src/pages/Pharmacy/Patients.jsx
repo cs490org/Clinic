@@ -30,18 +30,20 @@ export default function Patients() {
         const patientArray = Array.isArray(patRes.data) ? patRes.data : [patRes.data];
         const allPrescriptions = presRes.data || [];
 
-        const enriched = patientArray.map(entry => {
-          const p = entry.patient;
+        const enriched = patientArray.map(p => {
           const drugs = allPrescriptions
-  .filter(pr => pr.patient?.id === p.id)
-  .map(pr => {
-    const drug = pr.drug || {};
-    const name = drug.name || pr.pillName || 'N/A';
-    return name;
-  });
+            .filter(pr => pr.patient?.user?.id === p.id)
+            .map(pr => pr.drug?.name || pr.pillName || 'N/A');
 
-
-          return { ...p, drugs };
+          return {
+            id: p.id,
+            firstName: p.firstName,
+            lastName: p.lastName,
+            email: p.email,
+            phone: p.phone || '—',
+            address: p.address || '—',
+            drugs,
+          };
         });
 
         setPatients(enriched);
@@ -84,7 +86,7 @@ export default function Patients() {
                   <TableCell>{p.email}</TableCell>
                   <TableCell>{p.address}</TableCell>
                   <TableCell>{p.phone}</TableCell>
-                  <TableCell>{p.drugs.join(', ') || '—'}</TableCell>
+                  <TableCell>{p.drugs?.join(', ') || '—'}</TableCell>
                   <TableCell>
                     <Button variant="contained" color="primary" onClick={() => handleContact(p)}>
                       💬 Talk

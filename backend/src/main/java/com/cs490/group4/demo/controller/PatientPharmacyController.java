@@ -2,14 +2,14 @@ package com.cs490.group4.demo.controller;
 
 import com.cs490.group4.demo.dao.PatientPharmacy;
 import com.cs490.group4.demo.dao.Pharmacy;
-import com.cs490.group4.demo.dao.Patient;
+import com.cs490.group4.demo.dto.authentication.UserResponseDTO;
 import com.cs490.group4.demo.service.PatientPharmacyService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
-@Controller
+@RestController
 public class PatientPharmacyController {
    private final PatientPharmacyService patientPharmacyService;
 
@@ -17,22 +17,36 @@ public class PatientPharmacyController {
       this.patientPharmacyService = patientPharmacyService;
    }
 
-
    @GetMapping("/patient/{patientId}/pharmacy")
    public ResponseEntity<Pharmacy> getPreferredPharmacy(@PathVariable Integer patientId) {
-         return ResponseEntity.ok(patientPharmacyService.getByPatientId(patientId));
+      return ResponseEntity.ok(patientPharmacyService.getByPatientId(patientId));
    }
 
    @GetMapping("/patient/pharmacy")
-      public ResponseEntity<PatientPharmacy> getPatientsByPharmacyId(@RequestParam Integer pharmacyId) {
-            return ResponseEntity.ok(patientPharmacyService.patientsByPharmacyId(pharmacyId));
-      }
+   public ResponseEntity<List<UserResponseDTO>> getPatientsByPharmacyId(@RequestParam Integer pharmacyId) {
+       List<PatientPharmacy> links = patientPharmacyService.patientsByPharmacyId(pharmacyId);
+   
+       List<UserResponseDTO> response = links.stream().map(link -> {
+           com.cs490.group4.demo.security.User user = link.getPatient().getUser();
+           return new UserResponseDTO(
+                   user.getUserId(),
+                   user.getCreditBalance(),
+                   user.getFirstName(),
+                   user.getLastName(),
+                   user.getEmail(),
+                   user.getImgUri(),
+                   user.getConnectedAccountId(),
+                   user.getRole(),
+                   user.isMfaEnabled()
+           );
+       }).toList();
+   
+       return ResponseEntity.ok(response);
+   }
+   
 
    @PutMapping("/patient/{patientId}/pharmacy/{pharmacyId}")
    public ResponseEntity<PatientPharmacy> updatePreferredPharmacy(@PathVariable Integer patientId, @PathVariable Integer pharmacyId) {
-      return ResponseEntity.ok(patientPharmacyService.setPreferredPharmacy(patientId,pharmacyId));
+      return ResponseEntity.ok(patientPharmacyService.setPreferredPharmacy(patientId, pharmacyId));
    }
-
-
 }
-
