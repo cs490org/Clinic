@@ -56,8 +56,8 @@ export default function PharmacyDashboard() {
       const pharmacyId = pharm?.id;
       if (!pharmacyId) return;
 
-      // 2) Parallel fetch of prescriptions, patients link, and inventory
-      const [presRes, patRes, invRes] = await Promise.all([
+      // 2) Parallel fetch: prescriptions, patient links, inventory, and bills
+      const [presRes, patRes, invRes, billRes] = await Promise.all([
         axios.get(
             `${PHARMACY_API_URL}/pharmacies/rx`,
             { params: { pharmacyId }, withCredentials: true }
@@ -69,17 +69,29 @@ export default function PharmacyDashboard() {
         axios.get(
             `${PHARMACY_API_URL}/pharmacies/drugs`,
             { params: { pharmacyId }, withCredentials: true }
+        ),
+        axios.get(
+            `${PHARMACY_API_URL}/pharmacies/allbills`,
+            { params: { pharmacyId }, withCredentials: true }
         )
       ]);
+
+      // Build lookup of which prescriptions have a paid bill
+      const paidMap = new Map(
+          (billRes.data || []).map(b => [b.prescription.id, b.paid])
+      );
 
       // Build a local stock map to avoid stale reads
       const stockMap = new Map(
           (invRes.data || []).map(item => [item.drug.id, item.inventory])
       );
 
-      // 3) Auto-process any NEW_PRESCRIPTION if stock ≥1
+      // 3) Auto-process only ONE NEW_PRESCRIPTION if its bill is paid and stock ≥1
       for (let rx of presRes.data || []) {
-        if (rx.rxStatusCode === 'NEW_PRESCRIPTION') {
+        if (
+            rx.rxStatusCode === 'NEW_PRESCRIPTION' &&
+            paidMap.get(rx.id) === true
+        ) {
           const currentQty = stockMap.get(rx.drug.id) ?? 0;
           if (currentQty > 0) {
             // decrement inventory on server
@@ -93,20 +105,22 @@ export default function PharmacyDashboard() {
                 },
                 { withCredentials: true }
             );
-            // update local map
             stockMap.set(rx.drug.id, currentQty - 1);
 
             // mark prescription ready
             await axios.patch(
-                `${PHARMACY_API_URL}/${rx.id}/status`,
+                `${API_URL}/prescriptions/${rx.id}/status`,
                 null,
                 { params: { status: 'READY_FOR_PICKUP' }, withCredentials: true }
             );
+
+            // only process one at a time
+            break;
           }
         }
       }
 
-      // 4) Re-fetch prescriptions & inventory after auto-processing
+      // 4) Re-fetch prescriptions & inventory
       const [newPresRes, newInvRes] = await Promise.all([
         axios.get(
             `${PHARMACY_API_URL}/pharmacies/rx`,
@@ -173,7 +187,7 @@ export default function PharmacyDashboard() {
 
       // update status to FULFILLED
       await axios.patch(
-          `${PHARMACY_API_URL}/${rx.id}/status`,
+          `${API_URL}/prescriptions/${rx.id}/status`,
           null,
           { params: { status: 'FULFILLED' }, withCredentials: true }
       );
@@ -194,7 +208,6 @@ export default function PharmacyDashboard() {
     );
   }
 
-  // placeholder monthly data
   const monthlyPatients = [
     { month: 'Jan', count: 0 },
     { month: 'Feb', count: 0 },
@@ -228,7 +241,6 @@ export default function PharmacyDashboard() {
               </ResponsiveContainer>
             </Paper>
           </Grid>
-
           <Grid item xs={12} md={6}>
             <Paper sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom>
