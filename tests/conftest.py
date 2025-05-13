@@ -5,6 +5,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
+import os
+import tempfile
 
 @pytest.fixture(scope="function")
 def driver():
@@ -12,10 +14,21 @@ def driver():
     chrome_options.add_argument("--headless")  # Run in headless mode for GitHub Actions
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--disable-gpu")
+    
+    # Create a unique temporary directory for each test
+    temp_dir = tempfile.mkdtemp()
+    chrome_options.add_argument(f"--user-data-dir={temp_dir}")
+    
     driver = webdriver.Chrome(options=chrome_options)
     driver.maximize_window()
     yield driver
     driver.quit()
+    # Clean up the temporary directory
+    try:
+        os.rmdir(temp_dir)
+    except:
+        pass  # Ignore cleanup errors
 
 @pytest.fixture(scope="function")
 def wait(driver):
