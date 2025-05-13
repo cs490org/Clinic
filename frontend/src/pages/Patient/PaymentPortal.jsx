@@ -23,13 +23,19 @@ import {
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'sonner';
-import {API_URL, PHARMACY_API_URL} from '../../utils/constants';
+import { API_URL, PHARMACY_API_URL } from '../../utils/constants';
 import { UserContext } from '../../contexts/UserContext.jsx';
 
-export default function PatientPaymentPortal({ billId, billAmount, prescriptionId, onPaymentSuccess }) {
+export default function PatientPaymentPortal({
+                                                 billId,
+                                                 billAmount,
+                                                 prescriptionId,
+                                                 drugId,
+                                                 onPaymentSuccess,
+                                             }) {
     const { roleData } = useContext(UserContext);
     const queryClient = useQueryClient();
-    if (!billId || !prescriptionId) return null;
+    if (!billId || !prescriptionId || !drugId) return null;
 
     const [selectedCardId, setSelectedCardId] = useState(null);
     const [addOpen, setAddOpen] = useState(false);
@@ -59,31 +65,71 @@ export default function PatientPaymentPortal({ billId, billAmount, prescriptionI
         const expMonth = parseInt(m, 10);
         const expYear = 2000 + parseInt(y, 10);
         const now = new Date();
-        const nowMonth = now.getMonth() + 1;
-        const nowYear = now.getFullYear();
-        return expYear < nowYear || (expYear === nowYear && expMonth < nowMonth);
+        return expYear < now.getFullYear() || (expYear === now.getFullYear() && expMonth < now.getMonth() + 1);
     })();
 
     const payAndReady = useMutation({
         mutationFn: async () => {
+            // 1) Pay the bill
             await axios.patch(
                 `${PHARMACY_API_URL}/pharmacies/bill`,
                 null,
                 { params: { billId }, withCredentials: true }
             );
-            return axios.patch(
-                `${PHARMACY_API_URL}/${prescriptionId}/status`,
-                null,
-                { params: { status: 'READY_FOR_PICKUP' }, withCredentials: true }
+
+            // 2) Fetch preferred pharmacy
+            const { data: pharmacy } = await axios.get(
+                `${API_URL}/patient/${roleData.id}/pharmacy`,
+                { withCredentials: true }
             );
+            const pharmacyId = pharmacy.id;
+
+            // 3) Fetch inventory
+            const { data: inventoryList } = await axios.get(
+                `${PHARMACY_API_URL}/pharmacies/drugs`,
+                { params: { pharmacyId }, withCredentials: true }
+            );
+            const entry = inventoryList.find(d => d.drug.id === drugId);
+            const currentQty = entry?.inventory ?? 0;
+
+            let statusUpdated = false;
+            if (currentQty > 0) {
+                // 4) Decrement inventory
+                await axios.patch(
+                    `${PHARMACY_API_URL}/pharmacies/drugs/inventory`,
+                    {
+                        pharmacyId,
+                        drugId,
+                        quantity: currentQty - 1,
+                        dispensed: false,
+                    },
+                    { withCredentials: true }
+                );
+                // 5) Update prescription status using the prescriptionId
+                await axios.patch(
+                    `${PHARMACY_API_URL}/${prescriptionId}/status`,
+                    null,
+                    { params: { status: 'READY_FOR_PICKUP' }, withCredentials: true }
+                );
+                statusUpdated = true;
+            }
+
+            return { statusUpdated };
         },
-        onSuccess: () => {
-            toast.success('Payment recorded and prescription is ready for pickup');
+        onSuccess: ({ statusUpdated }) => {
+            toast.success(
+                statusUpdated
+                    ? 'Payment complete. Prescription ready for pickup.'
+                    : 'Payment complete. We will notify you as soon as the prescription is ready for pickup.'
+            );
             queryClient.invalidateQueries(['bills', roleData.id]);
             onPaymentSuccess();
             setSelectedCardId(null);
         },
-        onError: () => toast.error('Payment or status update failed'),
+        onError: err => {
+            console.error(err);
+            toast.error('Payment or inventory update failed');
+        },
     });
 
     const handlePay = () => {
@@ -94,7 +140,7 @@ export default function PatientPaymentPortal({ billId, billAmount, prescriptionI
         payAndReady.mutate();
     };
 
-    // New card form state
+    // Card-add form state & validation unchanged...
     const [cardForm, setCardForm] = useState({
         patientId: roleData.id,
         cardHolderName: '',
@@ -106,76 +152,57 @@ export default function PatientPaymentPortal({ billId, billAmount, prescriptionI
         zip: '',
     });
     const [cardErrors, setCardErrors] = useState({});
-
     const validators = {
-        cardHolderName: v => {
-            const re = /^[A-Z][a-zA-Z]{1,}\s[A-Z][a-zA-Z]{1,}$/;
-            return re.test(v.trim()) ? '' : 'First and last name, ex. Jon Doe';
-        },
+        cardHolderName: v =>
+            /^[A-Z][a-zA-Z]+ [A-Z][a-zA-Z]+$/.test(v.trim()) ? '' : 'First and last name, ex. Jon Doe',
         cardNumber: v =>
             /^\d{13,19}$/.test(v.replace(/\s+/g, '')) ? '' : 'Invalid card number',
         expirationDate: v =>
-            /^(0[1-9]|1[0-2])\/\d{2}$/.test(v) ? '' : '2 digits month and 2 digits year',
-        street: v => {
-            const re = /^\d+\s[A-Z][a-zA-Z]{1,}(?:\s[A-Z][a-zA-Z]{1,})*$/;
-            return re.test(v.trim()) ? '' : 'street number and name, ex. 123 Main Ave';
-        },
-        city: v => {
-            const re = /^[A-Z][a-zA-Z]{2,}(?:[ -][A-Za-z]{2,})*$/;
-            return re.test(v.trim()) ? '' : 'please input city';
-        },
-        state: v =>
-            /^[A-Z]{2}$/.test(v.trim()) ? '' : '2-letter code, all caps',
-        zip: v =>
-            /^\d{5}$/.test(v) ? '' : '5 digits',
+            /^(0[1-9]|1[0-2])\/\d{2}$/.test(v) ? '' : 'MM/YY',
+        street: v =>
+            /^\d+ [A-Z][a-zA-Z]+(?: [A-Z][a-zA-Z]+)*$/.test(v.trim()) ? '' : 'e.g. 123 Main St',
+        city: v =>
+            /^[A-Z][a-zA-Z]{2,}(?:[ -][A-Za-z]{2,})*$/.test(v.trim()) ? '' : 'e.g. Springfield',
+        state: v => /^[A-Z]{2}$/.test(v.trim()) ? '' : 'e.g. CA',
+        zip: v => /^\d{5}$/.test(v) ? '' : '5 digits',
     };
 
     const handleCardChange = e => {
         const { name, value } = e.target;
         setCardForm(f => ({ ...f, [name]: value }));
-        setCardErrors(err => ({
-            ...err,
-            [name]: validators[name](value),
-        }));
+        setCardErrors(err => ({ ...err, [name]: validators[name](value) }));
     };
 
-    const isCardFormValid =
-        Object.keys(validators).every(field =>
-            validators[field](cardForm[field]) === ''
-        );
-
-
+    const isCardFormValid = Object.keys(validators).every(
+        field => validators[field](cardForm[field]) === ''
+    );
 
     const handleCardSubmit = async e => {
         e.preventDefault();
         const errors = {};
-        const numberRe = /^\d{13,19}$/;
-        const expRe = /^(0[1-9]|1[0-2])\/\d{2}$/;
-        const zipRe = /^\d{5}$/;
         if (!cardForm.cardHolderName.trim()) errors.cardHolderName = 'Required';
-        if (!numberRe.test(cardForm.cardNumber.replace(/\s+/g, ''))) errors.cardNumber = 'Invalid';
-        if (!expRe.test(cardForm.expirationDate)) errors.expirationDate = 'MM/YY';
+        if (validators.cardNumber(cardForm.cardNumber)) errors.cardNumber = 'Invalid';
+        if (validators.expirationDate(cardForm.expirationDate)) errors.expirationDate = 'MM/YY';
         if (!cardForm.street.trim()) errors.street = 'Required';
         if (!cardForm.city.trim()) errors.city = 'Required';
         if (!cardForm.state.trim()) errors.state = 'Required';
-        if (!zipRe.test(cardForm.zip)) errors.zip = '5 digits';
+        if (validators.zip(cardForm.zip)) errors.zip = '5 digits';
         setCardErrors(errors);
         if (Object.keys(errors).length) return;
 
         const billingAddress = `${cardForm.street}, ${cardForm.city}, ${cardForm.state} ${cardForm.zip}`;
-        const submission = {
-            patientId: cardForm.patientId,
-            cardHolderName: cardForm.cardHolderName,
-            cardNumber: cardForm.cardNumber,
-            expirationDate: cardForm.expirationDate,
-            billingAddress,
-        };
         try {
             const res = await fetch(`${API_URL}/credit-cards`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
-                body: JSON.stringify(submission),
+                body: JSON.stringify({
+                    patientId: roleData.id,
+                    cardHolderName: cardForm.cardHolderName,
+                    cardNumber: cardForm.cardNumber,
+                    expirationDate: cardForm.expirationDate,
+                    billingAddress,
+                }),
             });
             if (!res.ok) throw new Error();
             toast.success('Card saved!');
@@ -199,12 +226,16 @@ export default function PatientPaymentPortal({ billId, billAmount, prescriptionI
     return (
         <>
             <Paper elevation={3} sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                <Typography variant="h6" gutterBottom>Pay ${billAmount.toFixed(2)}</Typography>
+                <Typography variant="h6" gutterBottom>
+                    Pay ${billAmount.toFixed(2)}
+                </Typography>
                 <Divider sx={{ mb: 2 }} />
                 {isLoading ? (
                     <CircularProgress />
                 ) : isError ? (
-                    <Typography color="error" sx={{ mb: 2 }}>Failed to load cards.</Typography>
+                    <Typography color="error" sx={{ mb: 2 }}>
+                        Failed to load cards.
+                    </Typography>
                 ) : (
                     <Stack spacing={1} sx={{ mb: 2 }}>
                         <FormControl component="fieldset">
@@ -238,16 +269,9 @@ export default function PatientPaymentPortal({ billId, billAmount, prescriptionI
                     color="primary"
                     fullWidth
                     onClick={handlePay}
-                    disabled={
-                        payAndReady.isLoading ||
-                        isLoading ||
-                        cards.length === 0 ||
-                        isExpired
-                    }
+                    disabled={payAndReady.isLoading || isLoading || cards.length === 0 || isExpired}
                 >
-                    {payAndReady.isLoading
-                        ? <CircularProgress size={24} />
-                        : `Pay $${billAmount.toFixed(2)}`}
+                    {payAndReady.isLoading ? <CircularProgress size={24} /> : `Pay $${billAmount.toFixed(2)}`}
                 </Button>
             </Paper>
 
@@ -326,11 +350,7 @@ export default function PatientPaymentPortal({ billId, billAmount, prescriptionI
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setAddOpen(false)}>Cancel</Button>
-                    <Button
-                        onClick={handleCardSubmit}
-                        variant="contained"
-                        disabled={!isCardFormValid}
-                    >
+                    <Button onClick={handleCardSubmit} variant="contained" disabled={!isCardFormValid}>
                         Save Card
                     </Button>
                 </DialogActions>
