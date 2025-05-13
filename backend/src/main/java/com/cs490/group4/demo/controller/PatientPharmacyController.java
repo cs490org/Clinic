@@ -28,14 +28,17 @@ public class PatientPharmacyController {
    
        List<UserResponseDTO> response = links.stream().map(link -> {
            com.cs490.group4.demo.security.User user = link.getPatient().getUser();
-           return new UserResponseDTO(
-                   user.getUserId(),
-                   user.getFirstName(),
-                   user.getLastName(),
-                   user.getEmail(),
-                   user.getImgUri(),
-                   user.getRole()
-           );
+
+           return UserResponseDTO.builder()
+                   .id(user.getUserId())
+                   .firstName(user.getFirstName())
+                   .lastName(user.getLastName())
+                   .email(user.getEmail())
+                   .imgUri(user.getImgUri())
+                   .phone(link.getPatient().getPhone())
+                   .address(link.getPatient().getAddress())
+                   .role(user.getRole())
+                   .build();
        }).toList();
    
        return ResponseEntity.ok(response);
