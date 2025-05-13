@@ -1,5 +1,3 @@
-// src/pages/Patient/PharmacyDashboard.jsx
-
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import {
   Container,
@@ -15,7 +13,8 @@ import {
   TableContainer,
   Divider,
   Box,
-  Button
+  Button,
+  CircularProgress
 } from '@mui/material';
 import {
   PieChart,
@@ -37,28 +36,27 @@ import { API_URL, PHARMACY_API_URL } from '../../utils/constants.js';
 
 const COLORS = ['#8884d8', '#83a6ed', '#8dd1e1', '#82ca9d', '#ffc658'];
 
-const PharmacyDashboard = () => {
+export default function PharmacyDashboard() {
   const { user } = useContext(UserContext);
-  const [prescriptions, setPrescriptions]     = useState([]);
-  const [patients, setPatients]               = useState([]);
+  const [prescriptions, setPrescriptions]       = useState([]);
+  const [patients, setPatients]                 = useState([]);
   const [distributionData, setDistributionData] = useState([]);
-  const [drugInventory, setDrugInventory]     = useState([]);
+  const [drugInventory, setDrugInventory]       = useState([]);
+  const [loading, setLoading]                   = useState(true);
 
-  // Fetch all dashboard data
   const fetchData = useCallback(async () => {
+    setLoading(true);
     try {
       // 1) Get pharmacy ID
-      const pharmacyRes = await axios.get(
+      const pharmRes = await axios.get(
           `${PHARMACY_API_URL}/pharmacies`,
           { params: { userId: user.id }, withCredentials: true }
       );
-      const pharm = Array.isArray(pharmacyRes.data)
-          ? pharmacyRes.data[0]
-          : pharmacyRes.data;
+      const pharm = Array.isArray(pharmRes.data) ? pharmRes.data[0] : pharmRes.data;
       const pharmacyId = pharm?.id;
       if (!pharmacyId) return;
 
-      // 2) Parallel fetch
+      // 2) Parallel fetch of prescriptions, patients link, and inventory
       const [presRes, patRes, invRes] = await Promise.all([
         axios.get(
             `${PHARMACY_API_URL}/pharmacies/rx`,
@@ -74,10 +72,54 @@ const PharmacyDashboard = () => {
         )
       ]);
 
-      // Prescriptions
-      setPrescriptions(presRes.data || []);
+      // Build a local stock map to avoid stale reads
+      const stockMap = new Map(
+          (invRes.data || []).map(item => [item.drug.id, item.inventory])
+      );
 
-      // Patients (flatten the DTO)
+      // 3) Auto-process any NEW_PRESCRIPTION if stock ≥1
+      for (let rx of presRes.data || []) {
+        if (rx.rxStatusCode === 'NEW_PRESCRIPTION') {
+          const currentQty = stockMap.get(rx.drug.id) ?? 0;
+          if (currentQty > 0) {
+            // decrement inventory on server
+            await axios.patch(
+                `${PHARMACY_API_URL}/pharmacies/drugs/inventory`,
+                {
+                  pharmacyId,
+                  drugId: rx.drug.id,
+                  quantity: currentQty - 1,
+                  dispensed: false
+                },
+                { withCredentials: true }
+            );
+            // update local map
+            stockMap.set(rx.drug.id, currentQty - 1);
+
+            // mark prescription ready
+            await axios.patch(
+                `${PHARMACY_API_URL}/${rx.id}/status`,
+                null,
+                { params: { status: 'READY_FOR_PICKUP' }, withCredentials: true }
+            );
+          }
+        }
+      }
+
+      // 4) Re-fetch prescriptions & inventory after auto-processing
+      const [newPresRes, newInvRes] = await Promise.all([
+        axios.get(
+            `${PHARMACY_API_URL}/pharmacies/rx`,
+            { params: { pharmacyId }, withCredentials: true }
+        ),
+        axios.get(
+            `${PHARMACY_API_URL}/pharmacies/drugs`,
+            { params: { pharmacyId }, withCredentials: true }
+        )
+      ]);
+
+      // 5) Update state
+      setPrescriptions(newPresRes.data || []);
       const patArr = Array.isArray(patRes.data) ? patRes.data : [patRes.data];
       setPatients(
           patArr.map(p => ({
@@ -90,11 +132,8 @@ const PharmacyDashboard = () => {
             imgUri: p.imgUri
           }))
       );
-
-      // Inventory and distribution
-      const invList = invRes.data || [];
-      setDrugInventory(invList);
-      const grouped = invList.reduce((acc, item) => {
+      setDrugInventory(newInvRes.data || []);
+      const grouped = (newInvRes.data || []).reduce((acc, item) => {
         const name = item.drug?.name || 'Unknown';
         acc[name] = (acc[name] || 0) + item.inventory;
         return acc;
@@ -102,42 +141,37 @@ const PharmacyDashboard = () => {
       setDistributionData(
           Object.entries(grouped).map(([name, value]) => ({ name, value }))
       );
-
     } catch (err) {
       console.error('Failed to load dashboard data:', err);
+      toast.error('Error loading dashboard');
+    } finally {
+      setLoading(false);
     }
   }, [user.id]);
 
   useEffect(() => {
     if (user?.id) fetchData();
-  }, [user?.id, fetchData]);
+  }, [user.id, fetchData]);
 
-  // Fulfill button handler
   const handleFulfill = async rx => {
     try {
-      // get pharmacyId again
+      // get pharmacyId
       const pharmRes = await axios.get(
           `${PHARMACY_API_URL}/pharmacies`,
           { params: { userId: user.id }, withCredentials: true }
       );
-      const pharm = Array.isArray(pharmRes.data)
-          ? pharmRes.data[0]
-          : pharmRes.data;
+      const pharm = Array.isArray(pharmRes.data) ? pharmRes.data[0] : pharmRes.data;
       const pharmacyId = pharm?.id;
       if (!pharmacyId) throw new Error('No pharmacy ID');
 
-      // 1) dispense-log
+      // log dispense
       await axios.post(
           `${API_URL}/dispenselog/log`,
-          {
-            pharmacyId,
-            drugId: rx.drug.id,
-            quantity: 1
-          },
+          { pharmacyId, drugId: rx.drug.id, quantity: 1 },
           { withCredentials: true }
       );
 
-      // 2) update prescription status
+      // update status to FULFILLED
       await axios.patch(
           `${PHARMACY_API_URL}/${rx.id}/status`,
           null,
@@ -152,13 +186,21 @@ const PharmacyDashboard = () => {
     }
   };
 
-  // Prepare monthly chart (example)
+  if (loading) {
+    return (
+        <Container sx={{ mt: 4, textAlign: 'center' }}>
+          <CircularProgress />
+        </Container>
+    );
+  }
+
+  // placeholder monthly data
   const monthlyPatients = [
     { month: 'Jan', count: 0 },
     { month: 'Feb', count: 0 },
     { month: 'Mar', count: 0 },
     { month: 'Apr', count: 0 },
-    { month: 'May', count: patients.length },
+    { month: 'May', count: patients.length }
   ];
 
   return (
@@ -171,7 +213,9 @@ const PharmacyDashboard = () => {
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid item xs={12} md={6}>
             <Paper sx={{ p: 3 }}>
-              <Typography variant="h6" gutterBottom>📊 Patients This Year</Typography>
+              <Typography variant="h6" gutterBottom>
+                📊 Patients This Year
+              </Typography>
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={monthlyPatients}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -184,9 +228,12 @@ const PharmacyDashboard = () => {
               </ResponsiveContainer>
             </Paper>
           </Grid>
+
           <Grid item xs={12} md={6}>
             <Paper sx={{ p: 3 }}>
-              <Typography variant="h6" gutterBottom>💊 Prescription Distribution</Typography>
+              <Typography variant="h6" gutterBottom>
+                💊 Prescription Distribution
+              </Typography>
               <PieChart width={250} height={250}>
                 <Pie
                     data={distributionData}
@@ -207,7 +254,9 @@ const PharmacyDashboard = () => {
         </Grid>
 
         {/* Prescriptions to Fulfill */}
-        <Typography variant="h5" gutterBottom>📦 Prescriptions to Fulfill</Typography>
+        <Typography variant="h5" gutterBottom>
+          📦 Prescriptions to Fulfill
+        </Typography>
         <TableContainer component={Paper} sx={{ mb: 4 }}>
           <Table>
             <TableHead sx={{ backgroundColor: '#d71600' }}>
@@ -219,11 +268,10 @@ const PharmacyDashboard = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {(prescriptions.length > 0)
-                  ? prescriptions
-                      .filter(rx => rx.rxStatusCode !== 'FULFILLED')
-                      .reverse()
-                      .map((rx, idx) => {
+              {prescriptions
+                  .filter(rx => rx.rxStatusCode !== 'FULFILLED')
+                  .reverse()
+                  .map((rx, idx) => {
                     const patient = rx.patient?.user;
                     if (!patient) return null;
                     const drugName = rx.drug?.name || 'Unnamed';
@@ -255,15 +303,7 @@ const PharmacyDashboard = () => {
                           </TableCell>
                         </TableRow>
                     );
-                  })
-                  : (
-                      <TableRow>
-                        <TableCell colSpan={4} align="center">
-                          No prescriptions to display
-                        </TableCell>
-                      </TableRow>
-                  )
-              }
+                  })}
             </TableBody>
           </Table>
         </TableContainer>
@@ -271,7 +311,9 @@ const PharmacyDashboard = () => {
         <Divider sx={{ my: 4 }} />
 
         {/* Drug Inventory */}
-        <Typography variant="h5" gutterBottom>💊 Drug Inventory</Typography>
+        <Typography variant="h5" gutterBottom>
+          💊 Drug Inventory
+        </Typography>
         <Grid container spacing={3} sx={{ mb: 4 }}>
           {drugInventory.map((pill, i) => (
               <Grid item xs={12} sm={6} md={3} key={i}>
@@ -281,11 +323,21 @@ const PharmacyDashboard = () => {
                       alt={pill.drug?.name}
                       style={{ width: '100%', height: 120, objectFit: 'contain' }}
                   />
-                  <Typography variant="h6">{pill.drug?.name}</Typography>
-                  <Typography variant="body2">{pill.drug?.description}</Typography>
-                  <Typography variant="body2"><strong>Dosage:</strong> {pill.drug?.dosage}</Typography>
-                  <Typography variant="body2"><strong>Price:</strong> ${pill.drug?.price}</Typography>
-                  <Typography variant="body2"><strong>Quantity:</strong> {pill.inventory}</Typography>
+                  <Typography variant="h6">
+                    {pill.drug?.name}
+                  </Typography>
+                  <Typography variant="body2">
+                    {pill.drug?.description}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Dosage:</strong> {pill.drug?.dosage}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Price:</strong> ${pill.drug?.price}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Quantity:</strong> {pill.inventory}
+                  </Typography>
                 </Paper>
               </Grid>
           ))}
@@ -294,12 +346,20 @@ const PharmacyDashboard = () => {
         <Divider sx={{ my: 4 }} />
 
         {/* Registered Patients */}
-        <Typography variant="h5" gutterBottom>🧑‍⚕️ Registered Patients</Typography>
+        <Typography variant="h5" gutterBottom>
+          🧑‍⚕️ Registered Patients
+        </Typography>
         <Grid container spacing={3}>
           {patients.map((p, i) => (
               <Grid item xs={12} sm={6} md={4} key={i}>
-                <Paper sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }} elevation={3}>
-                  <Avatar src={p.imgUri} sx={{ width: 64, height: 64, bgcolor: 'primary.main' }}>
+                <Paper
+                    sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }}
+                    elevation={3}
+                >
+                  <Avatar
+                      src={p.imgUri}
+                      sx={{ width: 64, height: 64, bgcolor: 'primary.main' }}
+                  >
                     {p.firstName[0]}
                   </Avatar>
                   <Box>
@@ -316,6 +376,4 @@ const PharmacyDashboard = () => {
         </Grid>
       </Container>
   );
-};
-
-export default PharmacyDashboard;
+}

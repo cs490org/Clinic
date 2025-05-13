@@ -126,7 +126,7 @@ const Prescriptions = () => {
         body: JSON.stringify({
           pharmacyId: pill.pharmacy.id,
           drugId: pill.drug.id,
-          quantity: pill.inventory,
+          quantity: 0,
           dispensed: true
         })
       });
@@ -351,13 +351,13 @@ const Prescriptions = () => {
                     <Typography variant="body2">
                       <strong>Quantity:</strong> {pill.inventory} {getColorDot(pill.inventory)}
                     </Typography>
-                    <Typography variant="body2" color={pill.dispensed ? 'green' : 'warning.main'} fontWeight="bold">
-                      <strong>Status:</strong> {pill.dispensed ? 'Dispensed' : 'Not Dispensed'}
+                    <Typography variant="body2" color={pill.dispensed ? 'warning.main' : 'green'} fontWeight="bold">
+                      <strong>Status:</strong> {pill.dispensed ? 'Scrapped' : 'Not Scrapped'}
                     </Typography>
                   </CardContent>
                   <Box px={2} pb={2}>
                     <Button variant="contained" fullWidth sx={{ mb: 1 }} onClick={() => handleDispense(pill)} disabled={pill.dispensed}>
-                      Mark as Dispensed
+                      Scrap current stock
                     </Button>
                     <Button variant="outlined" fullWidth sx={{ mb: 1 }} onClick={() => handleOpenDialog(pill)}>
                       Modify Quantity
