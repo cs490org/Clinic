@@ -3,7 +3,7 @@ import {
   Container, Typography, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, Button
 } from "@mui/material";
-import {API_URL, PHARMACY_API_URL} from '../../utils/constants.js';
+import { API_URL, PHARMACY_API_URL } from '../../utils/constants.js';
 import { UserContext } from '../../contexts/UserContext.jsx';
 import axios from "axios";
 
@@ -20,7 +20,10 @@ export default function Patients() {
         });
         const pharmacyData = await pharmacyRes.json();
         const pharmacyId = Array.isArray(pharmacyData) ? pharmacyData[0]?.id : pharmacyData?.id;
-        if (!pharmacyId) return;
+        if (!pharmacyId) {
+          console.warn("❌ No pharmacy ID found.");
+          return;
+        }
 
         const [patRes, presRes] = await Promise.all([
           axios.get(`${API_URL}/patient/pharmacy?pharmacyId=${pharmacyId}`, { withCredentials: true }),
@@ -30,10 +33,31 @@ export default function Patients() {
         const patientArray = Array.isArray(patRes.data) ? patRes.data : [patRes.data];
         const allPrescriptions = presRes.data || [];
 
+        console.log("✅ Fetched patients:", patientArray);
+        console.log("✅ Fetched prescriptions:", allPrescriptions);
+
         const enriched = patientArray.map(p => {
-          const drugs = allPrescriptions
-            .filter(pr => pr.patient?.user?.id === p.id)
-            .map(pr => pr.drug?.name || pr.pillName || 'N/A');
+          const drugMap = {};
+
+          allPrescriptions
+            .filter(pr =>
+              pr.patient?.id === p.id ||
+              pr.patientId === p.id ||
+              pr.patient?.user?.email === p.email ||
+              pr.patient?.email === p.email
+            )
+            .forEach(pr => {
+              const name = pr.drug?.name || pr.pillName || 'N/A';
+              drugMap[name] = (drugMap[name] || 0) + 1;
+            });
+
+          const drugs = Object.entries(drugMap).map(([name, count]) =>
+            count > 1 ? `${name} (${count})` : name
+          );
+
+          if (drugs.length === 0) {
+            console.warn(`⚠️ No matched drugs for patient ${p.firstName} ${p.lastName}`, p.email, p.id);
+          }
 
           return {
             id: p.id,
@@ -42,14 +66,14 @@ export default function Patients() {
             email: p.email,
             phone: p.phone || '—',
             address: p.address || '—',
-            drugs,
+            drugs
           };
         });
 
         setPatients(enriched);
         setPrescriptions(allPrescriptions);
       } catch (err) {
-        console.error("Error fetching dynamic patient data:", err);
+        console.error("❌ Error fetching patient data:", err);
       }
     };
 
