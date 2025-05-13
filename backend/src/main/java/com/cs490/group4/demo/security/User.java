@@ -24,9 +24,21 @@ public class User implements UserDetails {
     @GeneratedValue
     @Column(name = "user_id")
     private Integer userId;
-    private String firstName, lastName, email, password, imgUri;
+
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String password;
+
+    private String imgUri;
+
+   
+    private String phone;
+    private String address;
+
     @Enumerated(EnumType.STRING)
     private Role role;
+
     @Column(columnDefinition = "boolean default false")
     private boolean disabled;
 
@@ -66,3 +78,4 @@ public class User implements UserDetails {
     }
 
 }
+

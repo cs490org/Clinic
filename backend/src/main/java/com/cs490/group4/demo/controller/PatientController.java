@@ -32,6 +32,11 @@ public class PatientController {
     private ResponseEntity<?> getPreferredPharmacy(@RequestParam(required = true) Integer patientId) {
         return ResponseEntity.ok(patientPharmacyService.getByPatientId(patientId));
     }
+    @GetMapping("/by-pharmacy")
+private ResponseEntity<?> getPatientsByPharmacy(@RequestParam Integer pharmacyId) {
+    return ResponseEntity.ok(patientPharmacyService.getPatientsByPharmacyId(pharmacyId));
+}
+
 
     @PostMapping()
     private ResponseEntity<?> createPatient(@RequestBody PatientCreateRequest request) {

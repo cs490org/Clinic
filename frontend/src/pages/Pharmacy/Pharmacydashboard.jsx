@@ -33,7 +33,7 @@ const PharmacyDashboard = () => {
 
         const [presRes, patRes, pharmRes] = await Promise.all([
           axios.get(`${PHARMACY_API_URL}/pharmacies/rx?pharmacyId=${pharmacyId}`, { withCredentials: true }),
-          axios.get(`${API_URL}/patient/pharmacy?pharmacyId=${pharmacyId}`, { withCredentials: true }),
+          axios.get(`${API_URL}/patients/by-pharmacy?pharmacyId=${pharmacyId}`, { withCredentials: true }),
           axios.get(`${PHARMACY_API_URL}/pharmacies/drugs?pharmacyId=${pharmacyId}`, { withCredentials: true })
         ]);
 
