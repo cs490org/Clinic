@@ -40,6 +40,7 @@ import PatientPaymentPortal from "./pages/Patient/PaymentPortal.jsx";
 import PatientBills from "./pages/Patient/PatientBills.jsx";
 import PatientMetrics from "./pages/Patient/PatientMetrics.jsx";
 import Conversations from './pages/MessageRoom/Conversations.jsx';
+import ReverseFulfillment from "./pages/Pharmacy/PharmacyHistoryOverride.jsx";
 
 const queryClient = new QueryClient()
 const router = createBrowserRouter([
@@ -100,10 +101,17 @@ const router = createBrowserRouter([
             </Auth>
     },
     {
-        path: '/pharmacist/prescriptions',
+        path: '/pharmacist/inventory',
         element:
             <Auth allowedRoles={["PHARMACIST"]}>
                 <Prescriptions />
+            </Auth>
+    },
+    {
+        path: '/pharmacist/override',
+        element:
+            <Auth allowedRoles={["PHARMACIST"]}>
+                <ReverseFulfillment />
             </Auth>
     },
     {

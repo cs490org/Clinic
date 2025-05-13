@@ -4,7 +4,7 @@ import {
     TableHead, TableRow, Paper, Box, Stack, TextField
 } from "@mui/material";
 import { PieChart, Pie, Cell, Legend, Tooltip } from "recharts";
-import { API_URL } from '../../utils/constants';
+import {API_URL, PHARMACY_API_URL} from '../../utils/constants';
 import { UserContext } from '../../contexts/UserContext';
 
 const COLORS = ["#4caf50", "#f44336"];
@@ -19,7 +19,7 @@ const Bills = () => {
 
         const fetchBills = async () => {
             try {
-                const pharmacyRes = await fetch(`${API_URL}/pharmacies?userId=${user.id}`, {
+                const pharmacyRes = await fetch(`${PHARMACY_API_URL}/pharmacies?userId=${user.id}`, {
                     credentials: "include"
                 });
                 const pharmacyData = await pharmacyRes.json();
@@ -28,7 +28,7 @@ const Bills = () => {
                     : pharmacyData?.id;
                 if (!pharmacyId) return;
 
-                const billsRes = await fetch(`${API_URL}/pharmacies/allbills?pharmacyId=${pharmacyId}`, {
+                const billsRes = await fetch(`${PHARMACY_API_URL}/pharmacies/allbills?pharmacyId=${pharmacyId}`, {
                     credentials: "include"
                 });
 

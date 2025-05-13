@@ -3,7 +3,7 @@ import {
   Container, Typography, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, Button
 } from "@mui/material";
-import { API_URL } from '../../utils/constants.js';
+import {API_URL, PHARMACY_API_URL} from '../../utils/constants.js';
 import { UserContext } from '../../contexts/UserContext.jsx';
 import axios from "axios";
 
@@ -15,7 +15,7 @@ export default function Patients() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const pharmacyRes = await fetch(`${API_URL}/pharmacies?userId=${user.id}`, {
+        const pharmacyRes = await fetch(`${PHARMACY_API_URL}/pharmacies?userId=${user.id}`, {
           credentials: 'include'
         });
         const pharmacyData = await pharmacyRes.json();
@@ -24,7 +24,7 @@ export default function Patients() {
 
         const [patRes, presRes] = await Promise.all([
           axios.get(`${API_URL}/patient/pharmacy?pharmacyId=${pharmacyId}`, { withCredentials: true }),
-          axios.get(`${API_URL}/pharmacies/rx?pharmacyId=${pharmacyId}`, { withCredentials: true }),
+          axios.get(`${PHARMACY_API_URL}/pharmacies/rx?pharmacyId=${pharmacyId}`, { withCredentials: true }),
         ]);
 
         const patientArray = Array.isArray(patRes.data) ? patRes.data : [patRes.data];

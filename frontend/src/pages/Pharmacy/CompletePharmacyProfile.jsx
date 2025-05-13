@@ -11,7 +11,7 @@ import {
     Autocomplete,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { API_URL } from "../../utils/constants.js";
+import {API_URL, PHARMACY_API_URL} from "../../utils/constants.js";
 import { toast } from "sonner";
 import { UserContext } from "../../contexts/UserContext.jsx";
 
@@ -36,7 +36,7 @@ const CompletePharmacyProfile = () => {
     const {user} = useContext(UserContext);
     useEffect(() => {
         const run = async () => {
-            const res = await fetch(API_URL + `/pharmacies?userId=${user.id}`)
+            const res = await fetch(PHARMACY_API_URL + `/pharmacies?userId=${user.id}`)
             if(res.ok){
                 navigate("/pharmacist/dashboard")
             }

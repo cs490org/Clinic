@@ -50,7 +50,7 @@ const Prescriptions = () => {
   const fetchPrescriptions = async () => {
     setLoading(true);
     try {
-      const pharmacyRes = await fetch(`${API_URL}/pharmacies?userId=${user.id}`, {
+      const pharmacyRes = await fetch(`${PHARMACY_API_URL}/pharmacies?userId=${user.id}`, {
         credentials: 'include'
       });
       const pharmacyData = await pharmacyRes.json();
@@ -126,7 +126,7 @@ const Prescriptions = () => {
         body: JSON.stringify({
           pharmacyId: pill.pharmacy.id,
           drugId: pill.drug.id,
-          quantity: pill.inventory,
+          quantity: 0,
           dispensed: true
         })
       });
@@ -173,13 +173,13 @@ const Prescriptions = () => {
     setNewDrug({ name: '', description: '', dosage: '', price: '', image: '', quantity: '' });
 
     try {
-      const pharmacyRes = await fetch(`${API_URL}/pharmacies?userId=${user.id}`, {
+      const pharmacyRes = await fetch(`${PHARMACY_API_URL}/pharmacies?userId=${user.id}`, {
         credentials: 'include'
       });
       const pharmacyData = await pharmacyRes.json();
       const pharmacyId = Array.isArray(pharmacyData) ? pharmacyData[0]?.id : pharmacyData?.id;
 
-      const res = await fetch(`${API_URL}/pharmacies/unassigned?pharmacyId=${pharmacyId}`, {
+      const res = await fetch(`${PHARMACY_API_URL}/pharmacies/unassigned?pharmacyId=${pharmacyId}`, {
         credentials: 'include'
       });
       const data = await res.json();
@@ -197,7 +197,7 @@ const Prescriptions = () => {
     }
 
     try {
-      const pharmacyRes = await fetch(`${API_URL}/pharmacies?userId=${user.id}`, {
+      const pharmacyRes = await fetch(`${PHARMACY_API_URL}/pharmacies?userId=${user.id}`, {
         credentials: 'include'
       });
       const pharmacyData = await pharmacyRes.json();
@@ -351,13 +351,13 @@ const Prescriptions = () => {
                     <Typography variant="body2">
                       <strong>Quantity:</strong> {pill.inventory} {getColorDot(pill.inventory)}
                     </Typography>
-                    <Typography variant="body2" color={pill.dispensed ? 'green' : 'warning.main'} fontWeight="bold">
-                      <strong>Status:</strong> {pill.dispensed ? 'Dispensed' : 'Not Dispensed'}
+                    <Typography variant="body2" color={pill.dispensed ? 'warning.main' : 'green'} fontWeight="bold">
+                      <strong>Status:</strong> {pill.dispensed ? 'Scrapped' : 'Not Scrapped'}
                     </Typography>
                   </CardContent>
                   <Box px={2} pb={2}>
                     <Button variant="contained" fullWidth sx={{ mb: 1 }} onClick={() => handleDispense(pill)} disabled={pill.dispensed}>
-                      Mark as Dispensed
+                      Scrap current stock
                     </Button>
                     <Button variant="outlined" fullWidth sx={{ mb: 1 }} onClick={() => handleOpenDialog(pill)}>
                       Modify Quantity
