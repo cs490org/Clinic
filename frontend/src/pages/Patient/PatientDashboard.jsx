@@ -15,6 +15,7 @@ import {
     Stack,
     Divider,
     Grid2,
+    Box,
 } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -52,54 +53,63 @@ const PatientDashboard = () => {
     };
 
     const theme = useTheme();
+    const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
 
-    const isMdUp= useMediaQuery(theme.breakpoints.up("md"))
     const Widgets = () => {
         return (
             <>
-                <Grid2 size={4} sx={{display:"flex",flexDirection:"column"}}>
+                <Grid2 size={4}>
                     <PatientQuickActions/>
-                </Grid2 >
+                </Grid2>
                 <Grid2 size={4}>
                     <PatientChosenDoctor/>
                 </Grid2>
-                <Grid2 size={4} >
+                <Grid2 size={4}>
                     <PendingAppointments/>
-                </Grid2 >
-                <Grid2 size={4} >
+                </Grid2>
+                <Grid2 size={4}>
                     <MealPlansWidget/>
                 </Grid2>
-                <Grid2 size={8} >
+                <Grid2 size={8}>
                     <AllDoctors onBookClick={handleBookClick} />
                 </Grid2>
-                <Grid2 size={6} >
+                <Grid2 size={6}>
                     <AllPatientMetrics patientId={roleData.id}/>
                 </Grid2>
-                <Grid2 size={6} >
+                <Grid2 size={6}>
                     <PatientSurvey />
                 </Grid2>
-                <Grid2 size={4} >
+                <Grid2 size={4}>
                     <PatientEditPreferredPharmacy/>
                 </Grid2>
             </>
-        )
-    }
+        );
+    };
 
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4, px: 4 }}>
-            <Typography sx={{ fontSize: '1.6rem', fontWeight: 'bold' }} gutterBottom>
-                Patient Dashboard
-            </Typography>
-            <Divider sx={{ mb: '2rem' }} />
-            {isMdUp ? (
-                <Grid container spacing={2}>
-                    <Widgets />
-                </Grid>
-            ) : (
-                <Stack spacing={3}>
-                    <Widgets />
-                </Stack>
-            )}
+            <Stack spacing={3}>
+                <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    mb: 3,
+                    flexWrap: 'wrap'
+                }}>
+                    <Typography fontWeight={"bold"} sx={{ fontSize: { xs: '1.6rem', sm: '2.2rem' } }} variant="h4" gutterBottom>
+                        Patient Dashboard
+                    </Typography>
+                </Box>
+                {isMdUp ? (
+                    <Grid2 container spacing={2}>
+                        <Widgets />
+                    </Grid2>
+                ) : (
+                    <Stack spacing={2}>
+                        <Widgets />
+                    </Stack>
+                )}
+            </Stack>
             <BookAppointmentDialog
                 openBooking={openBooking}
                 setOpenBooking={setOpenBooking}
