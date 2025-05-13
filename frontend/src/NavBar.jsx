@@ -28,6 +28,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import FlatwareIcon from '@mui/icons-material/Flatware';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import {
+  Engineering,
   Medication, Message, Payment, ReceiptLong,
 } from "@mui/icons-material";
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
@@ -302,15 +303,26 @@ export default function NavBar() {
           {(user?.role === "PHARMACIST") &&
             <ListItemButton
               onClick={() => {
-                navigate("/pharmacist/prescriptions");
+                navigate("/pharmacist/inventory");
                 setDrawerOpen(false);
               }}>
               <ListItemIcon>
                 <Medication />
               </ListItemIcon>
-              <ListItemText primary={"Prescriptions"} />
+              <ListItemText primary={"Pharmacy Inventory"} />
             </ListItemButton>
           }
+
+          {user?.role === "PHARMACIST" && (
+              <ListItemButton
+                  onClick={() => {
+                    navigate("/pharmacist/override");
+                    setDrawerOpen(false);
+                  }}>
+                <ListItemIcon><Engineering /></ListItemIcon>
+                <ListItemText primary={"Pharmacy History and Override"} />
+              </ListItemButton>
+          )}
         </List>
 
         <Divider />
