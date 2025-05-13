@@ -50,7 +50,7 @@ const Prescriptions = () => {
   const fetchPrescriptions = async () => {
     setLoading(true);
     try {
-      const pharmacyRes = await fetch(`${API_URL}/pharmacies?userId=${user.id}`, {
+      const pharmacyRes = await fetch(`${PHARMACY_API_URL}/pharmacies?userId=${user.id}`, {
         credentials: 'include'
       });
       const pharmacyData = await pharmacyRes.json();
@@ -173,13 +173,13 @@ const Prescriptions = () => {
     setNewDrug({ name: '', description: '', dosage: '', price: '', image: '', quantity: '' });
 
     try {
-      const pharmacyRes = await fetch(`${API_URL}/pharmacies?userId=${user.id}`, {
+      const pharmacyRes = await fetch(`${PHARMACY_API_URL}/pharmacies?userId=${user.id}`, {
         credentials: 'include'
       });
       const pharmacyData = await pharmacyRes.json();
       const pharmacyId = Array.isArray(pharmacyData) ? pharmacyData[0]?.id : pharmacyData?.id;
 
-      const res = await fetch(`${API_URL}/pharmacies/unassigned?pharmacyId=${pharmacyId}`, {
+      const res = await fetch(`${PHARMACY_API_URL}/pharmacies/unassigned?pharmacyId=${pharmacyId}`, {
         credentials: 'include'
       });
       const data = await res.json();
@@ -197,7 +197,7 @@ const Prescriptions = () => {
     }
 
     try {
-      const pharmacyRes = await fetch(`${API_URL}/pharmacies?userId=${user.id}`, {
+      const pharmacyRes = await fetch(`${PHARMACY_API_URL}/pharmacies?userId=${user.id}`, {
         credentials: 'include'
       });
       const pharmacyData = await pharmacyRes.json();
