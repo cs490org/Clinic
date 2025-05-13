@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react"
 import {UserContext} from '../contexts/UserContext';
 import {useNavigate} from 'react-router-dom';
-import {API_URL} from '../utils/constants.js';
+import {API_URL, PHARMACY_API_URL} from '../utils/constants.js';
 import theme from '../theme.js';
 import {CssBaseline, ThemeProvider, Typography} from "@mui/material";
 import NavBar from '../NavBar.jsx';
@@ -47,7 +47,7 @@ export default function Auth({children, notRequired, allowedRoles}) {
             } else if (user.role === "DOCTOR") {
                 url = API_URL + `/doctors?userId=${user.id}`
             } else if (user.role === "PHARMACIST") {
-                url = API_URL + `/pharmacies?userId=${user.id}`
+                url = PHARMACY_API_URL + `/pharmacies?userId=${user.id}`
             } else {
                 throw new Error("Role undefined")
             }
