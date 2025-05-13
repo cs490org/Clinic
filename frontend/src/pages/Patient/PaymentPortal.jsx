@@ -23,7 +23,7 @@ import {
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { API_URL } from '../../utils/constants';
+import {API_URL, PHARMACY_API_URL} from '../../utils/constants';
 import { UserContext } from '../../contexts/UserContext.jsx';
 
 export default function PatientPaymentPortal({ billId, billAmount, prescriptionId, onPaymentSuccess }) {
@@ -67,12 +67,12 @@ export default function PatientPaymentPortal({ billId, billAmount, prescriptionI
     const payAndReady = useMutation({
         mutationFn: async () => {
             await axios.patch(
-                `${API_URL}/pharmacies/bill`,
+                `${PHARMACY_API_URL}/pharmacies/bill`,
                 null,
                 { params: { billId }, withCredentials: true }
             );
             return axios.patch(
-                `${API_URL}/${prescriptionId}/status`,
+                `${PHARMACY_API_URL}/${prescriptionId}/status`,
                 null,
                 { params: { status: 'READY_FOR_PICKUP' }, withCredentials: true }
             );

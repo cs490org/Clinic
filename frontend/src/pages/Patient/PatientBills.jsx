@@ -3,7 +3,7 @@ import React, { useContext, useState } from 'react';
 import { Paper, Typography, Divider, CircularProgress, Box, Button, Stack } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { API_URL } from '../../utils/constants';
+import {API_URL, PHARMACY_API_URL} from '../../utils/constants';
 import { UserContext } from '../../contexts/UserContext.jsx';
 import PatientPaymentPortal from './PaymentPortal.jsx';
 
@@ -15,7 +15,7 @@ export default function PatientBills() {
         queryKey: ['bills', roleData.id],
         queryFn: () =>
             axios
-                .get(`${API_URL}/pharmacies/bills`, {
+                .get(`${PHARMACY_API_URL}/pharmacies/bills`, {
                     params: { patientId: roleData.id },
                     withCredentials: true
                 })

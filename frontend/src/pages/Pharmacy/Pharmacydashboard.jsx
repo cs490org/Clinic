@@ -24,7 +24,7 @@ const PharmacyDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const pharmacyRes = await fetch(`${API_URL}/pharmacies?userId=${user.id}`, {
+        const pharmacyRes = await fetch(`${PHARMACY_API_URL}/pharmacies?userId=${user.id}`, {
           credentials: 'include'
         });
         const pharmacyData = await pharmacyRes.json();

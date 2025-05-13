@@ -11,7 +11,7 @@ import {
     Typography
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import { API_URL } from "../../utils/constants.js";
+import {API_URL, PHARMACY_API_URL} from "../../utils/constants.js";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../contexts/UserContext.jsx";
 import { toast } from "sonner";
@@ -65,7 +65,7 @@ export default function AssignPrescription() {
         queryKey: ["drugs", pharmacyId],
         queryFn: async () => {
             if (!pharmacyId) return []; //this one is good because it only gets the drugs which pharmacy has in stock
-                const res = await fetch(`${APHARMACY_API_URL}/pharmacies/drugs?pharmacyId=${pharmacyId}`, {
+                const res = await fetch(`${PHARMACY_API_URL}/pharmacies/drugs?pharmacyId=${pharmacyId}`, {
                     credentials: 'include'
                 });
             /*const res = await fetch(`${API_URL}/drugs`, {  // gets ALL drugs breaking the constraint on pharmacy end
@@ -91,7 +91,7 @@ export default function AssignPrescription() {
         };
 
         try {
-            const res = await fetch(`${API_URL}/prescription`, {
+            const res = await fetch(`${PHARMACY_API_URL}/prescription`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
