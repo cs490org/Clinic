@@ -133,7 +133,7 @@ export default function ReverseFulfillment() {
                                             {rx.drug?.name || 'Unknown'}
                                         </TableCell>
                                         <TableCell>
-                                            {rx.updateTimestamp.slice(0, 10)}
+                                            {rx.updateTimestamp.slice(0, 16).replace('T', ' ')}
                                         </TableCell>
                                         <TableCell>
                                             <Button

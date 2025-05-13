@@ -220,7 +220,10 @@ const PharmacyDashboard = () => {
             </TableHead>
             <TableBody>
               {(prescriptions.length > 0)
-                  ? prescriptions.reverse().map((rx, idx) => {
+                  ? prescriptions
+                      .filter(rx => rx.rxStatusCode !== 'FULFILLED')
+                      .reverse()
+                      .map((rx, idx) => {
                     const patient = rx.patient?.user;
                     if (!patient) return null;
                     const drugName = rx.drug?.name || 'Unnamed';
