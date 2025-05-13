@@ -36,5 +36,8 @@ jobs:
         sleep 10  # Wait for the application to start
     
     - name: Run tests
+      env:
+        PYTHONPATH: ${{ github.workspace }}
+        CHROME_OPTIONS: "--headless --no-sandbox --disable-dev-shm-usage --disable-gpu --user-data-dir=/tmp/chrome-test"
       run: |
         pytest tests/ -v  # Then run the tests 
