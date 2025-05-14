@@ -7,7 +7,7 @@ import {
   import { useContext } from "react";
   import { UserContext } from "../../contexts/UserContext.jsx";
   import { useNavigate } from "react-router-dom";
-  import { useQuery } from "@tanstack/react-query";
+  import {useQuery, useQueryClient} from "@tanstack/react-query";
   import { queryKeys } from "../../utils/queryKeys.js";
   
   export default function PendingAppointments({ onAppointmentChange }) {
@@ -29,9 +29,11 @@ import {
       },
       refetchOnWindowFocus: false
     });
-  
+
+    const queryClient = useQueryClient();
     if (isLoading) return <div>Loading...</div>;
-  
+
+
     return (
       <Paper sx={{ p: "1rem", height: "100%" }}>
         <Typography sx={{ fontWeight: "bold", fontSize: "1.4rem", mb: 2 }}>
@@ -73,38 +75,47 @@ import {
                         })}
                       </Typography>
                       <div style={{ display: "flex", gap: 12 }}>
-                        <Button
-                          variant="contained"
-                          onClick={async () => {
-                            try {
-                              await axios.patch(`${API_URL}/appointments/${appointment.id}/reject`, null, {
-                                withCredentials: true
-                              });
-                              toast.success("Appointment cancelled");
-  
-                              // 🔄 Trigger parent refresh if provided
-                              if (onAppointmentChange) onAppointmentChange();
-                            } catch {
-                              toast.error("Cancel failed");
-                            }
-                          }}
+                        <div
+                            style={{
+                              display: "flex",
+                              flexWrap: "wrap",
+                              gap: 8,
+                              justifyContent: "flex-end"
+                            }}
                         >
-                          Cancel
-                        </Button>
-                        <Tooltip title={!canEnter ? "Not ready yet" : ""}>
-                          <span>
-                            <Button
+                          <Button
                               variant="contained"
-                              color="error"
-                              disabled={!canEnter}
-                              onClick={() =>
-                                navigate(`/appointment/${appointment.id}/${appointment.doctor.id}`)
-                              }
-                            >
-                              Enter
-                            </Button>
-                          </span>
-                        </Tooltip>
+                              onClick={async () => {
+                                try {
+                                  await axios.patch(`${API_URL}/appointments/${appointment.id}/reject`, null, {
+                                    withCredentials: true
+                                  });
+                                  toast.success("Appointment cancelled");
+                                  queryClient.invalidateQueries(queryKeys.appointments.all)
+                                  if (onAppointmentChange) onAppointmentChange();
+                                } catch {
+                                  toast.error("Cancel failed");
+                                }
+                              }}
+                          >
+                            Cancel
+                          </Button>
+                          <Tooltip title={!canEnter ? "Not ready yet" : ""}>
+    <span>
+      <Button
+          variant="contained"
+          color="error"
+          disabled={!canEnter}
+          onClick={() =>
+              navigate(`/appointment/${appointment.id}/${appointment.doctor.id}`)
+          }
+      >
+        Enter
+      </Button>
+    </span>
+                          </Tooltip>
+                        </div>
+
                       </div>
                     </div>
                   </div>
