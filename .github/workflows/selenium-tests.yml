@@ -1,0 +1,48 @@
+name: Selenium Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+    
+    - name: Install Chrome
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y chromium-browser
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest selenium pytest-selenium
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Install frontend dependencies and start application
+      run: |
+        cd frontend
+        npm install
+        npm run dev &
+        sleep 10  # Wait for the application to start
+    
+    - name: Run tests
+      env:
+        PYTHONPATH: ${{ github.workspace }}
+        CHROME_OPTIONS: "--headless=new --no-sandbox --disable-dev-shm-usage --disable-gpu --remote-debugging-port=9222"
+      run: |
+        pytest tests/ -v  # Then run the tests 

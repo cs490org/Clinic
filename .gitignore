@@ -4,3 +4,7 @@ node_modules
 .idea
 package-lock.json
 .mvnw
+venv/
+__pycache__/
+*.py[cod]
+.vscode/
