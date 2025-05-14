@@ -2,6 +2,7 @@ package com.cs490.group4.demo.service;
 
 import com.cs490.group4.demo.dao.*;
 import com.cs490.group4.demo.dto.DoctorReviewDTO;
+import com.cs490.group4.demo.dto.TopDoctorsResponseDTO;
 import com.cs490.group4.demo.security.User;
 import com.cs490.group4.demo.security.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -10,7 +11,11 @@ import org.springframework.stereotype.Service;
 
 import javax.print.Doc;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class DoctorService {
@@ -34,6 +39,29 @@ public class DoctorService {
             throw new EntityNotFoundException("Doctor not found");
         }
         return doctor;
+    }
+
+    public List<TopDoctorsResponseDTO> getTopDoctors(){
+        List<DoctorReviews> res = doctorReviewsRepository.findTopDoctors();
+
+        List<TopDoctorsResponseDTO> doctors = new ArrayList<>();
+        Set<Integer> seenDoctorIds = new HashSet<>();
+        
+        res.forEach(review -> {
+            Integer doctorId = review.getDoctor().getId();
+            if (!seenDoctorIds.contains(doctorId)) {
+                seenDoctorIds.add(doctorId);
+                doctors.add(TopDoctorsResponseDTO.builder()
+                        .doctor(review.getDoctor())
+                        .build());
+            }
+        });
+
+        doctors.forEach(doctor -> {
+            doctor.setRating(getAverageRating(doctor.getDoctor().getId()));
+        });
+
+        return doctors;
     }
 
     public Doctor createDoctor(Integer userId, String phone, String specialty, String licenseNumber) {

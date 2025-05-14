@@ -21,7 +21,7 @@ import {
       queryKey: queryKeys.appointments.pending(roleData.id),
       queryFn: async () => {
         const res = await fetch(
-          API_URL + `/appointments/patient?patientId=${roleData.id}&status=1`,
+          API_URL + `/appointments/patient?patientId=${roleData.id}&status=2`,
           { credentials: 'include' }
         );
         if (!res.ok) throw new Error("Failed to fetch");

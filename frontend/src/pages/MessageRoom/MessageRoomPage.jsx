@@ -12,7 +12,12 @@ import {
     Divider,
     ListItemAvatar,
     Avatar,
-    useTheme
+    useTheme,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Stack
 } from '@mui/material';
 import { format } from 'date-fns';
 import { API_URL } from '../../utils/constants';
@@ -22,11 +27,15 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import PatientAddAppointmentData from "../Patient/PatientAddAppointmentData.jsx";
 import {useQuery} from "@tanstack/react-query";
+import AssignRx from '../Doctor/AssignRx';
+import AssignMealPlan from '../Doctor/AssignMealPlan';
 
 export default function MessageRoomPage() {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
-
+    const [showEndAppointmentModal, setShowEndAppointmentModal] = useState(false);
+    const [showRxForm, setShowRxForm] = useState(false);
+    const [showMealPlanForm, setShowMealPlanForm] = useState(false);
 
     // patient submitting their metrics for the appointment
     const [showForm, setShowForm] = useState(false);
@@ -147,6 +156,20 @@ export default function MessageRoomPage() {
         }
     };
 
+    const handleEndAppointment = async () => {
+        try {
+            await axios.post(`${API_URL}/appointments/${id}/complete`, null, {
+                withCredentials: true
+            });
+            toast.success("Appointment ended successfully");
+            setShowEndAppointmentModal(false);
+            navigate('/doctor/dashboard');
+        } catch (error) {
+            console.error("Failed to complete appointment:", error);
+            toast.error("Failed to end appointment");
+        }
+    };
+
     return (
         <>
         <Container maxWidth="md" sx={{ height: '90vh', py: 4 }}>
@@ -168,18 +191,7 @@ export default function MessageRoomPage() {
                         <Button
                             variant="contained"
                             color="error"
-                            onClick={async () => {
-                                try {
-                                    await axios.post(`${API_URL}/appointments/${id}/complete`, null, {
-                                        withCredentials: true
-                                    });
-                                    toast.success("Appointment ended successfully");
-                                    navigate('/doctor/dashboard');
-                                } catch (error) {
-                                    console.error("Failed to complete appointment:", error);
-                                    toast.error("Failed to end appointment");
-                                }
-                            }}
+                            onClick={() => setShowEndAppointmentModal(true)}
                         >
                             End Appointment
                         </Button>
@@ -260,20 +272,87 @@ export default function MessageRoomPage() {
                 </Box>
             </Paper>
         </Container>
-            {showForm && user?.role === 'PATIENT' && (
-                <PatientAddAppointmentData
-                    open={showForm}
-                    onClose={(success) => {
-                        setShowForm(false);
-                        if (success) {
-                            toast.success("Appointment data submitted.");
-                            setHasSubmittedData(true);
-                        }
-                    }}
-                    appointmentId={id}
-                    patientId={roleData.id}
-                />
-            )}
-            </>
+
+        {/* End Appointment Modal */}
+        <Dialog 
+            open={showEndAppointmentModal} 
+            onClose={() => setShowEndAppointmentModal(false)}
+            maxWidth="sm"
+            fullWidth
+        >
+            <DialogTitle>End Appointment</DialogTitle>
+            <DialogContent>
+                <Stack spacing={2} sx={{ mt: 2 }}>
+                    <Button 
+                        variant="outlined" 
+                        onClick={() => {
+                            setShowRxForm(true);
+                            setShowEndAppointmentModal(false);
+                        }}
+                    >
+                        Assign Medication
+                    </Button>
+                    <Button 
+                        variant="outlined" 
+                        onClick={() => {
+                            setShowMealPlanForm(true);
+                            setShowEndAppointmentModal(false);
+                        }}
+                    >
+                        Assign Meal Plan
+                    </Button>
+                </Stack>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => setShowEndAppointmentModal(false)}>Cancel</Button>
+                <Button onClick={handleEndAppointment} color="primary">
+                    End Without Assigning
+                </Button>
+            </DialogActions>
+        </Dialog>
+
+        {/* Prescription Form */}
+        {showRxForm && (
+            <Dialog 
+                open={showRxForm} 
+                onClose={() => setShowRxForm(false)}
+                maxWidth="md"
+                fullWidth
+            >
+                <DialogContent>
+                    <AssignRx toUserId={toUserId} />
+                </DialogContent>
+            </Dialog>
+        )}
+
+        {/* Meal Plan Form */}
+        {showMealPlanForm && (
+            <Dialog 
+                open={showMealPlanForm} 
+                onClose={() => setShowMealPlanForm(false)}
+                maxWidth="md"
+                fullWidth
+            >
+                <DialogContent>
+                    <AssignMealPlan />
+                </DialogContent>
+            </Dialog>
+        )}
+
+        {showForm && user?.role === 'PATIENT' && (
+            <PatientAddAppointmentData
+                open={showForm}
+                onClose={(success) => {
+                    setShowForm(false);
+                    if (success) {
+                        toast.success("Appointment data submitted.");
+                        setHasSubmittedData(true);
+                    }
+                }}
+                appointmentId={id}
+                patientId={roleData.id}
+            />
+        )}
+        </>
     );
 }

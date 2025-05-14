@@ -1,9 +1,9 @@
-import { Box, Paper, Typography, Container, Avatar, Stack } from "@mui/material";
+import { Box, Paper, Typography, Container, Avatar, Stack, Rating } from "@mui/material";
 import PersonIcon from '@mui/icons-material/Person';
 import { API_URL } from "../../../utils/constants";
 import { useEffect, useState } from "react";
 
-const DoctorCard = ({ firstName, lastName, specialty, description, user }) => (
+const DoctorCard = ({ firstName, lastName, specialty, description, user, rating }) => (
     <Paper sx={{ p: 2 }}>
         <Box display={"flex"} flexDirection={"column"} alignItems={"center"} width={"300px"}>
             <Avatar
@@ -25,6 +25,14 @@ const DoctorCard = ({ firstName, lastName, specialty, description, user }) => (
             <Typography textAlign={"center"} color="text.secondary">
                 {description}
             </Typography>
+            <Typography variant="subtitle1" color="text.secondary" mb={2}>
+                <Rating
+                    value={rating} 
+                    readOnly 
+                    precision={0.25}
+                    sx={{ mb: 2 }}
+                />
+            </Typography>
         </Box>
     </Paper>
 );
@@ -35,7 +43,7 @@ const TopDoctors = () => {
 
     useEffect(() => {
         const fetchDoctors = async () => {
-            const response = await fetch(`${API_URL}/doctors`);
+            const response = await fetch(`${API_URL}/doctors/topDoctors`);
             const data = await response.json();
             setDoctors([...data]);
         };
@@ -84,7 +92,7 @@ const TopDoctors = () => {
                     >
                     {doctors.map((doctor, index) => {
                         console.log(doctor)
-                        return < DoctorCard key={index} {...doctor} />
+                        return <DoctorCard key={index} firstName={doctor.doctor.firstName} lastName={doctor.doctor.lastName} specialty={doctor.doctor.specialty} description={doctor.doctor.description} user={doctor.doctor.user} rating={doctor.rating} />
                     })}
                 </Stack>
             </Container>
