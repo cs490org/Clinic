@@ -1,4 +1,4 @@
-import {useState} from "react";
+import { useEffect, useState } from "react";
 import {
     Container,
     Paper,
@@ -9,9 +9,9 @@ import {
     Tabs,
     Tab,
 } from "@mui/material";
-import {useNavigate} from "react-router-dom";
-import {API_URL} from "../utils/constants";
-import {toast} from "sonner";
+import { useNavigate } from "react-router-dom";
+import { API_URL, PHARMACY_API_URL } from "../utils/constants";
+import { toast } from "sonner";
 
 
 const SignupPage = () => {
@@ -52,9 +52,13 @@ const SignupPage = () => {
         setErrors({});
     };
 
+    useEffect(() => {
+        console.log(userType)
+    }, [userType]);
+
     const register = async (event) => {
         event.preventDefault();
-        if(!validate()) return;
+        if (!validate()) return;
         const res = await fetch(API_URL + '/auth/register', {
             method: 'POST',
             body: JSON.stringify({
@@ -75,15 +79,28 @@ const SignupPage = () => {
                 credentials: 'include'
             });
 
-            if (userRes.status === 200) {
-                // get user response
-                window.location.reload();
-            } else {
-                // WTF
-                toast.error("There was an error when creating the account.")
-                throw new Error("Error while creating account")
+            const userData = await userRes.json();
+            console.log(userData)
+
+            if (userType == "PHARMACIST") {
+
+                const res = await fetch(`${PHARMACY_API_URL}/pharmacies`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        userId: userData.id,
+                        name: firstName + " " + lastName,
+                        zipCode: "",
+                        phone: "",
+                        address: "",
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include'
+                });
             }
 
+            navigate('/pharmacy/complete-profile')
         } else if (res.status == 202) {
             // TODO: introduce error displays
             // setError('Account already exists.')
@@ -100,7 +117,7 @@ const SignupPage = () => {
         }}>
             <Paper
                 elevation={3}
-                sx={{p: 4}}
+                sx={{ p: 4 }}
             >
                 <Stack alignItems={"center"}>
                     <Typography component="h1" variant="h5" gutterBottom>
@@ -111,16 +128,16 @@ const SignupPage = () => {
                         value={userType}
                         onChange={handleUserTypeChange}
                         variant="fullWidth"
-                        sx={{width: '100%', mb: 3}}
+                        sx={{ width: '100%', mb: 3 }}
                     >
-                        <Tab label="Patient" value="PATIENT"/>
-                        <Tab label="Doctor" value="DOCTOR"/>
-                        <Tab label="Pharmacist" value="PHARMACIST"/>
+                        <Tab label="Patient" value="PATIENT" />
+                        <Tab label="Doctor" value="DOCTOR" />
+                        <Tab label="Pharmacist" value="PHARMACIST" />
                     </Tabs>
 
-                    <form onSubmit={register} style={{width: '100%'}}>
-                        <Stack spacing={2} sx={{width: '100%'}}>
-                            <Stack direction={{xs: 'column', sm: 'row'}} spacing={2}>
+                    <form onSubmit={register} style={{ width: '100%' }}>
+                        <Stack spacing={2} sx={{ width: '100%' }}>
+                            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                                 <TextField
                                     name="firstName"
                                     required

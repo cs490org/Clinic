@@ -97,8 +97,8 @@ const CompletePharmacyProfile = () => {
         }
 
         try {
-            const response = await fetch(API_URL + "/pharmacies", {
-                method: "POST",
+            const response = await fetch(PHARMACY_API_URL + "/pharmacies", {
+                method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
                 },
