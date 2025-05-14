@@ -109,7 +109,7 @@ export default function PharmacyDashboard() {
 
             // mark prescription ready
             await axios.patch(
-                `${API_URL}/prescriptions/${rx.id}/status`,
+                `${PHARMACY_API_URL}/${rx.id}/status`,
                 null,
                 { params: { status: 'READY_FOR_PICKUP' }, withCredentials: true }
             );
