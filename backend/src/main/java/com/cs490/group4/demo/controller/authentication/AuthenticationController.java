@@ -34,6 +34,8 @@ public class AuthenticationController {
     @Autowired
     private UserService userService;
 
+    String domain = "https://clinic-919309081290.us-east4.run.app";
+
     @PostMapping("/auth/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequestDTO request) {
             AuthenticationResponseDTO responseDTO = authenticationService.register(request);
@@ -43,10 +45,10 @@ public class AuthenticationController {
                 ResponseCookie accessTokenCookie, refreshTokenCookie;
                 if (!ENVIRONMENT_TYPE.equals("localhost")) {
                     accessTokenCookie = ResponseCookie.from("access_token", responseDTO.getAccessToken())
-                            .httpOnly(true).secure(true).sameSite("None").path("/").domain(".bryceblankinship.com").maxAge(TokenConstants.USER_ACCESS_TOKEN_EXPIRATION).build();
+                            .httpOnly(true).secure(true).sameSite("None").path("/").domain(domain).maxAge(TokenConstants.USER_ACCESS_TOKEN_EXPIRATION).build();
 
                     refreshTokenCookie = ResponseCookie.from("refresh_token", responseDTO.getRefreshToken())
-                            .httpOnly(true).secure(true).sameSite("None").path("/").domain(".bryceblankinship.com").maxAge(TokenConstants.USER_REFRESH_TOKEN_EXPIRATION).build();
+                            .httpOnly(true).secure(true).sameSite("None").path("/").domain(domain).maxAge(TokenConstants.USER_REFRESH_TOKEN_EXPIRATION).build();
                 } else {
                     accessTokenCookie = ResponseCookie.from("access_token", responseDTO.getAccessToken())
                             .httpOnly(false).secure(false).sameSite("Lax").path("/").domain(".localhost").maxAge(TokenConstants.USER_ACCESS_TOKEN_EXPIRATION).build();
@@ -73,10 +75,10 @@ public class AuthenticationController {
                 ResponseCookie accessTokenCookie, refreshTokenCookie;
                 if (!ENVIRONMENT_TYPE.equals("localhost")) {
                     accessTokenCookie = ResponseCookie.from("access_token", responseDTO.getAccessToken())
-                            .httpOnly(true).secure(true).sameSite("None").path("/").domain(".bryceblankinship.com").maxAge(TokenConstants.USER_ACCESS_TOKEN_EXPIRATION).build();
+                            .httpOnly(true).secure(true).sameSite("None").path("/").domain(domain).maxAge(TokenConstants.USER_ACCESS_TOKEN_EXPIRATION).build();
 
                     refreshTokenCookie = ResponseCookie.from("refresh_token", responseDTO.getRefreshToken())
-                            .httpOnly(true).secure(true).sameSite("None").path("/").domain(".bryceblankinship.com").maxAge(TokenConstants.USER_REFRESH_TOKEN_EXPIRATION).build();
+                            .httpOnly(true).secure(true).sameSite("None").path("/").domain(domain).maxAge(TokenConstants.USER_REFRESH_TOKEN_EXPIRATION).build();
                 } else {
                     accessTokenCookie = ResponseCookie.from("access_token", responseDTO.getAccessToken())
                             .httpOnly(false).secure(false).sameSite("Lax").path("/").domain(".localhost").maxAge(TokenConstants.USER_ACCESS_TOKEN_EXPIRATION).build();
@@ -102,10 +104,10 @@ public class AuthenticationController {
             ResponseCookie accessTokenCookie, refreshTokenCookie;
             if (!ENVIRONMENT_TYPE.equals("localhost")) {
                 accessTokenCookie = ResponseCookie.from("access_token", "deleted")
-                        .httpOnly(true).secure(true).sameSite("None").path("/").domain(".bryceblankinship.com").maxAge(TokenConstants.USER_ACCESS_TOKEN_EXPIRATION).build();
+                        .httpOnly(true).secure(true).sameSite("None").path("/").domain(domain).maxAge(TokenConstants.USER_ACCESS_TOKEN_EXPIRATION).build();
 
                 refreshTokenCookie = ResponseCookie.from("refresh_token", "deleted")
-                        .httpOnly(true).secure(true).sameSite("None").path("/").domain(".bryceblankinship.com").maxAge(TokenConstants.USER_REFRESH_TOKEN_EXPIRATION).build();
+                        .httpOnly(true).secure(true).sameSite("None").path("/").domain(domain).maxAge(TokenConstants.USER_REFRESH_TOKEN_EXPIRATION).build();
             } else {
                 accessTokenCookie = ResponseCookie.from("access_token", "deleted")
                         .httpOnly(false).secure(false).sameSite("Lax").path("/").domain(".localhost").maxAge(TokenConstants.USER_ACCESS_TOKEN_EXPIRATION).build();
@@ -146,10 +148,10 @@ public class AuthenticationController {
                     ResponseCookie accessTokenCookie, refreshTokenCookie;
                     if (!ENVIRONMENT_TYPE.equals("localhost")) {
                         accessTokenCookie = ResponseCookie.from("access_token", responseDTO.getAccessToken())
-                                .httpOnly(true).secure(true).sameSite("None").path("/").domain(".bryceblankinship.com").maxAge(TokenConstants.USER_ACCESS_TOKEN_EXPIRATION).build();
+                                .httpOnly(true).secure(true).sameSite("None").path("/").domain(domain).maxAge(TokenConstants.USER_ACCESS_TOKEN_EXPIRATION).build();
 
                         refreshTokenCookie = ResponseCookie.from("refresh_token", responseDTO.getRefreshToken())
-                                .httpOnly(true).secure(true).sameSite("None").path("/").domain(".bryceblankinship.com").maxAge(TokenConstants.USER_REFRESH_TOKEN_EXPIRATION).build();
+                                .httpOnly(true).secure(true).sameSite("None").path("/").domain(domain).maxAge(TokenConstants.USER_REFRESH_TOKEN_EXPIRATION).build();
                     } else {
                         accessTokenCookie = ResponseCookie.from("access_token", responseDTO.getAccessToken())
                                 .httpOnly(false).secure(false).sameSite("Lax").path("/").domain(".localhost").maxAge(TokenConstants.USER_ACCESS_TOKEN_EXPIRATION).build();
