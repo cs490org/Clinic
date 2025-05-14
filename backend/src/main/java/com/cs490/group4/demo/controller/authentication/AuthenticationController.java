@@ -34,7 +34,7 @@ public class AuthenticationController {
     @Autowired
     private UserService userService;
 
-    String domain = "https://clinic-919309081290.us-east4.run.app";
+    String domain = ".bryceblankinship.com";
 
     @PostMapping("/auth/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequestDTO request) {
