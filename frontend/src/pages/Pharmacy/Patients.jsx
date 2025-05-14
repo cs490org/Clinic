@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
   Container, Typography, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, Paper, Button
+  TableContainer, TableHead, TableRow, Paper, Button, TextField
 } from "@mui/material";
 import { API_URL, PHARMACY_API_URL } from '../../utils/constants.js';
 import { UserContext } from '../../contexts/UserContext.jsx';
@@ -10,6 +10,7 @@ import axios from "axios";
 export default function Patients() {
   const [patients, setPatients] = useState([]);
   const [prescriptions, setPrescriptions] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const { user } = useContext(UserContext);
 
   useEffect(() => {
@@ -33,9 +34,6 @@ export default function Patients() {
         const patientArray = Array.isArray(patRes.data) ? patRes.data : [patRes.data];
         const allPrescriptions = presRes.data || [];
 
-        console.log("✅ Fetched patients:", patientArray);
-        console.log("✅ Fetched prescriptions:", allPrescriptions);
-
         const enriched = patientArray.map(p => {
           const drugMap = {};
 
@@ -54,10 +52,6 @@ export default function Patients() {
           const drugs = Object.entries(drugMap).map(([name, count]) =>
             count > 1 ? `${name} (${count})` : name
           );
-
-          if (drugs.length === 0) {
-            console.warn(`⚠️ No matched drugs for patient ${p.firstName} ${p.lastName}`, p.email, p.id);
-          }
 
           return {
             id: p.id,
@@ -78,17 +72,32 @@ export default function Patients() {
     };
 
     fetchData();
-  }, []);
+  }, [user.id]);
 
   const handleContact = (patient) => {
     console.log(`📨 Contacting ${patient.firstName} (${patient.email})`);
   };
+
+  // Filter patients by name or email
+  const filteredPatients = patients.filter(p =>
+    `${p.firstName} ${p.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <Container sx={{ mt: 4 }}>
       <Typography variant="h4" gutterBottom fontWeight="bold">
         Patients at Your Pharmacy
       </Typography>
+
+      <TextField
+        label="Search Patients by Name or Email"
+        variant="outlined"
+        fullWidth
+        sx={{ mt: 2 }}
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
 
       <Paper sx={{ mt: 3 }}>
         <TableContainer>
@@ -104,7 +113,7 @@ export default function Patients() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {patients.length > 0 ? patients.map((p, i) => (
+              {filteredPatients.length > 0 ? filteredPatients.map((p, i) => (
                 <TableRow key={i}>
                   <TableCell>{p.firstName} {p.lastName}</TableCell>
                   <TableCell>{p.email}</TableCell>
