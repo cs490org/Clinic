@@ -1,15 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
   Container, Typography, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, Paper, Button
+  TableContainer, TableHead, TableRow, Paper, Button, TextField
 } from "@mui/material";
-import {API_URL, PHARMACY_API_URL} from '../../utils/constants.js';
+import { API_URL, PHARMACY_API_URL } from '../../utils/constants.js';
 import { UserContext } from '../../contexts/UserContext.jsx';
 import axios from "axios";
 
 export default function Patients() {
   const [patients, setPatients] = useState([]);
   const [prescriptions, setPrescriptions] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const { user } = useContext(UserContext);
 
   useEffect(() => {
@@ -20,7 +21,10 @@ export default function Patients() {
         });
         const pharmacyData = await pharmacyRes.json();
         const pharmacyId = Array.isArray(pharmacyData) ? pharmacyData[0]?.id : pharmacyData?.id;
-        if (!pharmacyId) return;
+        if (!pharmacyId) {
+          console.warn("❌ No pharmacy ID found.");
+          return;
+        }
 
         const [patRes, presRes] = await Promise.all([
           axios.get(`${API_URL}/patient/pharmacy?pharmacyId=${pharmacyId}`, { withCredentials: true }),
@@ -31,9 +35,23 @@ export default function Patients() {
         const allPrescriptions = presRes.data || [];
 
         const enriched = patientArray.map(p => {
-          const drugs = allPrescriptions
-            .filter(pr => pr.patient?.user?.id === p.id)
-            .map(pr => pr.drug?.name || pr.pillName || 'N/A');
+          const drugMap = {};
+
+          allPrescriptions
+            .filter(pr =>
+              pr.patient?.id === p.id ||
+              pr.patientId === p.id ||
+              pr.patient?.user?.email === p.email ||
+              pr.patient?.email === p.email
+            )
+            .forEach(pr => {
+              const name = pr.drug?.name || pr.pillName || 'N/A';
+              drugMap[name] = (drugMap[name] || 0) + 1;
+            });
+
+          const drugs = Object.entries(drugMap).map(([name, count]) =>
+            count > 1 ? `${name} (${count})` : name
+          );
 
           return {
             id: p.id,
@@ -42,29 +60,44 @@ export default function Patients() {
             email: p.email,
             phone: p.phone || '—',
             address: p.address || '—',
-            drugs,
+            drugs
           };
         });
 
         setPatients(enriched);
         setPrescriptions(allPrescriptions);
       } catch (err) {
-        console.error("Error fetching dynamic patient data:", err);
+        console.error("❌ Error fetching patient data:", err);
       }
     };
 
     fetchData();
-  }, []);
+  }, [user.id]);
 
   const handleContact = (patient) => {
     console.log(`📨 Contacting ${patient.firstName} (${patient.email})`);
   };
+
+  // Filter patients by name or email
+  const filteredPatients = patients.filter(p =>
+    `${p.firstName} ${p.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <Container sx={{ mt: 4 }}>
       <Typography variant="h4" gutterBottom fontWeight="bold">
         Patients at Your Pharmacy
       </Typography>
+
+      <TextField
+        label="Search Patients by Name or Email"
+        variant="outlined"
+        fullWidth
+        sx={{ mt: 2 }}
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
 
       <Paper sx={{ mt: 3 }}>
         <TableContainer>
@@ -80,7 +113,7 @@ export default function Patients() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {patients.length > 0 ? patients.map((p, i) => (
+              {filteredPatients.length > 0 ? filteredPatients.map((p, i) => (
                 <TableRow key={i}>
                   <TableCell>{p.firstName} {p.lastName}</TableCell>
                   <TableCell>{p.email}</TableCell>
