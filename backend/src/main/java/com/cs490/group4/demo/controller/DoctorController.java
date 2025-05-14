@@ -25,6 +25,11 @@ public class DoctorController {
         }
     }
 
+    @GetMapping("/topDoctors")
+    private ResponseEntity<?> getTopDoctors() {
+        return ResponseEntity.ok(doctorService.getTopDoctors());
+    }
+
     @PostMapping()
     private ResponseEntity<?> createDoctor(@RequestBody DoctorCreateRequest request) {
         try {

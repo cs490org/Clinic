@@ -11,14 +11,14 @@ import {
     Typography
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import {API_URL, PHARMACY_API_URL} from "../../utils/constants.js";
+import { API_URL, PHARMACY_API_URL } from "../../utils/constants.js";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../contexts/UserContext.jsx";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { convertLength } from "@mui/material/styles/cssUtils.js";
 
-export default function AssignPrescription() {
+export default function AssignPrescription({ toUserId }) {
     const { roleData } = useContext(UserContext);
     const [selectedPatientId, setSelectedPatientId] = useState("");
     const [pharmacyId, setPharmacyId] = useState(null);
@@ -65,9 +65,9 @@ export default function AssignPrescription() {
         queryKey: ["drugs", pharmacyId],
         queryFn: async () => {
             if (!pharmacyId) return []; //this one is good because it only gets the drugs which pharmacy has in stock
-                const res = await fetch(`${PHARMACY_API_URL}/pharmacies/drugs?pharmacyId=${pharmacyId}`, {
-                    credentials: 'include'
-                });
+            const res = await fetch(`${PHARMACY_API_URL}/pharmacies/drugs?pharmacyId=${pharmacyId}`, {
+                credentials: 'include'
+            });
             /*const res = await fetch(`${API_URL}/drugs`, {  // gets ALL drugs breaking the constraint on pharmacy end
                 credentials: 'include'
             });*/
@@ -113,6 +113,12 @@ export default function AssignPrescription() {
         return <Typography>You currently have no assigned patients.</Typography>;
     }
 
+    useEffect(() => {
+        if (toUserId) {
+            setSelectedPatientId(toUserId);
+        }
+    }, [toUserId]);
+
     return (
         <Container>
             <Typography sx={{ fontSize: "2rem", fontWeight: "bold", mb: "2rem" }}>
@@ -123,9 +129,11 @@ export default function AssignPrescription() {
             {loadingPatients ? (
                 <CircularProgress />
             ) : (
+
                 <FormControl fullWidth sx={{ mt: 2 }}>
                     <InputLabel id="patient-select-label">Patient</InputLabel>
                     <Select
+                        readOnly={toUserId}
                         labelId="patient-select-label"
                         value={selectedPatientId}
                         onChange={(e) => setSelectedPatientId(e.target.value)}
@@ -138,6 +146,7 @@ export default function AssignPrescription() {
                         ))}
                     </Select>
                 </FormControl>
+
             )}
 
             <Typography sx={{ mt: 4 }}>Choose Drug</Typography>

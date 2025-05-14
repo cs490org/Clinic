@@ -17,6 +17,14 @@ export default function DoctorQuickActions() {
                 >
                     Assign Meal Plan
                 </Button>
+
+                <Button
+                    variant="contained"
+                    fullWidth
+                    onClick={() => navigate('/doctor/assignrx')}
+                >
+                    Assign Medication
+                </Button>
             </Stack>
         </Paper>
     );

@@ -16,7 +16,7 @@ import {
     Checkbox, Divider,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { API_URL } from "../../utils/constants";
+import { API_URL, PHARMACY_API_URL } from "../../utils/constants";
 import { UserContext } from "../../contexts/UserContext";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../utils/queryKeys";
@@ -56,7 +56,7 @@ const CompletePatientProfile = () => {
     const { data: pharmacies, isLoading: isLoadingPharmacies } = useQuery({
         queryKey: queryKeys.pharmacies.all,
         queryFn: async () => {
-            const res = await fetch(API_URL + '/pharmacies', {
+            const res = await fetch(PHARMACY_API_URL + '/pharmacies', {
                 credentials: 'include'
             });
             if (!res.ok) throw new Error('Failed to fetch pharmacies');
