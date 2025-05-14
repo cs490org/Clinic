@@ -6,10 +6,11 @@ import time
 #Updated
 '''
 Fire doctor Keep Separate
-View more from current meal plan Import
-Use search feature 
-Take daily survey Import 
-Take weekly survey Import
+Patient food run Separate
+View more from current meal plan Import Done
+Use search feature Import Done
+Take daily survey Import  Done
+Take weekly survey Import Done
 '''
 
 driver = webdriver.Chrome()
@@ -116,12 +117,12 @@ try:
     driver.execute_script("arguments[0].click();", view_health_button)
     print("Patient clicked 'View my health'")
 
-    # 3) Wait for the metrics page
+    # Wait for the metrics page
     wait.until(EC.url_contains("/metrics"))
     print("Navigated to /metrics")
     time.sleep(2)
 
-    # 4) Now your slow scroll
+    # Now your slow scroll
     slow_scroll_to_bottom(driver, pause=0.1, step=200)
     time.sleep(1)
 
@@ -321,18 +322,115 @@ try:
     driver.execute_script("arguments[0].click();", viewMoreMealPlan)
     print("Patient clicked 'View More'")
 
-    # 3) Wait for the assigned page
+    # Wait for the assigned page
     wait.until(EC.url_contains("assigned"))
     print("Navigated to mealplans/assigned")
     time.sleep(2)
 
-    # 4) Now your slow scroll
+    # Now your slow scroll
     slow_scroll_to_bottom(driver, pause=0.1, step=200)
     time.sleep(1)
 
     driver.back()
     wait.until(EC.url_contains("dashboard"))
     print("Patient returned to dashboard from view health")
+
+    slow_scroll_to_bottom(driver, pause=0.1, step=200)
+
+    # Open Daily Survey
+    daily_btn_xpath = '//button[normalize-space(text())="Take Daily survey"]'
+    dailySurvey = wait.until(EC.presence_of_element_located((By.XPATH, daily_btn_xpath)))
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", dailySurvey)
+    time.sleep(0.5)
+    driver.execute_script("arguments[0].click();", dailySurvey)
+    print("Clicked 'Take Daily survey'")
+
+    # Select first meal plan from the combobox
+    mealPlanXPath = '//div[@role="combobox" and contains(@class,"MuiSelect-select")]'
+    mealPlanDS = wait.until(EC.element_to_be_clickable((By.XPATH, mealPlanXPath)))
+    mealPlanDS.click()
+    firstOption = wait.until(EC.element_to_be_clickable((
+        By.XPATH,
+        '(//ul[@role="listbox"]//li[not(@aria-disabled="true")])[1]'
+    )))
+    firstOption.click()
+    wait.until(EC.invisibility_of_element_located((By.XPATH, "//ul[@role='listbox']")))
+    print("Selected first meal plan")
+
+    #Autofill
+    if wait_and_click('//button[normalize-space(text())="Autofill Calories"]', use_js=True):
+        print("Clicked 'Autofill Calories'")
+        time.sleep(0.5)
+
+    # Fill in Mood
+    mood_input = wait.until(EC.element_to_be_clickable((
+        By.XPATH,
+        '//label[normalize-space(text())="Mood (1-10)"]/following-sibling::div//input'
+    )))
+    mood_input.clear()
+    mood_input.send_keys("7")   
+    print("Entered Mood")
+
+    # Submit
+    submit_btn = wait.until(EC.element_to_be_clickable((
+        By.XPATH, '//button[normalize-space(text())="Submit"]'
+    )))
+    submit_btn.click()
+    print("Clicked 'Submit'")
+    weekly_xpath = '//button[normalize-space(text())="Take Weekly survey"]'
+    weeklySurvey = wait.until(EC.element_to_be_clickable((By.XPATH, weekly_xpath)))
+    # scroll the actual element
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", weeklySurvey)
+    time.sleep(0.5)
+    driver.execute_script("arguments[0].click();", weeklySurvey)
+    print("Clicked 'Take Weekly survey'")
+
+    # Fill in weight
+    weightInput = wait.until(EC.element_to_be_clickable((
+        By.XPATH,
+        '//label[normalize-space(text())="Weight (lbs)"]/following-sibling::div//input'
+    )))
+    weightInput.clear()
+    weightInput.send_keys("134")   
+    print("Entered weight")
+
+    # Submit
+    submit_btn = wait.until(EC.element_to_be_clickable((
+        By.XPATH, '//button[normalize-space(text())="Submit"]'
+    )))
+    submit_btn.click()
+    print("Clicked 'Submit'")
+
+    # Wait 
+    wait.until(EC.invisibility_of_element_located((By.XPATH, '//button[normalize-space(text())="Submit"]')))
+    wait.until(EC.url_contains("/dashboard"))
+    print("Survey submitted and back on dashboard")
+
+    # Search by Name
+    name_input = wait.until(EC.element_to_be_clickable((
+        By.XPATH,
+        '//label[normalize-space(text())="Search by Name"]/following-sibling::div//input'
+    )))
+    driver.execute_script("arguments[0].scrollIntoView({block: 'start'});", name_input)
+    time.sleep(1)
+
+    
+    name_input.send_keys("S")
+    time.sleep(1)
+
+    print("Filtered by name")
+    time.sleep(1)
+    
+
+    # Specialty
+    spec_input = wait.until(EC.element_to_be_clickable((
+        By.XPATH,
+        '//label[normalize-space(text())="Search by Specialty"]/following-sibling::div//input'
+    )))
+    spec_input.clear()
+    spec_input.send_keys("Endocrinologist")
+    time.sleep(1)
+    print("Filtered by specialty")
 
 
     #Dark/light mode

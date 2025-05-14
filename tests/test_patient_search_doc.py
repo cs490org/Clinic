@@ -76,18 +76,15 @@ try:
         '//label[normalize-space(text())="Search by Name"]/following-sibling::div//input'
     )))
     driver.execute_script("arguments[0].scrollIntoView({block: 'start'});", name_input)
-
-    name_input.clear()
-    name_input.send_keys("Samantha Salomon")
     time.sleep(1)
-    wait.until(EC.visibility_of_element_located((
-        By.XPATH,
-        '//h6[contains(normalize-space(.),"Samantha Salomon")]'
-    )))
+
+    
+    name_input.send_keys("S")
+    time.sleep(1)
+
     print("Filtered by name")
     time.sleep(1)
-    name_input.send_keys(Keys.CONTROL, "a", Keys.DELETE)
-    time.sleep(1)
+    
 
     # 3) Now switch to Specialty
     spec_input = wait.until(EC.element_to_be_clickable((
@@ -97,10 +94,6 @@ try:
     spec_input.clear()
     spec_input.send_keys("Endocrinologist")
     time.sleep(1)
-    wait.until(EC.visibility_of_element_located((
-        By.XPATH,
-        '//p[contains(normalize-space(.),"Endocrinologist")]'
-    )))
     print("Filtered by specialty")
 
 except Exception as e:

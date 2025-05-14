@@ -55,6 +55,24 @@ try:
     wait_and_click(menu_icon, use_js=True)
     time.sleep(2)
     
+    # Click conversations 
+    appChatHist = '//div[contains(@class, "MuiDrawer-paper")]//div[contains(@class, "MuiListItemButton-root")][.//span[contains(text(), "Appointment Chat History")]]'
+    if wait_and_click(appChatHist, use_js=True):
+        wait.until(EC.url_contains("/conversations"))
+        print("Navigated to Chat History page")
+        time.sleep(1)
+        wait_and_click(menu_icon, use_js=True)
+        time.sleep(1.5)
+        dashboard_button = '//div[contains(@class, "MuiDrawer-paper")]//div[contains(@class, "MuiListItemButton-root")][.//span[contains(text(), "Dashboard")]]'
+        if wait_and_click(dashboard_button, use_js=True):
+            wait.until(EC.url_contains("/dashboard"))
+            print("Returned to Pharmacist Dashboard via drawer")
+    time.sleep(1)
+
+    #Hamburger 2
+    wait_and_click(menu_icon, use_js=True)
+    time.sleep(2)
+    
     # Click Bills 
     medication_button = '//div[contains(@class, "MuiDrawer-paper")]//div[contains(@class, "MuiListItemButton-root")][.//span[contains(text(), "Bills")]]'
     if wait_and_click(medication_button, use_js=True):
@@ -69,7 +87,7 @@ try:
             print("Returned to Pharmacist Dashboard via drawer")
     time.sleep(1)
 
-    #Hamburger 2
+    #Hamburger 3
     wait_and_click(menu_icon, use_js=True)
     time.sleep(2)
     
@@ -77,7 +95,7 @@ try:
     Recipes_button = '//div[contains(@class, "MuiDrawer-paper")]//div[contains(@class, "MuiListItemButton-root")][.//span[contains(text(), "Patients")]]'
     if wait_and_click(Recipes_button, use_js=True):
         wait.until(EC.url_contains("/patients"))
-        print("Navigated to Recipes page")
+        print("Navigated to Patients page")
         time.sleep(1)
         wait_and_click(menu_icon, use_js=True)
         time.sleep(1.5)
@@ -91,11 +109,77 @@ try:
     wait_and_click(menu_icon, use_js=True)
     time.sleep(2)
     
-    # Click Prescriptions 
-    mealPlan_button = '//div[contains(@class, "MuiDrawer-paper")]//div[contains(@class, "MuiListItemButton-root")][.//span[contains(text(), "Prescriptions")]]'
-    if wait_and_click(mealPlan_button, use_js=True):
-        wait.until(EC.url_contains("/prescriptions"))
-        print("Navigated to Assign a Meal Plan page")
+    # Click Inventory 
+    pharmInven = '//div[contains(@class, "MuiDrawer-paper")]//div[contains(@class, "MuiListItemButton-root")][.//span[contains(text(), "Pharmacy Inventory")]]'
+    if wait_and_click(pharmInven, use_js=True):
+        wait.until(EC.url_contains("/Inventory"))
+        print("Navigated to Inventory page")
+        time.sleep(1)
+        wait.until(EC.presence_of_element_located((
+            By.CSS_SELECTOR,
+            "div.MuiCard-root"
+        )))
+
+        #Ibuprofen
+        drug_name = "Ibuprofen"
+        card_xpath = (
+            f"//div[contains(@class,'MuiCard-root') and .//p[normalize-space(text())='{drug_name}']]"
+        )
+        card = wait.until(EC.presence_of_element_located((
+            By.XPATH,
+            card_xpath
+        )))
+
+        #Modify
+        modify_btn = card.find_element(
+            By.XPATH,
+            ".//button[normalize-space(text())='MODIFY QUANTITY']"
+        )
+        modify_btn.click()
+        print(f"Clicked Modify Quantity on {drug_name}")
+
+        #fill in quantity
+        new_qty_input = wait.until(EC.element_to_be_clickable((
+            By.XPATH,
+            "//label[contains(text(),'New Quantity')]/following-sibling::div//input"
+        )))
+        new_qty_input.clear()
+        new_qty = "10"
+        new_qty_input.send_keys(new_qty)
+        print(f"Entered new quantity: {new_qty}")
+
+        # Save
+        save_btn = wait.until(EC.element_to_be_clickable((
+            By.XPATH,
+            "//button[normalize-space(text())='Save']"
+        )))
+        save_btn.click()
+        print("Clicked Save")
+
+        #Verify the update
+        updated_qty = wait.until(EC.visibility_of_element_located((
+            By.XPATH,
+            f"{card_xpath}//p[contains(text(),'Quantity')]/..//*[contains(text(),'{new_qty}')]"
+        ))).text
+        print(f"Quantity now shows: {updated_qty}")
+        wait_and_click(menu_icon, use_js=True)
+        time.sleep(1.5)
+        dashboard_button = '//div[contains(@class, "MuiDrawer-paper")]//div[contains(@class, "MuiListItemButton-root")][.//span[contains(text(), "Dashboard")]]'
+        if wait_and_click(dashboard_button, use_js=True):
+            wait.until(EC.url_contains("/dashboard"))
+            print("Returned to Pharmacist Dashboard via drawer")
+    time.sleep(1)
+
+
+    #Hamburger 4
+    wait_and_click(menu_icon, use_js=True)
+    time.sleep(2)
+    
+    # Click Pharmacy History and Override 
+    pharmInven = '//div[contains(@class, "MuiDrawer-paper")]//div[contains(@class, "MuiListItemButton-root")][.//span[contains(text(), "Pharmacy History and Override")]]'
+    if wait_and_click(pharmInven, use_js=True):
+        wait.until(EC.url_contains("/override"))
+        print("Navigated to Pharmacy History and Override page")
         time.sleep(1)
         wait_and_click(menu_icon, use_js=True)
         time.sleep(1.5)
