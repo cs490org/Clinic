@@ -1,0 +1,103 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
+import time
+import random
+
+opts = Options()
+opts.add_experimental_option("prefs", {"autofill.profile_enabled": False})
+driver = webdriver.Chrome(options=opts)
+wait = WebDriverWait(driver, 10)
+
+def click(xpath, use_js=False):
+    el = wait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
+    if use_js:
+        driver.execute_script("arguments[0].click();", el)
+    else:
+        el.click()
+
+def select_doctor_tab():
+    driver.get("http://localhost:5173/signup?role=PATIENT")
+    click('//button[contains(text(), "Doctor")]')
+    print("Doctor path selected")
+
+def fill_doctor_signup(email_value, password_value):
+    select_doctor_tab()
+    first = wait.until(EC.visibility_of_element_located((By.NAME, "firstName")))
+    last = driver.find_element(By.NAME, "lastName")
+    email = driver.find_element(By.NAME, "email")
+    pw = driver.find_element(By.NAME, "password")
+
+    first.clear(); first.send_keys("Doctor")
+    last.clear(); last.send_keys("User")
+    email.clear(); email.send_keys(email_value)
+    pw.clear(); pw.send_keys(password_value)
+    click('//button[@type="submit"]')
+    print(f"Attempted doctor signup with email: '{email_value}', password: '{password_value}'")
+
+def check_error(field):
+    selector = {
+        "email": ".email-error, .MuiFormHelperText-root",
+        "password": ".password-error, .MuiFormHelperText-root"
+    }[field]
+    err = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector)))
+    print(f"{field.capitalize()} validation error: {err.text.strip()}")
+
+try:
+    # 1) Duplicate-email test (valid password)
+    fill_doctor_signup("samanthasalomon@clinic.com", "Valid123")
+    time.sleep(1)
+    try:
+        check_error("email")
+    except:
+        print("No duplicate-email error found for doctor signup")
+    finally:
+        driver.delete_all_cookies()
+
+    # 2) Invalid-email formats
+    invalid_emails = ["noatsign.com", "doc@@clinic.com", "doc@clinic", "@clinic.com", "doc@.com"]
+    for bad_email in invalid_emails:
+        fill_doctor_signup(bad_email, "Valid123")
+        time.sleep(1)
+        try:
+            check_error("email")
+        except:
+            print(f"No email-error for '{bad_email}' in doctor signup")
+        finally:
+            driver.delete_all_cookies()
+
+    # 3) Invalid-password tests (with fresh email)
+    invalid_passwords = ["short", "allletters", "1234567"]
+    for pwd in invalid_passwords:
+        unique_email = f"doctor{int(time.time())}@naik.com"
+        fill_doctor_signup(unique_email, pwd)
+        time.sleep(1)
+        try:
+            check_error("password")
+        except:
+            print(f"No password-error for '{pwd}' in doctor signup")
+        finally:
+            driver.delete_all_cookies()
+
+    # 4) Happy-path: valid email/password + complete profile
+    valid_email = f"doctor{int(time.time())}@naik.com"
+    fill_doctor_signup(valid_email, "Valid123")
+    time.sleep(1)
+    wait.until(EC.url_contains("/complete-profile"))
+    if "complete-profile" not in driver.current_url:
+        print("Doctor signup did not advance to profile step")
+    else:
+        # complete doctor profile
+        driver.find_element(By.NAME, "phone").send_keys("1234567890")
+        click('//div[@role="combobox" and @aria-haspopup="listbox"]')
+        click('//li[@role="option" and text()="Cardiology"]')
+        lic = driver.find_element(By.NAME, "licenseNumber")
+        lic.send_keys(f"MD-{random.randint(0,999999):06d}")
+        click('//button[contains(text(), "Complete Profile")]')
+        wait.until(EC.url_contains("/doctor/dashboard"))
+        print("Doctor happy-path signup and profile complete")
+
+finally:
+    driver.quit()
